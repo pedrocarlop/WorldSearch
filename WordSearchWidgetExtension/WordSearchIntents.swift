@@ -32,7 +32,7 @@ struct WordSearchWidgetConfigurationIntent: WidgetConfigurationIntent {
     static var description = IntentDescription("Configura el slot para esta instancia del widget.")
 
     @Parameter(title: "Partida")
-    var slot: WordSearchSlot
+    var slot: WordSearchSlot?
 
     init() {
         self.slot = .a
@@ -128,7 +128,7 @@ struct WordSearchPosition: Hashable, Codable {
 
 @available(iOS 17.0, *)
 struct WordSearchState: Codable, Equatable {
-    var grid: [[Character]]
+    var grid: [[String]]
     var words: [String]
     var selected: Set<WordSearchPosition>
     var foundWords: Set<String>
@@ -157,7 +157,7 @@ struct WordSearchState: Codable, Equatable {
 
 @available(iOS 17.0, *)
 struct WordSearchPuzzle {
-    let grid: [[Character]]
+    let grid: [[String]]
     let words: [String]
 }
 
@@ -217,7 +217,7 @@ enum WordSearchPuzzleBank {
     }
 
     private static func build(_ rows: [String], words: [String]) -> WordSearchPuzzle {
-        let grid = rows.map { $0.split(separator: " ").map { Character(String($0)) } }
+        let grid = rows.map { $0.split(separator: " ").map { String($0) } }
         return WordSearchPuzzle(grid: grid, words: words)
     }
 }
@@ -334,7 +334,7 @@ enum WordSearchLogic {
         }
 
         let letters = positions.map { state.grid[$0.r][$0.c] }
-        let candidate = String(letters).uppercased()
+        let candidate = letters.joined().uppercased()
         let allowed = Set(state.words.map { $0.uppercased() })
         if allowed.contains(candidate) { return candidate }
         let reverse = String(candidate.reversed())
@@ -351,7 +351,7 @@ private struct LegacyPosition: Hashable, Codable {
 
 @available(iOS 17.0, *)
 private struct LegacyPuzzleState: Codable {
-    var grid: [[Character]]
+    var grid: [[String]]
     var words: [String]
     var selected: Set<LegacyPosition>
     var foundWords: Set<String>

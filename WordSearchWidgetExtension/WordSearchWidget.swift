@@ -21,7 +21,7 @@ struct WordSearchProvider: AppIntentTimelineProvider {
     }
 
     func snapshot(for configuration: WordSearchWidgetConfigurationIntent, in context: Context) async -> WordSearchEntry {
-        let slot = configuration.slot
+        let slot = configuration.slot ?? .a
         return WordSearchEntry(
             date: Date(),
             slot: slot,
@@ -30,7 +30,7 @@ struct WordSearchProvider: AppIntentTimelineProvider {
     }
 
     func timeline(for configuration: WordSearchWidgetConfigurationIntent, in context: Context) async -> Timeline<WordSearchEntry> {
-        let slot = configuration.slot
+        let slot = configuration.slot ?? .a
         let entry = WordSearchEntry(
             date: Date(),
             slot: slot,
@@ -70,7 +70,7 @@ struct WordSearchWidgetEntryView: View {
                     Text("Completada")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.green)
-                    AppIntentButton(ResetPuzzleIntent(slot: entry.slot)) {
+                    Button(intent: ResetPuzzleIntent(slot: entry.slot)) {
                         Label("Nueva sopa", systemImage: "arrow.triangle.2.circlepath")
                             .frame(maxWidth: .infinity)
                     }
@@ -98,7 +98,7 @@ private struct WordSearchGridWidget: View {
                     ForEach(0..<cols, id: \.self) { col in
                         let ch = state.grid[row][col]
                         let selected = state.selected.contains(WordSearchPosition(r: row, c: col))
-                        AppIntentButton(ToggleCellIntent(slot: slot, row: row, col: col)) {
+                        Button(intent: ToggleCellIntent(slot: slot, row: row, col: col)) {
                             Text(String(ch))
                                 .font(.system(size: 11, weight: .semibold, design: .rounded))
                                 .frame(width: 20, height: 20)
@@ -149,13 +149,13 @@ private struct ControlsWidget: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            AppIntentButton(ConfirmSelectionIntent(slot: slot)) {
+            Button(intent: ConfirmSelectionIntent(slot: slot)) {
                 Label("Comprobar", systemImage: "checkmark.circle")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
 
-            AppIntentButton(ResetPuzzleIntent(slot: slot)) {
+            Button(intent: ResetPuzzleIntent(slot: slot)) {
                 Label("Reiniciar", systemImage: "arrow.counterclockwise")
                     .frame(maxWidth: .infinity)
             }
