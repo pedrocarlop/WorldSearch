@@ -47,6 +47,22 @@ struct ToggleHelpIntent: AppIntent {
 }
 
 @available(iOS 17.0, *)
+struct DismissHintIntent: AppIntent {
+    static var title: LocalizedStringResource = "Ocultar pista"
+
+    init() {}
+
+    func perform() async throws -> some IntentResult {
+        var state = WordSearchPersistence.loadState(at: Date())
+        state.nextHintWord = nil
+        state.nextHintExpiresAt = nil
+        WordSearchPersistence.save(state)
+        WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConstants.widgetKind)
+        return .result()
+    }
+}
+
+@available(iOS 17.0, *)
 enum WordSearchConstants {
     static let suiteName = "group.com.pedrocarrasco.miapp"
     static let widgetKind = "WordSearchWidget"
@@ -57,6 +73,7 @@ enum WordSearchConstants {
     static let lastAppliedResetKey = "puzzle_last_applied_reset_v1"
     static let appearanceModeKey = "puzzle_theme_mode_v1"
     static let gridSizeKey = "puzzle_grid_size_v1"
+    static let wordHintModeKey = "puzzle_word_hint_mode_v1"
     static let minGridSize = 7
     static let maxGridSize = 12
 
@@ -96,6 +113,129 @@ enum WordSearchDifficulty {
 }
 
 @available(iOS 17.0, *)
+enum WordSearchHintMode: String, CaseIterable, Identifiable {
+    case word
+    case definition
+
+    var id: String { rawValue }
+
+    static func current(defaults: UserDefaults?) -> WordSearchHintMode {
+        guard let defaults else { return .word }
+        guard let raw = defaults.string(forKey: WordSearchConstants.wordHintModeKey) else { return .word }
+        return WordSearchHintMode(rawValue: raw) ?? .word
+    }
+}
+
+@available(iOS 17.0, *)
+enum WordSearchWordHints {
+    static func displayText(for word: String, mode: WordSearchHintMode) -> String {
+        switch mode {
+        case .word:
+            return word
+        case .definition:
+            return definition(for: word) ?? "Sin definicion"
+        }
+    }
+
+    static func definition(for word: String) -> String? {
+        let normalized = word.uppercased()
+        return definitions[normalized]
+    }
+
+    private static let definitions: [String: String] = [
+        "ARBOL": "Planta grande con tronco y ramas.",
+        "TIERRA": "Suelo donde crecen las plantas.",
+        "NUBE": "Masa de vapor de agua en el cielo.",
+        "MAR": "Gran extension de agua salada.",
+        "SOL": "Estrella que ilumina la Tierra.",
+        "RIO": "Corriente natural de agua.",
+        "FLOR": "Parte de la planta que produce semillas.",
+        "LUNA": "Satelite natural de la Tierra.",
+        "MONTE": "Elevacion natural del terreno.",
+        "VALLE": "Zona baja entre montes.",
+        "BOSQUE": "Conjunto denso de arboles.",
+        "RAMA": "Parte del arbol que sale del tronco.",
+        "ROCA": "Piedra grande y dura.",
+        "PLAYA": "Orilla de arena junto al mar.",
+        "NIEVE": "Agua congelada que cae del cielo.",
+        "VIENTO": "Movimiento del aire.",
+        "TRUENO": "Sonido fuerte tras un rayo.",
+        "FUEGO": "Combustion que produce calor y luz.",
+        "ARENA": "Granitos que forman playas o desiertos.",
+        "ISLA": "Tierra rodeada de agua.",
+        "CIELO": "Espacio visible sobre la Tierra.",
+        "SELVA": "Bosque tropical muy denso.",
+        "LLUVIA": "Agua que cae de las nubes.",
+        "CAMINO": "Via o senda para ir de un lugar a otro.",
+        "MUSGO": "Planta pequena que crece en lugares humedos.",
+        "LAGO": "Cuerpo de agua interior.",
+        "PRIMAVERA": "Estacion del anio entre invierno y verano.",
+        "HORIZONTE": "Linea donde parece unirse cielo y tierra.",
+        "ESTRELLA": "Cuerpo celeste que emite luz.",
+        "PLANETA": "Cuerpo que orbita una estrella.",
+        "QUESO": "Lacteo curado o fresco hecho de leche.",
+        "PAN": "Alimento horneado a base de harina.",
+        "MIEL": "Sustancia dulce producida por abejas.",
+        "LECHE": "Liquido blanco nutritivo de mamiferos.",
+        "UVA": "Fruto pequeno que crece en racimos.",
+        "PERA": "Fruta dulce de forma alargada.",
+        "CAFE": "Bebida hecha con granos tostados.",
+        "TOMATE": "Fruto rojo usado en ensaladas y salsas.",
+        "ACEITE": "Liquido graso usado para cocinar.",
+        "SAL": "Condimento mineral que realza el sabor.",
+        "PASTA": "Masa alimenticia de harina y agua.",
+        "ARROZ": "Cereal en grano muy usado en comidas.",
+        "PAPAYA": "Fruta tropical de pulpa naranja.",
+        "MANGO": "Fruta tropical dulce y jugosa.",
+        "BANANA": "Fruta alargada y amarilla.",
+        "NARANJA": "Fruta citrica redonda y dulce.",
+        "CEREZA": "Fruta pequena roja con hueso.",
+        "SOPA": "Comida liquida y caliente.",
+        "TORTILLA": "Preparacion de huevo o de masa de maiz.",
+        "GALLETA": "Dulce horneado y crujiente.",
+        "CHOCOLATE": "Dulce hecho con cacao.",
+        "YOGUR": "Lacteo fermentado y cremoso.",
+        "MANZANA": "Fruta redonda y crujiente.",
+        "AVENA": "Cereal usado en desayunos.",
+        "ENSALADA": "Mezcla de vegetales frescos.",
+        "PIMIENTO": "Hortaliza de piel lisa y colorida.",
+        "LIMON": "Fruta citrica muy acida.",
+        "COCO": "Fruto tropical con cascara dura.",
+        "ALMENDRA": "Semilla comestible con cascara dura.",
+        "ALBAHACA": "Hierba aromatica usada en cocina.",
+        "TREN": "Vehiculo que va sobre vias.",
+        "BUS": "Vehiculo grande para pasajeros.",
+        "CARRO": "Vehiculo de cuatro ruedas.",
+        "PUERTA": "Elemento que abre o cierra un paso.",
+        "LIBRO": "Conjunto de paginas encuadernadas.",
+        "CINE": "Lugar para ver peliculas.",
+        "PUENTE": "Estructura que cruza un rio o via.",
+        "CALLE": "Via urbana entre edificios.",
+        "METRO": "Transporte subterraneo en ciudades.",
+        "AVION": "Vehiculo que vuela.",
+        "BARRIO": "Zona de una ciudad con identidad propia.",
+        "PLAZA": "Espacio publico abierto en la ciudad.",
+        "PARQUE": "Area verde para ocio.",
+        "TORRE": "Construccion alta y estrecha.",
+        "MUSEO": "Lugar donde se exhibe arte o historia.",
+        "MAPA": "Representacion grafica de un lugar.",
+        "RUTA": "Camino planificado para ir a un destino.",
+        "BICICLETA": "Vehiculo de dos ruedas con pedales.",
+        "TRAFICO": "Circulacion de vehiculos.",
+        "SEMAFORO": "Senal luminosa para regular el paso.",
+        "ESTACION": "Lugar de salida y llegada de transporte.",
+        "AUTOPISTA": "Via rapida de varios carriles.",
+        "TAXI": "Vehiculo de servicio publico individual.",
+        "MOTOR": "Maquina que genera movimiento.",
+        "VIAJE": "Desplazamiento de un lugar a otro.",
+        "MOCHILA": "Bolso que se lleva en la espalda.",
+        "PASEO": "Actividad de caminar o recorrer.",
+        "CIUDAD": "Asentamiento grande y urbano.",
+        "CARTEL": "Placa o anuncio con informacion."
+    ]
+}
+
+@available(iOS 17.0, *)
 struct WordSearchPosition: Hashable, Codable {
     let r: Int
     let c: Int
@@ -127,6 +267,8 @@ struct WordSearchState: Codable, Equatable {
     var feedback: WordSearchFeedback?
     var pendingWord: String?
     var pendingSolvedPositions: Set<WordSearchPosition>
+    var nextHintWord: String?
+    var nextHintExpiresAt: Date?
 
     private enum CodingKeys: String, CodingKey {
         case grid
@@ -140,6 +282,8 @@ struct WordSearchState: Codable, Equatable {
         case feedback
         case pendingWord
         case pendingSolvedPositions
+        case nextHintWord
+        case nextHintExpiresAt
     }
 
     init(
@@ -153,7 +297,9 @@ struct WordSearchState: Codable, Equatable {
         isHelpVisible: Bool,
         feedback: WordSearchFeedback?,
         pendingWord: String?,
-        pendingSolvedPositions: Set<WordSearchPosition>
+        pendingSolvedPositions: Set<WordSearchPosition>,
+        nextHintWord: String?,
+        nextHintExpiresAt: Date?
     ) {
         self.grid = grid
         self.words = words
@@ -166,6 +312,8 @@ struct WordSearchState: Codable, Equatable {
         self.feedback = feedback
         self.pendingWord = pendingWord
         self.pendingSolvedPositions = pendingSolvedPositions
+        self.nextHintWord = nextHintWord
+        self.nextHintExpiresAt = nextHintExpiresAt
     }
 
     init(from decoder: Decoder) throws {
@@ -182,6 +330,8 @@ struct WordSearchState: Codable, Equatable {
         feedback = try container.decodeIfPresent(WordSearchFeedback.self, forKey: .feedback)
         pendingWord = try container.decodeIfPresent(String.self, forKey: .pendingWord)
         pendingSolvedPositions = try container.decodeIfPresent(Set<WordSearchPosition>.self, forKey: .pendingSolvedPositions) ?? []
+        nextHintWord = try container.decodeIfPresent(String.self, forKey: .nextHintWord)
+        nextHintExpiresAt = try container.decodeIfPresent(Date.self, forKey: .nextHintExpiresAt)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -197,6 +347,8 @@ struct WordSearchState: Codable, Equatable {
         try container.encodeIfPresent(feedback, forKey: .feedback)
         try container.encodeIfPresent(pendingWord, forKey: .pendingWord)
         try container.encode(pendingSolvedPositions, forKey: .pendingSolvedPositions)
+        try container.encodeIfPresent(nextHintWord, forKey: .nextHintWord)
+        try container.encodeIfPresent(nextHintExpiresAt, forKey: .nextHintExpiresAt)
     }
 
     var isCompleted: Bool {
@@ -430,11 +582,14 @@ enum WordSearchPersistence {
     }
 
     static func nextRefreshDate(from now: Date, state: WordSearchState) -> Date {
-        let dailyRefresh = nextDailyRefreshDate(after: now)
+        var refreshAt = nextDailyRefreshDate(after: now)
         if let feedback = state.feedback, feedback.expiresAt > now {
-            return min(dailyRefresh, feedback.expiresAt)
+            refreshAt = min(refreshAt, feedback.expiresAt)
         }
-        return dailyRefresh
+        if let hintExpiry = state.nextHintExpiresAt, hintExpiry > now {
+            refreshAt = min(refreshAt, hintExpiry)
+        }
+        return refreshAt
     }
 
     static func nextDailyRefreshDate(after now: Date) -> Date {
@@ -471,7 +626,9 @@ enum WordSearchPersistence {
             isHelpVisible: false,
             feedback: nil,
             pendingWord: nil,
-            pendingSolvedPositions: []
+            pendingSolvedPositions: [],
+            nextHintWord: nil,
+            nextHintExpiresAt: nil
         )
     }
 
@@ -515,7 +672,9 @@ enum WordSearchPersistence {
             isHelpVisible: false,
             feedback: nil,
             pendingWord: nil,
-            pendingSolvedPositions: []
+            pendingSolvedPositions: [],
+            nextHintWord: nil,
+            nextHintExpiresAt: nil
         )
     }
 
@@ -590,7 +749,9 @@ enum WordSearchPersistence {
                 isHelpVisible: false,
                 feedback: nil,
                 pendingWord: nil,
-                pendingSolvedPositions: []
+                pendingSolvedPositions: [],
+                nextHintWord: nil,
+                nextHintExpiresAt: nil
             )
             save(migrated, defaults: defaults)
             defaults.removeObject(forKey: WordSearchConstants.legacyStateKey)
@@ -614,7 +775,9 @@ enum WordSearchPersistence {
                 isHelpVisible: false,
                 feedback: nil,
                 pendingWord: nil,
-                pendingSolvedPositions: []
+                pendingSolvedPositions: [],
+                nextHintWord: nil,
+                nextHintExpiresAt: nil
             )
             save(migrated, defaults: defaults)
             defaults.removeObject(forKey: WordSearchConstants.legacyStateKey)
@@ -645,6 +808,8 @@ enum WordSearchPersistence {
 
 @available(iOS 17.0, *)
 enum WordSearchLogic {
+    private static let hintDuration: TimeInterval? = nil
+
     static func applyTap(state: WordSearchState, row: Int, col: Int, now: Date) -> WordSearchState {
         var next = resolveExpiredFeedback(state: state, now: now)
 
@@ -683,16 +848,17 @@ enum WordSearchLogic {
             next.feedback = WordSearchFeedback(
                 kind: .correct,
                 positions: linePath,
-                expiresAt: now.addingTimeInterval(0.33)
+                expiresAt: now.addingTimeInterval(0.4)
             )
             next.pendingWord = nil
             next.pendingSolvedPositions.removeAll()
+            applyNextHint(into: &next, now: now)
         } else {
             let preview = linePath ?? [anchor, tapped]
             next.feedback = WordSearchFeedback(
                 kind: .incorrect,
                 positions: preview,
-                expiresAt: now.addingTimeInterval(0.33)
+                expiresAt: now.addingTimeInterval(0.4)
             )
             next.pendingWord = nil
             next.pendingSolvedPositions.removeAll()
@@ -702,19 +868,56 @@ enum WordSearchLogic {
         return next
     }
 
-    static func resolveExpiredFeedback(state: WordSearchState, now: Date) -> WordSearchState {
-        guard let feedback = state.feedback else { return state }
-        guard now >= feedback.expiresAt else { return state }
-
-        var next = state
-        // Backward compatibility for states saved before immediate-commit logic.
-        if feedback.kind == .correct, let pendingWord = next.pendingWord?.uppercased() {
-            next.foundWords.insert(pendingWord)
-            next.solvedPositions.formUnion(next.pendingSolvedPositions)
+    private static func applyNextHint(into state: inout WordSearchState, now: Date) {
+        guard !state.isCompleted else {
+            state.nextHintWord = nil
+            state.nextHintExpiresAt = nil
+            return
         }
-        next.feedback = nil
-        next.pendingWord = nil
-        next.pendingSolvedPositions.removeAll()
+
+        if let nextWord = nextUnfoundWord(in: state) {
+            state.nextHintWord = nextWord
+            if let hintDuration {
+                state.nextHintExpiresAt = now.addingTimeInterval(hintDuration)
+            } else {
+                state.nextHintExpiresAt = nil
+            }
+        } else {
+            state.nextHintWord = nil
+            state.nextHintExpiresAt = nil
+        }
+    }
+
+    private static func nextUnfoundWord(in state: WordSearchState) -> String? {
+        let found = Set(state.foundWords.map { $0.uppercased() })
+        for word in state.words {
+            let normalized = word.uppercased()
+            if !found.contains(normalized) {
+                return normalized
+            }
+        }
+        return nil
+    }
+
+    static func resolveExpiredFeedback(state: WordSearchState, now: Date) -> WordSearchState {
+        var next = state
+
+        if let feedback = state.feedback, now >= feedback.expiresAt {
+            // Backward compatibility for states saved before immediate-commit logic.
+            if feedback.kind == .correct, let pendingWord = next.pendingWord?.uppercased() {
+                next.foundWords.insert(pendingWord)
+                next.solvedPositions.formUnion(next.pendingSolvedPositions)
+            }
+            next.feedback = nil
+            next.pendingWord = nil
+            next.pendingSolvedPositions.removeAll()
+        }
+
+        if let hintExpiry = state.nextHintExpiresAt, now >= hintExpiry {
+            next.nextHintWord = nil
+            next.nextHintExpiresAt = nil
+        }
+
         return next
     }
 

@@ -114,14 +114,16 @@ private struct WordSearchGridWidget: View {
     private var cols: Int { state.grid.first?.count ?? 0 }
     private var isDark: Bool { colorScheme == .dark }
     private var lineColor: Color { isDark ? Color.white.opacity(0.18) : Color.gray.opacity(0.24) }
-    private var solvedFill: Color { isDark ? Color.blue.opacity(0.28) : Color.blue.opacity(0.16) }
     private var solvedWordBorder: Color { isDark ? Color.blue.opacity(0.94) : Color.blue.opacity(0.84) }
-    private var anchorFill: Color { isDark ? Color.white.opacity(0.16) : Color.gray.opacity(0.14) }
-    private var okFill: Color { isDark ? Color.green.opacity(0.32) : Color.green.opacity(0.25) }
-    private var errorFill: Color { isDark ? Color.red.opacity(0.33) : Color.red.opacity(0.24) }
     private var boardFill: Color { isDark ? Color.white.opacity(0.08) : Color.white.opacity(0.25) }
     private var boardStroke: Color { isDark ? Color.white.opacity(0.20) : Color.white.opacity(0.35) }
     private var letterColor: Color { isDark ? Color.white.opacity(0.94) : Color.primary }
+    private var hintMode: WordSearchHintMode {
+        WordSearchHintMode.current(defaults: UserDefaults(suiteName: WordSearchConstants.suiteName))
+    }
+    private var isHintBlocking: Bool {
+        state.nextHintWord != nil && !state.isCompleted
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -147,6 +149,19 @@ private struct WordSearchGridWidget: View {
                 board(cellSize: cellSize)
                     .frame(width: boardWidth, height: boardHeight)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .allowsHitTesting(!isHintBlocking)
+
+                if isHintBlocking {
+                    Color.black
+                        .opacity(isDark ? 0.28 : 0.18)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .contentShape(Rectangle())
+                }
+
+                nextWordOverlay
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .padding(.horizontal, 10)
+                    .padding(.top, 8)
 
                 if state.isCompleted {
                     completionOverlay
@@ -202,6 +217,49 @@ private struct WordSearchGridWidget: View {
 
             foundWordOutlines(cellSize: cellSize)
                 .allowsHitTesting(false)
+
+            feedbackOutline(cellSize: cellSize)
+                .allowsHitTesting(false)
+        }
+    }
+
+    @ViewBuilder
+    private var nextWordOverlay: some View {
+        if let hint = state.nextHintWord, !hint.isEmpty, !state.isCompleted {
+            let display = WordSearchWordHints.displayText(for: hint, mode: hintMode)
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Siguiente:")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.secondary)
+                    Text(display)
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
+                }
+
+                Spacer(minLength: 8)
+
+                Button(intent: DismissHintIntent()) {
+                    Text("Entendido")
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(Color.blue.opacity(isDark ? 0.35 : 0.22))
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(Color.white.opacity(isDark ? 0.25 : 0.4), lineWidth: 0.8)
+            )
+            .allowsHitTesting(true)
         }
     }
 
@@ -230,22 +288,10 @@ private struct WordSearchGridWidget: View {
     }
 
     private func cellFill(for position: WordSearchPosition) -> Color {
-        if let feedback = state.feedback, feedback.positions.contains(position) {
-            return feedback.kind == .correct ? okFill : errorFill
-        }
-        if state.solvedPositions.contains(position) {
-            return solvedFill
-        }
-        if state.anchor == position {
-            return anchorFill
-        }
-        return .clear
+        .clear
     }
 
     private func cellBorderColor(for position: WordSearchPosition) -> Color {
-        if let feedback = state.feedback, feedback.positions.contains(position) {
-            return feedback.kind == .correct ? Color.green.opacity(0.95) : Color.red.opacity(0.92)
-        }
         if state.anchor == position {
             return isDark ? Color.white.opacity(0.62) : Color.gray.opacity(0.75)
         }
@@ -254,12 +300,33 @@ private struct WordSearchGridWidget: View {
 
     private func cellBorderWidth(for position: WordSearchPosition) -> CGFloat {
         if let feedback = state.feedback, feedback.positions.contains(position) {
-            return 2.0
+            return 0
         }
         if state.anchor == position {
             return 1.8
         }
         return 0
+    }
+
+    @ViewBuilder
+    private func feedbackOutline(cellSize: CGFloat) -> some View {
+        if let feedback = state.feedback,
+           let first = feedback.positions.first,
+           let last = feedback.positions.last {
+            let capsuleHeight = cellSize * 0.82
+            let lineWidth = max(1.8, min(3.6, cellSize * 0.12))
+            let color = feedback.kind == .correct ? Color.green : Color.red
+            StretchingCapsule(
+                start: center(for: first, cellSize: cellSize),
+                end: center(for: last, cellSize: cellSize),
+                capsuleHeight: capsuleHeight,
+                lineWidth: lineWidth,
+                color: color
+            )
+            .id("feedback-\(feedback.kind.rawValue)-\(feedback.expiresAt.timeIntervalSince1970)")
+        } else {
+            EmptyView()
+        }
     }
 
     private func foundWordOutlines(cellSize: CGFloat) -> some View {
@@ -372,6 +439,37 @@ private struct WordSearchGridWidget: View {
         }
 
         return results
+    }
+}
+
+@available(iOS 17.0, *)
+private struct StretchingCapsule: View {
+    let start: CGPoint
+    let end: CGPoint
+    let capsuleHeight: CGFloat
+    let lineWidth: CGFloat
+    let color: Color
+
+    @State private var animate = false
+
+    var body: some View {
+        let dx = end.x - start.x
+        let dy = end.y - start.y
+        let angle = Angle(radians: atan2(dy, dx))
+        let centerPoint = CGPoint(x: (start.x + end.x) / 2, y: (start.y + end.y) / 2)
+        let capsuleWidth = max(capsuleHeight, hypot(dx, dy) + capsuleHeight)
+
+        return Capsule(style: .continuous)
+            .stroke(color, lineWidth: lineWidth)
+            .frame(width: capsuleWidth, height: capsuleHeight)
+            .scaleEffect(x: animate ? 1 : 0.05, y: 1, anchor: .leading)
+            .rotationEffect(angle)
+            .position(centerPoint)
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.22)) {
+                    animate = true
+                }
+            }
     }
 }
 
