@@ -473,6 +473,223 @@ private struct HostSharedSyncContext {
     let puzzleIndex: Int
 }
 
+struct LoupeConfiguration {
+    var size: CGSize
+    var magnification: CGFloat
+    var offset: CGSize
+    var edgePadding: CGFloat
+    var cornerRadius: CGFloat
+    var borderWidth: CGFloat
+    var glassOpacity: Double
+    var highlightOpacity: Double
+    var glowOpacity: Double
+    var blurRadius: CGFloat
+    var smoothing: CGFloat
+    var material: Material
+
+    init(
+        size: CGSize = CGSize(width: 110, height: 110),
+        magnification: CGFloat = 1.7,
+        offset: CGSize = CGSize(width: 0, height: -70),
+        edgePadding: CGFloat = 8,
+        cornerRadius: CGFloat? = nil,
+        borderWidth: CGFloat = 1.2,
+        glassOpacity: Double = 0.9,
+        highlightOpacity: Double = 0.35,
+        glowOpacity: Double = 0.18,
+        blurRadius: CGFloat = 6,
+        smoothing: CGFloat = 0.22,
+        material: Material = .ultraThinMaterial
+    ) {
+        self.size = size
+        self.magnification = magnification
+        self.offset = offset
+        self.edgePadding = edgePadding
+        self.cornerRadius = cornerRadius ?? min(size.width, size.height) * 0.5
+        self.borderWidth = borderWidth
+        self.glassOpacity = glassOpacity
+        self.highlightOpacity = highlightOpacity
+        self.glowOpacity = glowOpacity
+        self.blurRadius = blurRadius
+        self.smoothing = smoothing
+        self.material = material
+    }
+
+    static let `default` = LoupeConfiguration()
+}
+
+struct LoupeState {
+    var isVisible: Bool = false
+    var fingerLocation: CGPoint = .zero
+    var loupeScreenPosition: CGPoint = .zero
+    var magnification: CGFloat
+    var loupeSize: CGSize
+
+    init(configuration: LoupeConfiguration = .default) {
+        magnification = configuration.magnification
+        loupeSize = configuration.size
+    }
+
+    mutating func update(
+        fingerLocation: CGPoint,
+        in bounds: CGRect,
+        configuration: LoupeConfiguration
+    ) {
+        magnification = configuration.magnification
+        loupeSize = configuration.size
+
+        let clampedFinger = fingerLocation.clamped(to: bounds)
+        self.fingerLocation = clampedFinger
+
+        let target = LoupeState.clampedLoupePosition(
+            fingerLocation: fingerLocation,
+            bounds: bounds,
+            size: configuration.size,
+            offset: configuration.offset,
+            edgePadding: configuration.edgePadding
+        )
+
+        if !isVisible {
+            isVisible = true
+            loupeScreenPosition = target
+            return
+        }
+
+        if configuration.smoothing > 0 {
+            loupeScreenPosition = loupeScreenPosition.lerped(
+                to: target,
+                alpha: configuration.smoothing
+            )
+        } else {
+            loupeScreenPosition = target
+        }
+    }
+
+    mutating func hide() {
+        isVisible = false
+    }
+
+    private static func clampedLoupePosition(
+        fingerLocation: CGPoint,
+        bounds: CGRect,
+        size: CGSize,
+        offset: CGSize,
+        edgePadding: CGFloat
+    ) -> CGPoint {
+        let raw = CGPoint(
+            x: fingerLocation.x + offset.width,
+            y: fingerLocation.y + offset.height
+        )
+
+        let insetX = size.width * 0.5 + edgePadding
+        let insetY = size.height * 0.5 + edgePadding
+        let safeRect = bounds.insetBy(dx: insetX, dy: insetY)
+
+        guard safeRect.width > 0, safeRect.height > 0 else {
+            return CGPoint(x: bounds.midX, y: bounds.midY)
+        }
+
+        return raw.clamped(to: safeRect)
+    }
+}
+
+private struct LoupeView<Content: View>: View {
+    @Binding var state: LoupeState
+    let configuration: LoupeConfiguration
+    let boardSize: CGSize
+    let content: Content
+
+    init(
+        state: Binding<LoupeState>,
+        configuration: LoupeConfiguration,
+        boardSize: CGSize,
+        @ViewBuilder content: () -> Content
+    ) {
+        _state = state
+        self.configuration = configuration
+        self.boardSize = boardSize
+        self.content = content()
+    }
+
+    var body: some View {
+        if state.isVisible {
+            let shape = RoundedRectangle(cornerRadius: configuration.cornerRadius, style: .continuous)
+            let scaledOffset = CGSize(
+                width: state.loupeSize.width * 0.5 - state.fingerLocation.x * state.magnification,
+                height: state.loupeSize.height * 0.5 - state.fingerLocation.y * state.magnification
+            )
+
+            ZStack {
+                shape
+                    .fill(configuration.material)
+                    .opacity(configuration.glassOpacity)
+
+                content
+                    .frame(width: boardSize.width, height: boardSize.height)
+                    .scaleEffect(state.magnification, anchor: .topLeading)
+                    .offset(scaledOffset)
+                    .frame(width: state.loupeSize.width, height: state.loupeSize.height, alignment: .topLeading)
+                    .clipShape(shape)
+
+                shape
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(configuration.highlightOpacity),
+                                Color.white.opacity(0.02),
+                                Color.white.opacity(configuration.highlightOpacity * 0.7)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .blendMode(.screen)
+                    .blur(radius: configuration.blurRadius)
+            }
+            .frame(width: state.loupeSize.width, height: state.loupeSize.height)
+            .overlay(
+                shape.stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.95),
+                            Color.white.opacity(0.2),
+                            Color.white.opacity(0.8)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: configuration.borderWidth
+                )
+            )
+            .overlay(
+                shape.stroke(Color.white.opacity(0.35), lineWidth: 0.6)
+                    .blur(radius: 0.6)
+            )
+            .shadow(color: Color.white.opacity(configuration.glowOpacity), radius: 10, x: 0, y: 0)
+            .shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 8)
+            .position(state.loupeScreenPosition)
+            .allowsHitTesting(false)
+            .transition(.opacity)
+        }
+    }
+}
+
+private extension CGPoint {
+    func lerped(to target: CGPoint, alpha: CGFloat) -> CGPoint {
+        CGPoint(
+            x: x + (target.x - x) * alpha,
+            y: y + (target.y - y) * alpha
+        )
+    }
+
+    func clamped(to rect: CGRect) -> CGPoint {
+        CGPoint(
+            x: min(max(x, rect.minX), rect.maxX),
+            y: min(max(y, rect.minY), rect.maxY)
+        )
+    }
+}
+
 private struct WordSearchGameView: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -828,6 +1045,9 @@ private struct WordSearchBoardView: View {
     let sideLength: CGFloat
     let onDragChanged: (HostGridPosition) -> Void
     let onDragEnded: () -> Void
+    @State private var loupeState = LoupeState(configuration: .default)
+
+    private let loupeConfiguration = LoupeConfiguration.default
 
     private struct WordOutline: Identifiable {
         let id: String
@@ -847,7 +1067,58 @@ private struct WordSearchBoardView: View {
         let safeCols = max(cols, 1)
         let cellSize = sideLength / CGFloat(safeCols)
         let activeSet = Set(activePositions)
+        let boardBounds = CGRect(origin: .zero, size: CGSize(width: sideLength, height: sideLength))
 
+        boardLayer(
+            cellSize: cellSize,
+            safeRows: safeRows,
+            safeCols: safeCols,
+            activeSet: activeSet
+        )
+        .frame(width: sideLength, height: sideLength)
+        .contentShape(Rectangle())
+        .overlay(alignment: .topLeading) {
+            // Magnify the board content directly to avoid per-frame screenshots.
+            LoupeView(
+                state: $loupeState,
+                configuration: loupeConfiguration,
+                boardSize: CGSize(width: sideLength, height: sideLength)
+            ) {
+                boardLayer(
+                    cellSize: cellSize,
+                    safeRows: safeRows,
+                    safeCols: safeCols,
+                    activeSet: activeSet
+                )
+            }
+        }
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    loupeState.update(
+                        fingerLocation: value.location,
+                        in: boardBounds,
+                        configuration: loupeConfiguration
+                    )
+                    if let position = position(for: value.location, cellSize: cellSize) {
+                        onDragChanged(position)
+                    }
+                }
+                .onEnded { _ in
+                    loupeState.hide()
+                    onDragEnded()
+                }
+        )
+        .shadow(color: Color.black.opacity(0.08), radius: 16, x: 0, y: 8)
+    }
+
+    @ViewBuilder
+    private func boardLayer(
+        cellSize: CGFloat,
+        safeRows: Int,
+        safeCols: Int,
+        activeSet: Set<HostGridPosition>
+    ) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .fill(Color.white.opacity(0.35))
@@ -890,20 +1161,6 @@ private struct WordSearchBoardView: View {
                     .transition(.opacity)
             }
         }
-        .frame(width: sideLength, height: sideLength)
-        .contentShape(Rectangle())
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { value in
-                    if let position = position(for: value.location, cellSize: cellSize) {
-                        onDragChanged(position)
-                    }
-                }
-                .onEnded { _ in
-                    onDragEnded()
-                }
-        )
-        .shadow(color: Color.black.opacity(0.08), radius: 16, x: 0, y: 8)
     }
 
     private func cellFill(isActive: Bool) -> Color {
