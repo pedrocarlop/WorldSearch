@@ -8,42 +8,30 @@ import SwiftUI
 import AppIntents
 
 @available(iOS 17.0, *)
-struct WordSearchProvider: AppIntentTimelineProvider {
-    typealias Intent = WordSearchWidgetConfigurationIntent
+struct WordSearchProvider: TimelineProvider {
     typealias Entry = WordSearchEntry
 
     func placeholder(in context: Context) -> WordSearchEntry {
-        WordSearchEntry(
-            date: Date(),
-            slot: .a,
-            state: WordSearchPersistence.loadState(for: .a)
-        )
+        WordSearchEntry(date: Date(), state: WordSearchPersistence.loadState(at: Date()))
     }
 
-    func snapshot(for configuration: WordSearchWidgetConfigurationIntent, in context: Context) async -> WordSearchEntry {
-        let slot = configuration.slot ?? .a
-        return WordSearchEntry(
-            date: Date(),
-            slot: slot,
-            state: WordSearchPersistence.loadState(for: slot)
-        )
+    func getSnapshot(in context: Context, completion: @escaping (WordSearchEntry) -> Void) {
+        let state = WordSearchPersistence.loadState(at: Date())
+        completion(WordSearchEntry(date: Date(), state: state))
     }
 
-    func timeline(for configuration: WordSearchWidgetConfigurationIntent, in context: Context) async -> Timeline<WordSearchEntry> {
-        let slot = configuration.slot ?? .a
-        let entry = WordSearchEntry(
-            date: Date(),
-            slot: slot,
-            state: WordSearchPersistence.loadState(for: slot)
-        )
-        return Timeline(entries: [entry], policy: .never)
+    func getTimeline(in context: Context, completion: @escaping (Timeline<WordSearchEntry>) -> Void) {
+        let now = Date()
+        let state = WordSearchPersistence.loadState(at: now)
+        let entry = WordSearchEntry(date: now, state: state)
+        let refreshAt = WordSearchPersistence.nextRefreshDate(from: now, state: state)
+        completion(Timeline(entries: [entry], policy: .after(refreshAt)))
     }
 }
 
 @available(iOS 17.0, *)
 struct WordSearchEntry: TimelineEntry {
     let date: Date
-    let slot: WordSearchSlot
     let state: WordSearchState
 }
 
@@ -52,116 +40,186 @@ struct WordSearchWidgetEntryView: View {
     let entry: WordSearchEntry
 
     var body: some View {
-        VStack(spacing: 8) {
-            HStack(alignment: .firstTextBaseline) {
-                Text("Sopa \(entry.slot.title)")
-                    .font(.headline)
-                Spacer()
-                Text(entry.state.progressText)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-            }
-
-            WordSearchGridWidget(slot: entry.slot, state: entry.state)
-            WordsProgressWidget(state: entry.state)
-
-            if entry.state.isCompleted {
-                VStack(spacing: 6) {
-                    Text("Completada")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.green)
-                    Button(intent: ResetPuzzleIntent(slot: entry.slot)) {
-                        Label("Nueva sopa", systemImage: "arrow.triangle.2.circlepath")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-            } else {
-                ControlsWidget(slot: entry.slot)
-            }
-        }
-        .containerBackground(.fill.tertiary, for: .widget)
+        WordSearchGridWidget(state: entry.state)
+            .containerBackground(.fill.tertiary, for: .widget)
     }
 }
 
 @available(iOS 17.0, *)
 private struct WordSearchGridWidget: View {
-    let slot: WordSearchSlot
     let state: WordSearchState
 
+    private let rows = 7
+    private let cols = 7
+    private let lineColor = Color.gray.opacity(0.28)
+    private let solvedFill = Color.blue.opacity(0.16)
+    private let anchorFill = Color.gray.opacity(0.14)
+    private let okFill = Color.green.opacity(0.25)
+    private let errorFill = Color.red.opacity(0.24)
+
     var body: some View {
-        let rows = state.grid.count
-        let cols = state.grid.first?.count ?? 0
-        VStack(spacing: 2) {
+        GeometryReader { geometry in
+            let horizontalPadding: CGFloat = 8
+            let verticalPadding: CGFloat = 8
+            let availableWidth = max(0, geometry.size.width - horizontalPadding * 2)
+            let availableHeight = max(0, geometry.size.height - verticalPadding * 2)
+            let cellSize = max(40, min(floor(availableWidth / CGFloat(cols)), floor(availableHeight / CGFloat(rows))))
+            let boardWidth = cellSize * CGFloat(cols)
+            let boardHeight = cellSize * CGFloat(rows)
+
+            ZStack {
+                board(cellSize: cellSize)
+                    .frame(width: boardWidth, height: boardHeight)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+
+                if !state.isCompleted {
+                    helpButton
+                        .padding(8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                }
+
+                if state.isHelpVisible {
+                    helpOverlay
+                }
+
+                if state.isCompleted {
+                    completionOverlay
+                }
+            }
+            .padding(.horizontal, horizontalPadding)
+            .padding(.vertical, verticalPadding)
+        }
+    }
+
+    private func board(cellSize: CGFloat) -> some View {
+        VStack(spacing: 0) {
             ForEach(0..<rows, id: \.self) { row in
-                HStack(spacing: 2) {
+                HStack(spacing: 0) {
                     ForEach(0..<cols, id: \.self) { col in
-                        let ch = state.grid[row][col]
-                        let selected = state.selected.contains(WordSearchPosition(r: row, c: col))
-                        Button(intent: ToggleCellIntent(slot: slot, row: row, col: col)) {
-                            Text(String(ch))
-                                .font(.system(size: 11, weight: .semibold, design: .rounded))
-                                .frame(width: 20, height: 20)
+                        let position = WordSearchPosition(r: row, c: col)
+                        let value = state.grid[row][col]
+
+                        Button(intent: ToggleCellIntent(row: row, col: col)) {
+                            Text(value)
+                                .font(.system(size: 28, weight: .medium, design: .rounded))
+                                .frame(width: cellSize, height: cellSize)
+                                .foregroundStyle(.primary)
+                                .background(cellFill(for: position))
+                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(selected ? Color.accentColor.opacity(0.25) : Color.secondary.opacity(0.08))
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 4)
-                                .stroke(selected ? Color.accentColor : Color.secondary.opacity(0.3), lineWidth: selected ? 2 : 1)
-                        )
-                        .disabled(state.isCompleted)
+                        .disabled(state.isCompleted || state.isHelpVisible)
                     }
                 }
             }
         }
+        .overlay(
+            GridLines(rows: rows, cols: cols)
+                .stroke(lineColor, lineWidth: 1)
+        )
     }
-}
 
-@available(iOS 17.0, *)
-private struct WordsProgressWidget: View {
-    let state: WordSearchState
+    private var helpButton: some View {
+        Button(intent: ToggleHelpIntent()) {
+            Image(systemName: "questionmark.circle")
+                .font(.system(size: 16, weight: .semibold))
+                .frame(width: 26, height: 26)
+                .foregroundStyle(.secondary)
+                .background(.ultraThinMaterial, in: Circle())
+        }
+        .buttonStyle(.plain)
+    }
 
-    private let columns = [GridItem(.flexible()), GridItem(.flexible())]
+    private var helpOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.18)
+                .ignoresSafeArea()
 
-    var body: some View {
-        LazyVGrid(columns: columns, spacing: 3) {
-            ForEach(state.words.map { $0.uppercased() }, id: \.self) { word in
-                HStack(spacing: 3) {
-                    Image(systemName: state.foundWords.contains(word) ? "checkmark.circle.fill" : "circle")
-                        .font(.system(size: 8))
-                        .foregroundStyle(state.foundWords.contains(word) ? .green : .secondary)
-                    Text(word)
-                        .font(.system(size: 8, weight: .semibold, design: .rounded))
-                        .lineLimit(1)
+            VStack(spacing: 12) {
+                HStack {
+                    Spacer()
+                    Button(intent: ToggleHelpIntent()) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Text(state.words.joined(separator: "  /  "))
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.primary)
             }
+            .padding(14)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .padding(20)
         }
+    }
+
+    private var completionOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.16)
+                .ignoresSafeArea()
+
+            VStack(spacing: 6) {
+                Text("Completado")
+                    .font(.system(size: 29, weight: .bold, design: .rounded))
+                    .multilineTextAlignment(.center)
+
+                Text("Manana a las 9 se cargara otra sopa de letras.")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .multilineTextAlignment(.center)
+                Text("Cada dia se anade un nuevo juego.")
+                    .font(.system(size: 12, weight: .regular, design: .rounded))
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            .padding(24)
+        }
+    }
+
+    private func cellFill(for position: WordSearchPosition) -> Color {
+        if let feedback = state.feedback, feedback.positions.contains(position) {
+            return feedback.kind == .correct ? okFill : errorFill
+        }
+        if state.solvedPositions.contains(position) {
+            return solvedFill
+        }
+        if state.anchor == position {
+            return anchorFill
+        }
+        return .clear
     }
 }
 
 @available(iOS 17.0, *)
-private struct ControlsWidget: View {
-    let slot: WordSearchSlot
+private struct GridLines: Shape {
+    let rows: Int
+    let cols: Int
 
-    var body: some View {
-        HStack(spacing: 10) {
-            Button(intent: ConfirmSelectionIntent(slot: slot)) {
-                Label("Comprobar", systemImage: "checkmark.circle")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        guard rows > 0, cols > 0 else { return path }
 
-            Button(intent: ResetPuzzleIntent(slot: slot)) {
-                Label("Reiniciar", systemImage: "arrow.counterclockwise")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.bordered)
+        let rowHeight = rect.height / CGFloat(rows)
+        let colWidth = rect.width / CGFloat(cols)
+
+        for row in 0...rows {
+            let y = CGFloat(row) * rowHeight
+            path.move(to: CGPoint(x: rect.minX, y: y))
+            path.addLine(to: CGPoint(x: rect.maxX, y: y))
         }
-        .font(.caption2)
+
+        for col in 0...cols {
+            let x = CGFloat(col) * colWidth
+            path.move(to: CGPoint(x: x, y: rect.minY))
+            path.addLine(to: CGPoint(x: x, y: rect.maxY))
+        }
+
+        return path
     }
 }
 
@@ -170,15 +228,12 @@ struct WordSearchWidget: Widget {
     let kind: String = WordSearchConstants.widgetKind
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(
-            kind: kind,
-            intent: WordSearchWidgetConfigurationIntent.self,
-            provider: WordSearchProvider()
-        ) { entry in
+        StaticConfiguration(kind: kind, provider: WordSearchProvider()) { entry in
             WordSearchWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Sopa de letras")
-        .description("Resuelve tu sopa directamente desde la pantalla de inicio.")
+        .description("Selecciona una letra inicial y una final para cada palabra.")
         .supportedFamilies([.systemLarge])
+        .contentMarginsDisabled()
     }
 }
