@@ -56,10 +56,19 @@ private enum HostAccentPalette {
 }
 
 private enum HostSemanticColors {
+    private static func adaptiveColor(light: UIColor, dark: UIColor) -> Color {
+        Color(
+            UIColor { trait in
+                trait.userInterfaceStyle == .dark ? dark : light
+            }
+        )
+    }
+
     static let appBackground = Color(.systemGroupedBackground)
     static let surfacePrimary = Color(.systemBackground)
     static let surfaceSecondary = Color(.secondarySystemBackground)
     static let surfaceTertiary = Color(.tertiarySystemBackground)
+    static let cardSurface = surfacePrimary
 
     static let boardBackground = surfacePrimary
     static let boardCellBackground = surfaceSecondary
@@ -68,13 +77,26 @@ private enum HostSemanticColors {
 
     static let cardInnerStroke = surfacePrimary
     static let cardOuterStroke = Color.secondary.opacity(0.14)
-    static let cardShadow = Color(.separator).opacity(0.35)
+    static let cardSubtleStroke = adaptiveColor(
+        light: UIColor(red: 0.92, green: 0.92, blue: 0.94, alpha: 0.62),
+        dark: UIColor.white.withAlphaComponent(0.07)
+    )
+    static let cardSelectedStroke = adaptiveColor(
+        light: UIColor.black.withAlphaComponent(0.92),
+        dark: UIColor.white.withAlphaComponent(0.92)
+    )
+    static let cardShadowAmbient = adaptiveColor(
+        light: UIColor.black.withAlphaComponent(0.06),
+        dark: UIColor.black.withAlphaComponent(0.24)
+    )
+    static let cardShadowDrop = adaptiveColor(
+        light: UIColor.black.withAlphaComponent(0.12),
+        dark: UIColor.black.withAlphaComponent(0.34)
+    )
 
     static let stateBadgeBackground = surfacePrimary.opacity(0.72)
 
-    static let carouselItemBackground = surfaceSecondary
-    static let carouselBorderSelected = Color.primary.opacity(0.70)
-    static let carouselBorderIdle = Color.secondary.opacity(0.22)
+    static let carouselItemBackground = cardSurface
     static let progressTrack = Color.secondary.opacity(0.26)
 
     static let foundOutlineStroke = Color.primary.opacity(0.82)
@@ -91,6 +113,7 @@ private enum HostSemanticColors {
     static let completionToastShadow = Color(.separator).opacity(0.42)
 
     static let settingsIcon = Color.primary
+    static let sheetDragIndicator = Color.secondary.opacity(0.35)
 
     static let wordChipNeutralFill = surfaceTertiary
     static let wordChipStroke = Color.primary.opacity(0.35)
@@ -177,7 +200,11 @@ private enum HostGlassRole {
 }
 
 private enum HostDesignTokens {
-    static let cardCornerRadius: CGFloat = 28
+    static let cardCornerRadius: CGFloat = 32
+    static let cardShadowAmbientRadius: CGFloat = 6
+    static let cardShadowAmbientY: CGFloat = 1
+    static let cardShadowDropRadius: CGFloat = 16
+    static let cardShadowDropY: CGFloat = 8
     static let panelCornerRadius: CGFloat = 20
     static let chipCornerRadius: CGFloat = 14
 
@@ -203,7 +230,7 @@ private enum HostDesignTokens {
         case .control:
             return HostSemanticColors.surfaceSecondary
         case .panel:
-            return HostSemanticColors.surfacePrimary
+            return HostSemanticColors.cardSurface
         case .loupe:
             return HostSemanticColors.surfaceTertiary
         case .banner:
@@ -439,27 +466,37 @@ private struct HomeCounterInfoSheet: View {
     let info: HomeCounterInfo
 
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: info.systemImage)
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(info.iconGradient)
+        VStack(spacing: 0) {
+            Capsule(style: .continuous)
+                .fill(HostSemanticColors.sheetDragIndicator)
+                .frame(width: 36, height: 5)
+                .padding(.top, 4)
+                .padding(.bottom, 32)
+                .accessibilityHidden(true)
 
-            Text(info.title)
-                .font(.system(size: 24, weight: .semibold))
-                .multilineTextAlignment(.center)
+            VStack(spacing: 16) {
+                Image(systemName: info.systemImage)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(info.iconGradient)
 
-            Text(info.explanation)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+                Text(info.title)
+                    .font(.system(size: 24, weight: .semibold))
+                    .multilineTextAlignment(.center)
 
-            Spacer(minLength: 0)
+                Text(info.explanation)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
         }
-        .padding(20)
         .frame(maxWidth: .infinity, alignment: .center)
         .presentationDetents([.height(220), .medium])
-        .presentationDragIndicator(.visible)
+        .presentationDragIndicator(.hidden)
     }
 }
 
@@ -574,7 +611,23 @@ private struct DailyChallengeCard: View {
                 RoundedRectangle(cornerRadius: HostDesignTokens.cardCornerRadius, style: .continuous)
                     .stroke(HostSemanticColors.cardOuterStroke, lineWidth: 1)
             )
-            .shadow(color: HostSemanticColors.cardShadow, radius: 18, x: 0, y: 10)
+            .overlay(
+                RoundedRectangle(cornerRadius: HostDesignTokens.cardCornerRadius, style: .continuous)
+                    .inset(by: -0.3)
+                    .stroke(HostSemanticColors.cardSubtleStroke, lineWidth: 0.6)
+            )
+            .shadow(
+                color: HostSemanticColors.cardShadowAmbient,
+                radius: HostDesignTokens.cardShadowAmbientRadius,
+                x: 0,
+                y: HostDesignTokens.cardShadowAmbientY
+            )
+            .shadow(
+                color: HostSemanticColors.cardShadowDrop,
+                radius: HostDesignTokens.cardShadowDropRadius,
+                x: 0,
+                y: HostDesignTokens.cardShadowDropY
+            )
             .opacity(1)
 
         }
@@ -654,6 +707,8 @@ private struct DayCarouselView: View {
 }
 
 private struct DayCarouselItem: View {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
     let date: Date
     let isSelected: Bool
     let isLocked: Bool
@@ -677,15 +732,22 @@ private struct DayCarouselItem: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(HostSemanticColors.carouselItemBackground)
+                .fill(HostDesignTokens.fillStyle(for: .panel, reduceTransparency: reduceTransparency))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(
-                    isSelected ? HostSemanticColors.carouselBorderSelected : HostSemanticColors.carouselBorderIdle,
-                    lineWidth: isSelected ? 1.5 : 1
-                )
+                .stroke(HostSemanticColors.cardInnerStroke, lineWidth: 1.4)
         )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(HostSemanticColors.cardOuterStroke, lineWidth: 1)
+        )
+        .overlay {
+            if isSelected {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .stroke(HostSemanticColors.cardSelectedStroke, lineWidth: 2.2)
+            }
+        }
         .scaleEffect(isSelected ? 1.04 : 0.98)
         .opacity(isSelected ? 1 : 0.92)
         .animation(.easeInOut(duration: 0.2), value: isSelected)
@@ -2385,7 +2447,7 @@ struct ContentView: View {
                 if presentedGame == nil {
                     ToolbarItem(placement: .principal) {
                         Text("Sopa diaria")
-                            .font(.title3.weight(.semibold))
+                            .font(.custom("GreatVibes-Regular", size: 24, relativeTo: .title3))
                     }
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         HomeNavCounter(
