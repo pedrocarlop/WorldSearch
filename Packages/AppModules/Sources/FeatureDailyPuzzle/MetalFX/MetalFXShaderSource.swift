@@ -134,21 +134,27 @@ float4 renderScanlineFragment(FXVertexOut input, constant FXOverlayUniforms &uni
 
     float projection = dot(rel, direction);
     float head = uniforms.progress * axisLength;
-    float axialDistance = fabs(projection - head);
-    float bandHalfWidth = max(uniforms.params.x, 0.01);
-    float band = 1.0 - smoothstepFx(bandHalfWidth, bandHalfWidth * 1.6, axialDistance);
+    float axialOffset = projection - head;
+    float trailLength = max(uniforms.params.x, 1.0);
+    float behind = max(-axialOffset, 0.0);
+    float ahead = max(axialOffset, 0.0);
+
+    float headMask = 1.0 - smoothstepFx(0.0, trailLength * 0.2, fabs(axialOffset));
+    float trailMask = (1.0 - smoothstepFx(0.0, trailLength, behind)) * step(0.0, behind);
+    float leadMask = (1.0 - smoothstepFx(0.0, trailLength * 0.24, ahead)) * step(0.0, ahead);
+    float axialMask = max(headMask, trailMask * 0.82 + leadMask * 0.2);
 
     float inSegment = step(0.0, projection) * step(projection, axisLength);
     float perpendicularDistance = fabs(rel.x * direction.y - rel.y * direction.x);
     float coreThickness = max(uniforms.params.y, 0.2);
-    float core = 1.0 - smoothstepFx(coreThickness, coreThickness + 1.0, perpendicularDistance);
-    float glow = 1.0 - smoothstepFx(coreThickness * 4.0, coreThickness * 7.0, perpendicularDistance);
+    float core = 1.0 - smoothstepFx(coreThickness, coreThickness + 0.85, perpendicularDistance);
+    float glow = 1.0 - smoothstepFx(coreThickness * 3.4, coreThickness * 6.1, perpendicularDistance);
 
-    float pulse = 0.9 + 0.1 * sin(uniforms.time * 22.0 + uniforms.progress * 5.0);
-    float alpha = inSegment * band * (core * 0.92 + glow * 0.55) * uniforms.alpha * pulse;
+    float pulse = 0.95 + 0.05 * sin(uniforms.time * 20.0 + uniforms.progress * 6.0);
+    float alpha = inSegment * axialMask * (core * 0.9 + glow * 0.48) * uniforms.alpha * pulse;
 
     float3 color = mix(float3(0.98, 0.92, 0.70), float3(1.0, 0.99, 0.86), uniforms.intensity);
-    color += glow * 0.08;
+    color += glow * 0.06 + headMask * 0.08;
 
     if (uniforms.debugEnabled > 0.5) {
         float centerMark = 1.0 - smoothstepFx(0.0, 4.0, distance(pixel, uniforms.center));

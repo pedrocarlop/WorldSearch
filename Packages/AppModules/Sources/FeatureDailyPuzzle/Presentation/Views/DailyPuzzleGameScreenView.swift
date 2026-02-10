@@ -141,7 +141,7 @@ public struct DailyPuzzleGameScreenView: View {
         static let entryBottomSpringDamping: Double = 0.88
         static let entryBottomDelayNanos: UInt64 = 90_000_000
 
-        static let feedbackShowDuration: Double = 0.2
+        static let feedbackShowDuration: Double = 0.08
         static let feedbackHideDelayNanos: UInt64 = 650_000_000
 
         static let completionBackdropDuration: Double = 0.12
@@ -402,9 +402,12 @@ private extension DailyPuzzleGameScreenView {
     private func handleDragEnded() {
         let selection = activeSelection
         dragAnchor = nil
-        activeSelection = []
-        guard selection.count >= 2 else { return }
+        guard selection.count >= 2 else {
+            activeSelection = []
+            return
+        }
         finalizeSelection(selection)
+        activeSelection = []
     }
 
     private func finalizeSelection(_ positions: [GridPosition]) {
@@ -420,6 +423,8 @@ private extension DailyPuzzleGameScreenView {
         }
 
         let completedNow = outcome.completedPuzzleNow
+        onWordValidated(pathCells: positions, isPuzzleComplete: completedNow)
+
         var completionStreak: Int?
         if completedNow {
             core.markCompletedDayUseCase.execute(dayKey: DayKey(offset: dayOffset))
@@ -435,10 +440,6 @@ private extension DailyPuzzleGameScreenView {
                 )
             }
         }
-
-        guard case .correct = outcome.kind else { return }
-
-        onWordValidated(pathCells: positions, isPuzzleComplete: completedNow)
         saveProgress()
         if completedNow {
             let preferences = celebrationPreferencesProvider()
