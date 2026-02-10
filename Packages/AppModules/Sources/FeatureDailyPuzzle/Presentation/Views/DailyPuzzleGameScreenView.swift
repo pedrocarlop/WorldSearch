@@ -121,6 +121,17 @@ private extension CelebrationIntensity {
             return 0.9
         }
     }
+
+    var fxValue: Float {
+        switch self {
+        case .low:
+            return 0.55
+        case .medium:
+            return 0.78
+        case .high:
+            return 1
+        }
+    }
 }
 
 public struct DailyPuzzleGameScreenView: View {
@@ -162,10 +173,12 @@ public struct DailyPuzzleGameScreenView: View {
     public let onSharedStateMutation: () -> Void
 
     @StateObject private var celebrationController = DailyPuzzleCelebrationController()
+    @StateObject private var fxManager = MetalFXManager()
     @State private var gameSession: DailyPuzzleGameSessionViewModel
     @State private var activeSelection: [GridPosition] = []
     @State private var dragAnchor: GridPosition?
     @State private var selectionFeedback: DailyPuzzleSelectionFeedback?
+    @State private var gridBounds: CGRect = .zero
     @State private var feedbackNonce = 0
     @State private var showResetAlert = false
     @State private var entryState = DailyPuzzleEntryState()
@@ -235,27 +248,47 @@ public struct DailyPuzzleGameScreenView: View {
                 let side = min(geometry.size.width - SpacingTokens.xl, 420)
 
                 VStack(spacing: SpacingTokens.lg) {
-                    DailyPuzzleGameBoardView(
-                        grid: puzzle.grid.letters,
-                        words: puzzle.words.map(\.text),
-                        foundWords: gameSession.foundWords,
-                        solvedPositions: gameSession.solvedPositions,
-                        activePositions: activeSelection,
-                        feedback: selectionFeedback.map {
-                            DailyPuzzleBoardFeedback(
-                                id: $0.id,
-                                kind: $0.kind == .correct ? .correct : .incorrect,
-                                positions: $0.positions
-                            )
-                        },
-                        celebrations: celebrationController.boardCelebrations,
-                        sideLength: side
-                    ) { position in
-                        guard !isCompleted else { return }
-                        handleDragChanged(position)
-                    } onDragEnded: {
-                        guard !isCompleted else { return }
-                        handleDragEnded()
+                    ZStack(alignment: .topLeading) {
+                        DailyPuzzleGameBoardView(
+                            grid: puzzle.grid.letters,
+                            words: puzzle.words.map(\.text),
+                            foundWords: gameSession.foundWords,
+                            solvedPositions: gameSession.solvedPositions,
+                            activePositions: activeSelection,
+                            feedback: selectionFeedback.map {
+                                DailyPuzzleBoardFeedback(
+                                    id: $0.id,
+                                    kind: $0.kind == .correct ? .correct : .incorrect,
+                                    positions: $0.positions
+                                )
+                            },
+                            celebrations: celebrationController.boardCelebrations,
+                            sideLength: side
+                        ) { position in
+                            guard !isCompleted else { return }
+                            handleDragChanged(position)
+                        } onDragEnded: {
+                            guard !isCompleted else { return }
+                            handleDragEnded()
+                        }
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear.preference(
+                                    key: DailyPuzzleGridFramePreferenceKey.self,
+                                    value: CGRect(origin: .zero, size: proxy.size)
+                                )
+                            }
+                        }
+
+                        if gridBounds.width > 0, gridBounds.height > 0 {
+                            MetalFXView(manager: fxManager, size: gridBounds.size)
+                                .frame(width: gridBounds.width, height: gridBounds.height)
+                                .allowsHitTesting(false)
+                        }
+                    }
+                    .onPreferenceChange(DailyPuzzleGridFramePreferenceKey.self) { bounds in
+                        guard bounds.width > 0, bounds.height > 0 else { return }
+                        gridBounds = bounds
                     }
                     .opacity(entryState.boardVisible ? 1 : 0)
                     .scaleEffect(entryState.boardVisible ? 1 : 0.98)
@@ -309,6 +342,8 @@ public struct DailyPuzzleGameScreenView: View {
             }
         }
         .onAppear {
+            let preferences = celebrationPreferencesProvider()
+            fxManager.setSuccessFXEnabled(preferences.enableCelebrations)
             if gameSession.startIfNeeded() {
                 saveProgress()
             }
@@ -510,13 +545,37 @@ private extension DailyPuzzleGameScreenView {
 
     private func onWordValidated(pathCells: [GridPosition], isPuzzleComplete: Bool) {
         let preferences = celebrationPreferencesProvider()
-        celebrationController.celebrateWord(
-            pathCells: pathCells,
-            preferences: preferences,
-            reduceMotion: reduceMotion,
-            onFeedback: onWordFeedback
-        )
+        onWordFeedback(preferences)
+        fxManager.setSuccessFXEnabled(preferences.enableCelebrations)
+        triggerWordSuccessWave(pathCells: pathCells, intensity: preferences.intensity)
         _ = isPuzzleComplete
+    }
+
+    private func triggerWordSuccessWave(pathCells: [GridPosition], intensity: CelebrationIntensity) {
+        guard gridBounds.width > 0, gridBounds.height > 0 else { return }
+
+        let localGridBounds = CGRect(origin: .zero, size: gridBounds.size)
+        let rows = max(puzzle.grid.rowCount, 1)
+        let cols = max(puzzle.grid.columnCount, 1)
+        let centers = MetalFXGridGeometry.pathPoints(
+            for: pathCells,
+            in: localGridBounds,
+            rows: rows,
+            cols: cols
+        )
+        guard !centers.isEmpty else { return }
+
+        fxManager.play(
+            FXEvent(
+                type: .wordSuccessWave,
+                timestamp: Date().timeIntervalSince1970,
+                gridBounds: localGridBounds,
+                pathPoints: centers,
+                cellCenters: centers,
+                wordRects: nil,
+                intensity: intensity.fxValue
+            )
+        )
     }
 
     private func presentCompletionOverlay(
