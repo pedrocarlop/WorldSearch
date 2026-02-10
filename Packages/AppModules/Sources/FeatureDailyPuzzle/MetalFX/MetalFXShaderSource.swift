@@ -94,7 +94,7 @@ vertex FXVertexOut vertex_passthrough(uint vertexID [[vertex_id]]) {
     FXVertexOut output;
     float2 clip = clipSpaceVertices[vertexID];
     output.position = float4(clip, 0.0, 1.0);
-    output.uv = float2((clip.x + 1.0) * 0.5, (clip.y + 1.0) * 0.5);
+    output.uv = float2((clip.x + 1.0) * 0.5, 1.0 - (clip.y + 1.0) * 0.5);
     return output;
 }
 

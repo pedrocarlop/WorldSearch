@@ -122,8 +122,8 @@ public final class MetalFXRenderer: NSObject, MTKViewDelegate {
             }
 
             let resolution = SIMD2<Float>(
-                Float(view.drawableSize.width),
-                Float(view.drawableSize.height)
+                Float(view.bounds.width),
+                Float(view.bounds.height)
             )
 
             for effect in activeEffects {
