@@ -26,20 +26,21 @@ public struct DSFeedbackBanner: View {
             VStack(alignment: .leading, spacing: SpacingTokens.xxs) {
                 Text(title)
                     .font(TypographyTokens.bodyStrong)
+                    .foregroundStyle(ColorTokens.inkPrimary)
                 if let message {
                     Text(message)
                         .font(TypographyTokens.footnote)
-                        .foregroundStyle(ColorTokens.textSecondary)
+                        .foregroundStyle(ColorTokens.inkSecondary)
                 }
             }
 
             Spacer(minLength: 0)
         }
         .padding(SpacingTokens.sm)
-        .background(ColorTokens.surfaceSecondary, in: RoundedRectangle(cornerRadius: RadiusTokens.md, style: .continuous))
+        .background(ColorTokens.surfaceSecondary, in: RoundedRectangle(cornerRadius: RadiusTokens.buttonRadius, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: RadiusTokens.md, style: .continuous)
-                .stroke(color.opacity(0.35), lineWidth: 1)
+            RoundedRectangle(cornerRadius: RadiusTokens.buttonRadius, style: .continuous)
+                .stroke(color.opacity(0.45), lineWidth: 1)
         )
     }
 

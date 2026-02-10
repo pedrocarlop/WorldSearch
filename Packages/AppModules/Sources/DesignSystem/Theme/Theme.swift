@@ -25,11 +25,11 @@ public struct Theme {
     }
 
     public static let `default` = Theme(
-        backgroundPrimary: ColorTokens.backgroundPrimary,
-        surfacePrimary: ColorTokens.surfacePrimary,
-        surfaceSecondary: ColorTokens.surfaceSecondary,
-        textPrimary: ColorTokens.textPrimary,
-        textSecondary: ColorTokens.textSecondary,
-        accentPrimary: ColorTokens.accentPrimary
+        backgroundPrimary: ThemeColors.backgroundPaper,
+        surfacePrimary: ThemeColors.surfacePaper,
+        surfaceSecondary: ThemeColors.surfacePaperMuted,
+        textPrimary: ThemeColors.inkPrimary,
+        textSecondary: ThemeColors.inkSecondary,
+        accentPrimary: ThemeColors.accentCoral
     )
 }

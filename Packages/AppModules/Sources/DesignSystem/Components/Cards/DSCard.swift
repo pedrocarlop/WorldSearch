@@ -9,14 +9,18 @@ public struct DSCard<Content: View>: View {
 
     public var body: some View {
         content
-            .padding(SpacingTokens.md)
+            .padding(SpacingTokens.lg)
             .background(
-                RoundedRectangle(cornerRadius: RadiusTokens.xl, style: .continuous)
+                RoundedRectangle(cornerRadius: RadiusTokens.cardRadius, style: .continuous)
                     .fill(ColorTokens.surfacePrimary)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: RadiusTokens.xl, style: .continuous)
-                    .stroke(ColorTokens.borderDefault, lineWidth: 1)
+                RoundedRectangle(cornerRadius: RadiusTokens.cardRadius, style: .continuous)
+                    .stroke(ColorTokens.borderSoft, lineWidth: 1)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: RadiusTokens.cardRadius, style: .continuous)
+                    .stroke(ColorTokens.cardHighlightStroke, lineWidth: 0.8)
             )
             .shadow(color: ShadowTokens.cardAmbient.color, radius: ShadowTokens.cardAmbient.radius, x: 0, y: ShadowTokens.cardAmbient.y)
             .shadow(color: ShadowTokens.cardDrop.color, radius: ShadowTokens.cardDrop.radius, x: 0, y: ShadowTokens.cardDrop.y)

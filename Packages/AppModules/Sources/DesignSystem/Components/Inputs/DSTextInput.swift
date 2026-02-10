@@ -13,13 +13,14 @@ public struct DSTextInput: View {
         TextField(title, text: $value)
             .textFieldStyle(.plain)
             .font(TypographyTokens.body)
+            .foregroundStyle(ColorTokens.inkPrimary)
             .padding(SpacingTokens.sm)
             .background(
-                RoundedRectangle(cornerRadius: RadiusTokens.md, style: .continuous)
+                RoundedRectangle(cornerRadius: RadiusTokens.buttonRadius, style: .continuous)
                     .fill(ColorTokens.surfaceSecondary)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: RadiusTokens.md, style: .continuous)
+                RoundedRectangle(cornerRadius: RadiusTokens.buttonRadius, style: .continuous)
                     .stroke(ColorTokens.borderDefault, lineWidth: 1)
             )
     }

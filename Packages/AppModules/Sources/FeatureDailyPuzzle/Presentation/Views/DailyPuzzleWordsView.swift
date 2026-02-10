@@ -20,11 +20,10 @@ public struct DailyPuzzleWordsView: View {
             Group {
                 if displayMode == .definition {
                     LazyVStack(spacing: SpacingTokens.xs) {
-                        ForEach(Array(words.enumerated()), id: \.offset) { index, word in
+                        ForEach(Array(words.enumerated()), id: \.offset) { _, word in
                             let displayText = WordHintsService.displayText(for: word, mode: displayMode)
                             WordChip(
                                 word: displayText,
-                                styleSeed: index,
                                 isFound: foundWords.contains(word.uppercased()),
                                 allowMultiline: true,
                                 expandsHorizontally: true
@@ -34,11 +33,10 @@ public struct DailyPuzzleWordsView: View {
                     .padding(.trailing, SpacingTokens.xxs)
                 } else {
                     WrappingFlowLayout(horizontalSpacing: SpacingTokens.xs, verticalSpacing: SpacingTokens.xs) {
-                        ForEach(Array(words.enumerated()), id: \.offset) { index, word in
+                        ForEach(Array(words.enumerated()), id: \.offset) { _, word in
                             let displayText = WordHintsService.displayText(for: word, mode: displayMode)
                             WordChip(
                                 word: displayText,
-                                styleSeed: index,
                                 isFound: foundWords.contains(word.uppercased()),
                                 allowMultiline: false,
                                 expandsHorizontally: false
@@ -52,53 +50,43 @@ public struct DailyPuzzleWordsView: View {
             .padding(.top, SpacingTokens.xs)
             .padding(.bottom, SpacingTokens.sm)
         }
-        .overlay(alignment: .top) {
-            LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: ColorTokens.backgroundPrimary, location: 0.0),
-                    .init(color: ColorTokens.backgroundPrimary.opacity(0.62), location: 0.48),
-                    .init(color: ColorTokens.backgroundPrimary.opacity(0.0), location: 1.0)
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: topFadeHeight)
-            .allowsHitTesting(false)
+        .mask(alignment: .top) {
+            VStack(spacing: 0) {
+                ThemeGradients.wordListTopFade
+                    .frame(height: topFadeHeight)
+                Rectangle()
+                    .fill(Color.black)
+            }
         }
     }
 }
 
 private struct WordChip: View {
     let word: String
-    let styleSeed: Int
     let isFound: Bool
     let allowMultiline: Bool
     let expandsHorizontally: Bool
 
     private var chipFillStyle: AnyShapeStyle {
         if isFound {
-            return AnyShapeStyle(foundGradient)
+            return AnyShapeStyle(ThemeGradients.brushWarm.opacity(0.26))
         }
         return AnyShapeStyle(ColorTokens.chipNeutralFill)
     }
 
     private var chipStroke: Color {
-        ColorTokens.chipBorder
+        isFound ? ColorTokens.accentCoralStrong.opacity(0.55) : ColorTokens.chipBorder
     }
 
     private var labelColor: Color {
-        isFound ? ColorTokens.textPrimary : Color.primary
-    }
-
-    private var foundGradient: LinearGradient {
-        DailyPuzzleWordGradientPalette.gradient(for: word, seed: styleSeed)
+        isFound ? ColorTokens.inkPrimary : ColorTokens.textPrimary
     }
 
     @ViewBuilder
     var body: some View {
         let chipContent = HStack(spacing: 6) {
             Text(word)
-                .font(TypographyTokens.bodyStrong)
+                .font(allowMultiline ? TypographyTokens.wordDescription : TypographyTokens.wordChip)
                 .lineLimit(allowMultiline ? nil : 1)
                 .minimumScaleFactor(allowMultiline ? 1 : 0.45)
                 .allowsTightening(true)
@@ -116,13 +104,16 @@ private struct WordChip: View {
         }
         .padding(.horizontal, SpacingTokens.sm)
         .padding(.vertical, SpacingTokens.xs)
-        .background(Capsule().fill(chipFillStyle))
+        .background(
+            RoundedRectangle(cornerRadius: RadiusTokens.chipRadius, style: .continuous)
+                .fill(chipFillStyle)
+        )
         .overlay(
-            Capsule()
+            RoundedRectangle(cornerRadius: RadiusTokens.chipRadius, style: .continuous)
                 .stroke(chipStroke, lineWidth: 1)
         )
         .scaleEffect(isFound ? 1.0 : 0.98)
-        .animation(.spring(response: 0.35, dampingFraction: 0.74), value: isFound)
+        .animation(MotionTokens.celebrate, value: isFound)
 
         if expandsHorizontally {
             chipContent
@@ -204,89 +195,5 @@ private struct WrappingFlowLayout: Layout {
             x += size.width + horizontalSpacing
             lineHeight = max(lineHeight, size.height)
         }
-    }
-}
-
-private enum DailyPuzzleWordGradientPalette {
-    private static let goldenStep = 0.61803398875
-
-    #if canImport(UIKit)
-    private static func adaptiveHSB(
-        hue: Double,
-        saturationLight: Double,
-        saturationDark: Double,
-        brightnessLight: Double,
-        brightnessDark: Double
-    ) -> Color {
-        Color(
-            UIColor { trait in
-                let isDark = trait.userInterfaceStyle == .dark
-                return UIColor(
-                    hue: CGFloat(hue),
-                    saturation: CGFloat(isDark ? saturationDark : saturationLight),
-                    brightness: CGFloat(isDark ? brightnessDark : brightnessLight),
-                    alpha: 1
-                )
-            }
-        )
-    }
-    #else
-    private static func adaptiveHSB(
-        hue: Double,
-        saturationLight: Double,
-        saturationDark: Double,
-        brightnessLight: Double,
-        brightnessDark: Double
-    ) -> Color {
-        Color(
-            hue: hue,
-            saturation: saturationLight,
-            brightness: brightnessLight,
-            opacity: 1
-        )
-    }
-    #endif
-
-    static func gradient(for word: String, seed: Int) -> LinearGradient {
-        let normalizedSeed = max(seed, 0)
-        let seedHue = (Double(normalizedSeed) * goldenStep).truncatingRemainder(dividingBy: 1)
-        let hash = stableHash(word.uppercased())
-        let jitter = Double((hash >> 8) % 12) / 260.0
-        let hueA = (seedHue + jitter).truncatingRemainder(dividingBy: 1)
-        let hueB = (hueA + 0.10 + Double(hash % 10) / 220.0).truncatingRemainder(dividingBy: 1)
-        let saturationALight = 0.28 + Double((hash / 97) % 10) / 100.0
-        let saturationBLight = 0.22 + Double((hash / 193) % 10) / 100.0
-        let saturationADark = min(1.0, saturationALight + 0.16)
-        let saturationBDark = min(1.0, saturationBLight + 0.16)
-
-        return LinearGradient(
-            colors: [
-                adaptiveHSB(
-                    hue: hueA,
-                    saturationLight: saturationALight,
-                    saturationDark: saturationADark,
-                    brightnessLight: 0.99,
-                    brightnessDark: 0.82
-                ),
-                adaptiveHSB(
-                    hue: hueB,
-                    saturationLight: saturationBLight,
-                    saturationDark: saturationBDark,
-                    brightnessLight: 0.94,
-                    brightnessDark: 0.72
-                )
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
-
-    private static func stableHash(_ text: String) -> UInt64 {
-        var hash: UInt64 = 1_469_598_103_934_665_603
-        for byte in text.utf8 {
-            hash ^= UInt64(byte)
-            hash &*= 1_099_511_628_211
-        }
-        return hash
     }
 }

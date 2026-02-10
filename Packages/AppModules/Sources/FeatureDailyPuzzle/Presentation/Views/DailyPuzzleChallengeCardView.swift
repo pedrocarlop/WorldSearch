@@ -70,16 +70,16 @@ public struct DailyPuzzleChallengeCardView: View {
                 VStack(spacing: SpacingTokens.sm + 6) {
                     VStack(spacing: SpacingTokens.xxs - 2) {
                         Text(Self.weekdayFormatter.string(from: date).capitalized)
-                            .font(TypographyTokens.titleSmall)
+                            .font(TypographyTokens.caption)
                             .foregroundStyle(ColorTokens.textSecondary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.55)
 
-                        Text(Self.monthDayFormatter.string(from: date))
-                            .font(TypographyTokens.titleLarge)
+                        Text(monthDayText)
+                            .font(TypographyTokens.displayTitle)
                             .foregroundStyle(ColorTokens.textPrimary)
                             .lineLimit(1)
-                            .minimumScaleFactor(0.55)
+                            .minimumScaleFactor(0.8)
                     }
 
                     GeometryReader { geometry in
@@ -111,15 +111,15 @@ public struct DailyPuzzleChallengeCardView: View {
                 }
             }
             .overlay(
-                RoundedRectangle(cornerRadius: RadiusTokens.xl, style: .continuous)
-                    .stroke(ColorTokens.surfacePrimary, lineWidth: 1.4)
+                RoundedRectangle(cornerRadius: RadiusTokens.cardRadius, style: .continuous)
+                    .stroke(ColorTokens.cardHighlightStroke, lineWidth: 1.4)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: RadiusTokens.xl, style: .continuous)
+                RoundedRectangle(cornerRadius: RadiusTokens.cardRadius, style: .continuous)
                     .stroke(ColorTokens.borderDefault, lineWidth: 1)
             )
         }
-        .contentShape(RoundedRectangle(cornerRadius: RadiusTokens.xl, style: .continuous))
+        .contentShape(RoundedRectangle(cornerRadius: RadiusTokens.cardRadius, style: .continuous))
         .onTapGesture {
             guard !isCompleted else { return }
             onPlay()
@@ -136,7 +136,7 @@ public struct DailyPuzzleChallengeCardView: View {
             ZStack {
                 Circle()
                     .fill(ColorTokens.surfacePrimary.opacity(0.78))
-                    .frame(width: 54, height: 54)
+                    .frame(width: badgeSize, height: badgeSize)
                 Image(systemName: "lock.fill")
                     .font(TypographyTokens.titleSmall)
                     .foregroundStyle(ColorTokens.textPrimary)
@@ -146,22 +146,17 @@ public struct DailyPuzzleChallengeCardView: View {
             ZStack {
                 Circle()
                     .fill(ColorTokens.surfacePrimary.opacity(0.78))
-                    .frame(width: 54, height: 54)
+                    .frame(width: badgeSize, height: badgeSize)
                 Image(systemName: "checkmark.seal.fill")
                     .font(TypographyTokens.titleSmall)
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                ColorTokens.accentPrimary,
-                                ColorTokens.accentPrimary.opacity(0.72)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
+                    .foregroundStyle(ThemeGradients.brushWarm)
             }
             .allowsHitTesting(false)
         }
+    }
+
+    private var badgeSize: CGFloat {
+        54
     }
 
     private var lockMessage: String {
@@ -169,6 +164,10 @@ public struct DailyPuzzleChallengeCardView: View {
             return "Disponible en \(hoursUntilAvailable)h"
         }
         return "Disponible pronto"
+    }
+
+    private var monthDayText: String {
+        Self.monthDayFormatter.string(from: date).uppercased()
     }
 
     private static let weekdayFormatter: DateFormatter = {
@@ -226,13 +225,13 @@ private struct DailyPuzzleChallengeCardGridPreview: View {
             solvedWordOutlines: outlines,
             anchor: nil,
             palette: SharedWordSearchBoardPalette(
-                boardBackground: ColorTokens.chipNeutralFill,
-                boardCellBackground: ColorTokens.chipNeutralFill,
+                boardBackground: ColorTokens.surfacePaperGrid,
+                boardCellBackground: ColorTokens.surfacePaperMuted,
                 boardGridStroke: ColorTokens.boardGridStroke,
                 boardOuterStroke: ColorTokens.boardOuterStroke,
                 letterColor: ColorTokens.textPrimary,
                 selectionFill: ColorTokens.selectionFill,
-                foundOutlineStroke: ColorTokens.textPrimary.opacity(0.82),
+                foundOutlineStroke: ColorTokens.boardGridStroke,
                 feedbackCorrect: ColorTokens.feedbackCorrect,
                 feedbackIncorrect: ColorTokens.feedbackIncorrect,
                 anchorBorder: ColorTokens.accentPrimary

@@ -5,7 +5,7 @@ public struct DSSurfaceModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
-            .background(ColorTokens.backgroundPrimary)
+            .background(ThemeGradients.paperBackground)
     }
 }
 

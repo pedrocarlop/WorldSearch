@@ -1,8 +1,5 @@
 import Foundation
 import SwiftUI
-#if canImport(UIKit)
-import UIKit
-#endif
 
 public struct SharedWordSearchBoardPosition: Hashable {
     public let row: Int
@@ -120,7 +117,7 @@ public struct SharedWordSearchBoardView: View {
         let safeRows = max(rows, 1)
         let safeCols = max(cols, 1)
         let cellSize = sideLength / CGFloat(safeCols)
-        let boardShape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+        let boardShape = RoundedRectangle(cornerRadius: RadiusTokens.boardRadius, style: .continuous)
 
         ZStack {
             boardShape
@@ -134,7 +131,7 @@ public struct SharedWordSearchBoardView: View {
                             let letter = row < rows && col < cols ? grid[row][col] : ""
 
                             Text(letter)
-                                .font(.system(size: max(10, cellSize * 0.45), weight: .semibold, design: .monospaced))
+                                .font(TypographyTokens.boardLetter(size: max(10, cellSize * 0.45)))
                                 .foregroundStyle(palette.letterColor)
                                 .frame(width: cellSize, height: cellSize)
                                 .background(cellFill(for: position))
@@ -155,10 +152,8 @@ public struct SharedWordSearchBoardView: View {
             foundWordOverlay(cellSize: cellSize)
                 .allowsHitTesting(false)
 
-            if activePositions.count > 1,
-               let first = activePositions.first,
-               let last = activePositions.last {
-                selectionCapsule(from: first, to: last, cellSize: cellSize)
+            if activePositions.count > 1 {
+                activeSelectionStroke(cellSize: cellSize)
                     .allowsHitTesting(false)
             }
 
@@ -224,8 +219,8 @@ public struct SharedWordSearchBoardView: View {
     }
 
     private func foundWordOverlay(cellSize: CGFloat) -> some View {
-        let capsuleHeight = cellSize * 0.82
-        let lineWidth = max(1.5, min(3.0, cellSize * 0.10))
+        let capsuleHeight = cellSize * 0.76
+        let lineWidth = max(1.0, min(2.1, cellSize * 0.07))
 
         return ZStack {
             ForEach(solvedWordOutlines) { outline in
@@ -238,13 +233,11 @@ public struct SharedWordSearchBoardView: View {
                     let angle = Angle(radians: atan2(dy, dx))
                     let centerPoint = CGPoint(x: (startPoint.x + endPoint.x) / 2, y: (startPoint.y + endPoint.y) / 2)
                     let capsuleWidth = max(capsuleHeight, hypot(dx, dy) + capsuleHeight)
-                    let gradient = SharedWordGradientPalette.gradient(for: outline.word, seed: outline.seed)
-
                     Capsule(style: .continuous)
-                        .fill(gradient.opacity(0.45))
+                        .fill(ThemeGradients.brushWarm.opacity(0.44))
                         .overlay(
                             Capsule(style: .continuous)
-                                .stroke(palette.foundOutlineStroke, lineWidth: lineWidth)
+                                .stroke(palette.foundOutlineStroke.opacity(0.42), lineWidth: lineWidth)
                         )
                         .frame(width: capsuleWidth, height: capsuleHeight)
                         .rotationEffect(angle)
@@ -254,25 +247,41 @@ public struct SharedWordSearchBoardView: View {
         }
     }
 
-    private func selectionCapsule(
-        from start: SharedWordSearchBoardPosition,
-        to end: SharedWordSearchBoardPosition,
-        cellSize: CGFloat
-    ) -> some View {
-        let startPoint = center(for: start, cellSize: cellSize)
-        let endPoint = center(for: end, cellSize: cellSize)
-        let dx = endPoint.x - startPoint.x
-        let dy = endPoint.y - startPoint.y
-        let angle = Angle(radians: atan2(dy, dx))
-        let centerPoint = CGPoint(x: (startPoint.x + endPoint.x) / 2, y: (startPoint.y + endPoint.y) / 2)
-        let capsuleHeight = cellSize * 0.82
-        let capsuleWidth = max(capsuleHeight, hypot(dx, dy) + capsuleHeight)
+    private func activeSelectionStroke(cellSize: CGFloat) -> some View {
+        let points = activePositions.map { center(for: $0, cellSize: cellSize) }
+        let primaryWidth = max(1.1, min(2.0, cellSize * 0.075))
+        let secondaryWidth = primaryWidth * 0.45
+        let path = selectionPath(points: points)
 
-        return Capsule(style: .continuous)
-            .fill(palette.selectionFill)
-            .frame(width: capsuleWidth, height: capsuleHeight)
-            .rotationEffect(angle)
-            .position(centerPoint)
+        return path
+            .stroke(
+                palette.letterColor.opacity(0.58),
+                style: StrokeStyle(
+                    lineWidth: primaryWidth,
+                    lineCap: .round,
+                    lineJoin: .round
+                )
+            )
+            .overlay {
+                path.stroke(
+                    palette.boardBackground.opacity(0.36),
+                    style: StrokeStyle(
+                        lineWidth: secondaryWidth,
+                        lineCap: .round,
+                        lineJoin: .round
+                    )
+                )
+            }
+    }
+
+    private func selectionPath(points: [CGPoint]) -> Path {
+        var path = Path()
+        guard let first = points.first else { return path }
+        path.move(to: first)
+        for point in points.dropFirst() {
+            path.addLine(to: point)
+        }
+        return path
     }
 
     private func center(for position: SharedWordSearchBoardPosition, cellSize: CGFloat) -> CGPoint {
@@ -306,93 +315,9 @@ private struct SharedWordSearchStretchingCapsule: View {
             .rotationEffect(angle)
             .position(centerPoint)
             .onAppear {
-                withAnimation(.easeOut(duration: 0.22)) {
+                withAnimation(MotionTokens.smooth) {
                     animate = true
                 }
             }
-    }
-}
-
-private enum SharedWordGradientPalette {
-    private static let goldenStep = 0.61803398875
-
-    #if canImport(UIKit)
-    private static func adaptiveHSB(
-        hue: Double,
-        saturationLight: Double,
-        saturationDark: Double,
-        brightnessLight: Double,
-        brightnessDark: Double
-    ) -> Color {
-        Color(
-            UIColor { trait in
-                let isDark = trait.userInterfaceStyle == .dark
-                return UIColor(
-                    hue: CGFloat(hue),
-                    saturation: CGFloat(isDark ? saturationDark : saturationLight),
-                    brightness: CGFloat(isDark ? brightnessDark : brightnessLight),
-                    alpha: 1
-                )
-            }
-        )
-    }
-    #else
-    private static func adaptiveHSB(
-        hue: Double,
-        saturationLight: Double,
-        saturationDark: Double,
-        brightnessLight: Double,
-        brightnessDark: Double
-    ) -> Color {
-        Color(
-            hue: hue,
-            saturation: saturationLight,
-            brightness: brightnessLight,
-            opacity: 1
-        )
-    }
-    #endif
-
-    static func gradient(for word: String, seed: Int) -> LinearGradient {
-        let normalizedSeed = max(seed, 0)
-        let seedHue = (Double(normalizedSeed) * goldenStep).truncatingRemainder(dividingBy: 1)
-        let hash = stableHash(word.uppercased())
-        let jitter = Double((hash >> 8) % 12) / 260.0
-        let hueA = (seedHue + jitter).truncatingRemainder(dividingBy: 1)
-        let hueB = (hueA + 0.10 + Double(hash % 10) / 220.0).truncatingRemainder(dividingBy: 1)
-        let saturationALight = 0.28 + Double((hash / 97) % 10) / 100.0
-        let saturationBLight = 0.22 + Double((hash / 193) % 10) / 100.0
-        let saturationADark = min(1.0, saturationALight + 0.16)
-        let saturationBDark = min(1.0, saturationBLight + 0.16)
-
-        return LinearGradient(
-            colors: [
-                adaptiveHSB(
-                    hue: hueA,
-                    saturationLight: saturationALight,
-                    saturationDark: saturationADark,
-                    brightnessLight: 0.99,
-                    brightnessDark: 0.82
-                ),
-                adaptiveHSB(
-                    hue: hueB,
-                    saturationLight: saturationBLight,
-                    saturationDark: saturationBDark,
-                    brightnessLight: 0.94,
-                    brightnessDark: 0.72
-                )
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-    }
-
-    private static func stableHash(_ text: String) -> UInt64 {
-        var hash: UInt64 = 1_469_598_103_934_665_603
-        for byte in text.utf8 {
-            hash ^= UInt64(byte)
-            hash &*= 1_099_511_628_211
-        }
-        return hash
     }
 }

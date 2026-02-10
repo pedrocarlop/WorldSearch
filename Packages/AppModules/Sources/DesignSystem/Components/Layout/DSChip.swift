@@ -12,17 +12,23 @@ public struct DSChip: View {
     public var body: some View {
         Text(text)
             .font(TypographyTokens.caption)
-            .foregroundStyle(ColorTokens.textPrimary)
+            .foregroundStyle(ColorTokens.inkPrimary)
             .padding(.horizontal, SpacingTokens.sm)
             .padding(.vertical, SpacingTokens.xs)
-            .background(fillColor, in: Capsule(style: .continuous))
+            .background(
+                RoundedRectangle(cornerRadius: RadiusTokens.chipRadius, style: .continuous)
+                    .fill(fillStyle)
+            )
             .overlay(
-                Capsule(style: .continuous)
+                RoundedRectangle(cornerRadius: RadiusTokens.chipRadius, style: .continuous)
                     .stroke(ColorTokens.chipBorder, lineWidth: 1)
             )
     }
 
-    private var fillColor: Color {
-        isSelected ? ColorTokens.accentPrimary.opacity(0.18) : ColorTokens.chipNeutralFill
+    private var fillStyle: AnyShapeStyle {
+        if isSelected {
+            return AnyShapeStyle(ThemeGradients.brushWarm.opacity(0.2))
+        }
+        return AnyShapeStyle(ColorTokens.chipNeutralFill)
     }
 }

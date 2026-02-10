@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import DesignSystem
 
 @main
 struct miappApp: App {
@@ -13,7 +14,9 @@ struct miappApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(container: container)
+            ThemeProvider {
+                ContentView(container: container)
+            }
         }
     }
 }

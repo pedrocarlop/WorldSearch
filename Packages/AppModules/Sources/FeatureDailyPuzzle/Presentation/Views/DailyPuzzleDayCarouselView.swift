@@ -68,7 +68,7 @@ public struct DailyPuzzleDayCarouselView: View {
                 .scrollTargetLayout()
                 .padding(.horizontal, sidePadding)
             }
-            .padding(.vertical, SpacingTokens.xxs + 2)
+            .padding(.vertical, SpacingTokens.xs)
             .scrollClipDisabled(true)
             .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
             .scrollPosition(id: scrollSelection, anchor: .center)
@@ -85,7 +85,7 @@ private struct DailyPuzzleDayCarouselItem: View {
     let hoursUntilAvailable: Int?
 
     var body: some View {
-        VStack(spacing: SpacingTokens.xxs + 2) {
+        VStack(spacing: SpacingTokens.xs) {
             Text(weekdayText)
                 .font(TypographyTokens.caption)
                 .foregroundStyle(ColorTokens.textSecondary)
@@ -97,15 +97,16 @@ private struct DailyPuzzleDayCarouselItem: View {
             statusView
                 .frame(height: 14, alignment: .center)
         }
-        .padding(EdgeInsets(top: SpacingTokens.sm, leading: SpacingTokens.xs + 2, bottom: SpacingTokens.sm, trailing: SpacingTokens.xs + 2))
+        .padding(.vertical, SpacingTokens.sm)
+        .padding(.horizontal, SpacingTokens.xs)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: RadiusTokens.lg, style: .continuous)
-                .fill(ColorTokens.surfaceTertiary)
+                .fill(ColorTokens.surfaceSecondary)
         )
         .overlay(
             RoundedRectangle(cornerRadius: RadiusTokens.lg, style: .continuous)
-                .stroke(ColorTokens.surfacePrimary, lineWidth: 1.4)
+                .stroke(ColorTokens.cardHighlightStroke, lineWidth: 1)
         )
         .overlay(
             RoundedRectangle(cornerRadius: RadiusTokens.lg, style: .continuous)
@@ -114,7 +115,7 @@ private struct DailyPuzzleDayCarouselItem: View {
         .overlay {
             if isSelected {
                 RoundedRectangle(cornerRadius: RadiusTokens.lg, style: .continuous)
-                    .stroke(ColorTokens.textPrimary.opacity(0.92), lineWidth: 2.2)
+                    .stroke(ThemeGradients.brushWarmStrong, lineWidth: 2)
             }
         }
         .scaleEffect(isSelected ? 1.04 : 0.98)
@@ -139,7 +140,7 @@ private struct DailyPuzzleDayCarouselItem: View {
         } else if isCompleted {
             Image(systemName: "checkmark.seal.fill")
                 .font(TypographyTokens.footnote)
-                .foregroundStyle(ColorTokens.accentPrimary)
+                .foregroundStyle(ThemeGradients.brushWarm)
         } else {
             DailyPuzzleDayProgressIndicator(progress: progress)
         }
@@ -154,12 +155,12 @@ private struct DailyPuzzleDayProgressIndicator: View {
 
         ZStack {
             Circle()
-                .stroke(ColorTokens.textSecondary.opacity(0.26), lineWidth: 2)
+                .stroke(ColorTokens.gridLine.opacity(0.75), lineWidth: 2)
 
             Circle()
                 .trim(from: 0, to: clamped)
                 .stroke(
-                    ColorTokens.accentPrimary,
+                    ThemeGradients.brushWarm,
                     style: StrokeStyle(lineWidth: 2, lineCap: .round)
                 )
                 .rotationEffect(.degrees(-90))

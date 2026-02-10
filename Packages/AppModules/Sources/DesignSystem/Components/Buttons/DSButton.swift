@@ -24,8 +24,15 @@ public struct DSButton: View {
                 .foregroundStyle(foregroundColor)
                 .padding(.horizontal, SpacingTokens.md)
                 .padding(.vertical, SpacingTokens.sm)
-                .frame(maxWidth: .infinity)
-                .background(backgroundColor, in: RoundedRectangle(cornerRadius: RadiusTokens.md, style: .continuous))
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .background(
+                    RoundedRectangle(cornerRadius: RadiusTokens.buttonRadius, style: .continuous)
+                        .fill(backgroundStyle)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: RadiusTokens.buttonRadius, style: .continuous)
+                        .stroke(borderColor, lineWidth: 1)
+                )
         }
         .buttonStyle(.plain)
     }
@@ -33,20 +40,31 @@ public struct DSButton: View {
     private var foregroundColor: Color {
         switch style {
         case .primary, .destructive:
-            return .white
+            return ColorTokens.surfacePaper
         case .secondary:
-            return ColorTokens.textPrimary
+            return ColorTokens.inkPrimary
         }
     }
 
-    private var backgroundColor: Color {
+    private var backgroundStyle: AnyShapeStyle {
         switch style {
         case .primary:
-            return ColorTokens.accentPrimary
+            return AnyShapeStyle(ThemeGradients.brushWarm)
         case .secondary:
-            return ColorTokens.surfaceSecondary
+            return AnyShapeStyle(ColorTokens.surfacePaper)
         case .destructive:
-            return ColorTokens.error
+            return AnyShapeStyle(ColorTokens.error)
+        }
+    }
+
+    private var borderColor: Color {
+        switch style {
+        case .primary:
+            return ColorTokens.borderSoft.opacity(0.35)
+        case .secondary:
+            return ColorTokens.borderSoft
+        case .destructive:
+            return ColorTokens.error.opacity(0.5)
         }
     }
 }

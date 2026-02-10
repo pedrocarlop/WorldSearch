@@ -16,15 +16,15 @@ public struct DSShadowToken {
 
 public enum ShadowTokens {
     public static let cardAmbient = DSShadowToken(
-        color: Color.black.opacity(0.08),
-        radius: 6,
+        color: ColorTokens.inkPrimary.opacity(0.06),
+        radius: 4,
         x: 0,
         y: 1
     )
     public static let cardDrop = DSShadowToken(
-        color: Color.black.opacity(0.14),
-        radius: 14,
+        color: ColorTokens.inkPrimary.opacity(0.04),
+        radius: 8,
         x: 0,
-        y: 8
+        y: 3
     )
 }
