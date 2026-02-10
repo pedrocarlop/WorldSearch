@@ -188,6 +188,65 @@ final class DataLayerTests: XCTestCase {
 
         XCTAssertNil(result.nextHintWord)
         XCTAssertNil(result.nextHintExpiresAt)
+        let reloaded = repository.loadState(now: now, preferredGridSize: 7)
+        XCTAssertNil(reloaded.nextHintWord)
+        XCTAssertNil(reloaded.nextHintExpiresAt)
+    }
+
+    func testSharedProgressPersistsAcrossUseCases() {
+        let store = InMemoryKeyValueStore()
+        let repository = LocalSharedPuzzleRepository(store: store)
+        let getState = GetSharedPuzzleStateUseCase(sharedRepository: repository)
+        let updateProgress = UpdateSharedProgressUseCase(sharedRepository: repository)
+        let now = Date(timeIntervalSince1970: 2500)
+
+        let initial = getState.execute(now: now, preferredGridSize: 7)
+        let targetWord = initial.words.first ?? "CAT"
+        let validPosition = GridPosition(row: 0, col: 0)
+        let outOfBounds = GridPosition(row: 99, col: 99)
+
+        updateProgress.execute(
+            puzzleIndex: initial.puzzleIndex,
+            gridSize: initial.gridSize,
+            foundWords: [targetWord, "NOT_IN_PUZZLE"],
+            solvedPositions: [validPosition, outOfBounds]
+        )
+
+        let reloaded = getState.execute(
+            now: now.addingTimeInterval(1),
+            preferredGridSize: initial.gridSize
+        )
+
+        XCTAssertEqual(reloaded.foundWords, Set([WordSearchNormalization.normalizedWord(targetWord)]))
+        XCTAssertTrue(reloaded.solvedPositions.contains(validPosition))
+        XCTAssertFalse(reloaded.solvedPositions.contains(outOfBounds))
+    }
+
+    func testSharedRepositoryRotatesPuzzleWhenBoundaryAdvances() {
+        let store = InMemoryKeyValueStore()
+        let repository = LocalSharedPuzzleRepository(store: store)
+        let now = Date(timeIntervalSince1970: 3_000_000)
+
+        var seeded = repository.loadState(now: now, preferredGridSize: 7)
+        seeded.puzzleIndex = 5
+        seeded.foundWords = ["CAT"]
+        seeded.solvedPositions = [GridPosition(row: 0, col: 0)]
+        repository.saveState(seeded)
+
+        let currentBoundary = repository.currentRotationBoundary(for: now)
+        let staleBoundary = Calendar.current.date(byAdding: .day, value: -2, to: currentBoundary) ?? currentBoundary
+        store.set(staleBoundary.timeIntervalSince1970, forKey: WordSearchConfig.rotationBoundaryKey)
+
+        let rotated = repository.loadState(now: now, preferredGridSize: 7)
+
+        XCTAssertEqual(rotated.puzzleIndex, PuzzleFactory.normalizedPuzzleIndex(7))
+        XCTAssertTrue(rotated.foundWords.isEmpty)
+        XCTAssertTrue(rotated.solvedPositions.isEmpty)
+        XCTAssertEqual(
+            store.double(forKey: WordSearchConfig.rotationBoundaryKey),
+            currentBoundary.timeIntervalSince1970,
+            accuracy: 0.001
+        )
     }
 
     func testProgressRecordResolverPrefersPreferredGridSizeKey() {

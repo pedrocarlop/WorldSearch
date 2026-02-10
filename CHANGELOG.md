@@ -61,6 +61,7 @@
 - Expanded tests:
   - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Tests/CoreTests/DataLayerTests.swift`
     - Added `ProgressRecordResolver` behavior coverage.
+    - Added integration coverage for shared progress persistence, hint-dismiss persistence, and daily rotation boundary updates.
   - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Tests/FeatureDailyPuzzleTests/DailyPuzzleHomeScreenViewModelTests.swift`
     - Added cached challenge-card state coverage.
 
