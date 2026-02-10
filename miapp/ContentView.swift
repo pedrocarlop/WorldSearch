@@ -31,18 +31,6 @@ private enum HomePresentedSheet: Identifiable {
     }
 }
 
-private struct SoftGlowBackground: View {
-    var body: some View {
-        ZStack {
-            ThemeGradients.paperBackground
-                .ignoresSafeArea()
-
-            DSGridBackgroundView(spacing: SpacingTokens.xxxl, opacity: 0.08)
-                .ignoresSafeArea()
-        }
-    }
-}
-
 struct ContentView: View {
     private enum Constants {
         static let closeGameAnimationDuration: Double = 0.22
@@ -86,81 +74,28 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                SoftGlowBackground()
+                DSPageBackgroundView()
 
-                GeometryReader { geometry in
-                    let verticalInset = SpacingTokens.xxxl
-                    let interSectionSpacing = SpacingTokens.xxxl
-                    let dayCarouselHeight: CGFloat = 106
-                    let cardWidth = min(geometry.size.width * 0.80, 450)
-                    let sidePadding = max((geometry.size.width - cardWidth) / 2, SpacingTokens.xs)
-                    let availableCardHeight = geometry.size.height - dayCarouselHeight - interSectionSpacing - (verticalInset * 2)
-                    let cardHeight = min(max(availableCardHeight, 260), 620)
-                    let cardSelection = Binding<Int?>(
-                        get: {
-                            let current = dailyPuzzleHomeViewModel.selectedOffset ?? todayOffset
-                            return dailyPuzzleHomeViewModel.carouselOffsets.contains(current) ? current : nil
-                        },
+                HomeScreenLayout(
+                    challengeCards: dailyPuzzleHomeViewModel.challengeCards,
+                    carouselOffsets: dailyPuzzleHomeViewModel.carouselOffsets,
+                    selectedOffset: Binding(
+                        get: { dailyPuzzleHomeViewModel.selectedOffset },
                         set: { dailyPuzzleHomeViewModel.setSelectedOffset($0) }
-                    )
-
-                    VStack(spacing: interSectionSpacing) {
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            LazyHStack(spacing: SpacingTokens.sm + 2) {
-                                ForEach(dailyPuzzleHomeViewModel.challengeCards) { card in
-                                    DailyPuzzleChallengeCardView(
-                                        date: card.date,
-                                        puzzleNumber: card.puzzleNumber,
-                                        grid: card.grid,
-                                        words: card.words,
-                                        foundWords: card.progress.foundWords,
-                                        solvedPositions: card.progress.solvedPositions,
-                                        isLocked: card.isLocked,
-                                        hoursUntilAvailable: card.hoursUntilAvailable,
-                                        isLaunching: launchingCardOffset == card.offset
-                                    ) {
-                                        handleChallengeCardTap(offset: card.offset)
-                                    }
-                                    .frame(width: cardWidth, height: cardHeight)
-                                    .scaleEffect(launchingCardOffset == card.offset ? 1.10 : 1)
-                                    .opacity(launchingCardOffset == nil || launchingCardOffset == card.offset ? 1 : 0.45)
-                                    .zIndex(launchingCardOffset == card.offset ? 5 : 0)
-                                    .id(card.offset)
-                                }
-                            }
-                            .scrollTargetLayout()
-                            .padding(.horizontal, sidePadding)
-                        }
-                        .frame(height: cardHeight)
-                        .scrollClipDisabled(true)
-                        .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
-                        .scrollPosition(id: cardSelection, anchor: .center)
-
-                        DailyPuzzleDayCarouselView(
-                            offsets: dailyPuzzleHomeViewModel.carouselOffsets,
-                            selectedOffset: Binding(
-                                get: { dailyPuzzleHomeViewModel.selectedOffset },
-                                set: { dailyPuzzleHomeViewModel.setSelectedOffset($0) }
-                            ),
-                            todayOffset: todayOffset,
-                            unlockedOffsets: dailyPuzzleHomeViewModel.easterUnlockedOffsets,
-                            dateForOffset: { dailyPuzzleHomeViewModel.puzzleDate(for: $0) },
-                            progressForOffset: {
-                                dailyPuzzleHomeViewModel.progressFraction(
-                                    for: $0,
-                                    preferredGridSize: settingsViewModel.model.gridSize
-                                )
-                            }
-                        ) { offset in
-                            dailyPuzzleHomeViewModel.hoursUntilAvailable(for: offset)
-                        }
-                        .frame(height: dayCarouselHeight)
-                        .padding(.horizontal, SpacingTokens.sm)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .padding(.top, verticalInset)
-                    .padding(.bottom, verticalInset)
-                }
+                    ),
+                    todayOffset: todayOffset,
+                    unlockedOffsets: dailyPuzzleHomeViewModel.easterUnlockedOffsets,
+                    launchingCardOffset: launchingCardOffset,
+                    onCardTap: handleChallengeCardTap(offset:),
+                    dateForOffset: { dailyPuzzleHomeViewModel.puzzleDate(for: $0) },
+                    progressForOffset: {
+                        dailyPuzzleHomeViewModel.progressFraction(
+                            for: $0,
+                            preferredGridSize: settingsViewModel.model.gridSize
+                        )
+                    },
+                    hoursUntilAvailable: { dailyPuzzleHomeViewModel.hoursUntilAvailable(for: $0) }
+                )
 
                 if let selection = presentedGame {
                     gameOverlay(for: selection.id)
@@ -173,37 +108,13 @@ struct ContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if presentedGame == nil {
-                    ToolbarItem(placement: .principal) {
-                        Text("Sopa diaria")
-                            .font(TypographyTokens.screenTitle)
-                    }
-                    ToolbarItemGroup(placement: .topBarTrailing) {
-                        HistoryNavCounterView(
-                            value: historyViewModel.model.completedCount,
-                            systemImage: "checkmark.seal.fill",
-                            iconGradient: ThemeGradients.brushWarm,
-                            accessibilityLabel: "Retos completados \(historyViewModel.model.completedCount)",
-                            accessibilityHint: "Pulsa para saber que mide este contador"
-                        ) {
-                            presentedSheet = .counter(.completedPuzzles)
-                        }
-                        HistoryNavCounterView(
-                            value: historyViewModel.model.currentStreak,
-                            systemImage: "flame.fill",
-                            iconGradient: ThemeGradients.brushWarmStrong,
-                            accessibilityLabel: "Racha actual \(historyViewModel.model.currentStreak)",
-                            accessibilityHint: "Pulsa para saber que mide este contador"
-                        ) {
-                            presentedSheet = .counter(.streak)
-                        }
-                        Button {
-                            presentedSheet = .settings
-                        } label: {
-                            Image(systemName: "gearshape")
-                                .foregroundStyle(ColorTokens.textPrimary)
-                        }
-                        .accessibilityLabel("Abrir ajustes")
-                    }
+                    HomeToolbarContent(
+                        completedCount: historyViewModel.model.completedCount,
+                        streakCount: historyViewModel.model.currentStreak,
+                        onCompletedTap: { presentedSheet = .counter(.completedPuzzles) },
+                        onStreakTap: { presentedSheet = .counter(.streak) },
+                        onSettingsTap: { presentedSheet = .settings }
+                    )
                 }
             }
             .onAppear {
@@ -226,7 +137,7 @@ struct ContentView: View {
                         values: settingsViewModel.makeSheetValues()
                     ) { updated in
                         settingsViewModel.save(values: updated)
-                        WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConfig.widgetKind)
+                        reloadWidgetTimeline()
                         refreshDailyPuzzleState()
                     }
                 case .counter(let info):
@@ -238,6 +149,7 @@ struct ContentView: View {
             }
         }
         .preferredColorScheme(settingsViewModel.model.appearanceMode.colorScheme)
+        .environment(\.locale, settingsViewModel.model.appLanguage.locale)
         .font(TypographyTokens.body)
     }
 
@@ -292,9 +204,15 @@ struct ContentView: View {
                     playCompletionFeedback(preferences)
                 },
                 onSharedStateMutation: {
-                    WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConfig.widgetKind)
+                    reloadWidgetTimeline()
                 }
             )
+        }
+    }
+
+    private func reloadWidgetTimeline() {
+        Task { @MainActor in
+            WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConfig.widgetKind)
         }
     }
 

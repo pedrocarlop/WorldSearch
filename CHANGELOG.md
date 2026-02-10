@@ -2,6 +2,37 @@
 
 ## 2026-02-10
 
+### feat(front): SwiftUI visual layer rewrite with DS composition and localization
+- Added reusable Design System primitives:
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/DesignSystem/Components/Layout/DSPageBackgroundView.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/DesignSystem/Components/Layout/DSSurfacePanel.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/DesignSystem/Components/Layout/DSStatusBadge.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/DesignSystem/Components/Layout/DSCircularProgressRing.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/DesignSystem/Components/Layout/WordSearchBoardStylePreset.swift`
+- Updated title typography tokens to use `InstrumentSerif-Regular` with system fallback.
+- Refactored home composition into reusable host views:
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/miapp/Home/HomeScreenLayout.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/miapp/ContentView.swift`
+- Refactored puzzle UI views for smaller focused files:
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/FeatureDailyPuzzle/Presentation/Views/DailyPuzzleGameBoardView.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/FeatureDailyPuzzle/Presentation/Views/DailyPuzzleGameBoardCelebrationViews.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/FeatureDailyPuzzle/Presentation/Views/DailyPuzzleLoupeView.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/FeatureDailyPuzzle/Presentation/Views/DailyPuzzleCompletionOverlayView.swift`
+- Refined settings sheet composition while preserving save/cancel behavior:
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Sources/FeatureSettings/Presentation/Views/SettingsSheetView.swift`
+- Split widget UI by responsibility:
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/WordSearchWidgetExtension/WordSearchWidget.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/WordSearchWidgetExtension/WordSearchWidgetAppearance.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/WordSearchWidgetExtension/WordSearchGridWidgetView.swift`
+- Added typed localization wrappers and String Catalogs (`es` + `en`) for app, widget and feature/core modules.
+- Migrated `WordHintsService` definitions to localized resources and added package resource processing for Core/Feature modules.
+- Added widget font registration and bundled `InstrumentSerif-Regular.ttf` for extension rendering.
+- Added localization-focused smoke tests:
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Tests/CoreTests/WordHintsLocalizationTests.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Tests/FeatureDailyPuzzleTests/DailyPuzzleStringsTests.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Tests/FeatureSettingsTests/SettingsStringsTests.swift`
+  - `/Users/pedrocarrascolopezbrea/Projects/miapp/Packages/AppModules/Tests/FeatureHistoryTests/HistoryStringsTests.swift`
+
 ### chore(repo): clean tracked build artifacts and ignores
 - Added `/Users/pedrocarrascolopezbrea/Projects/miapp/.gitignore` with Swift/Xcode/SwiftPM ignores.
 - Removed tracked files under `Packages/AppModules/.build` from version control to eliminate build-noise churn.

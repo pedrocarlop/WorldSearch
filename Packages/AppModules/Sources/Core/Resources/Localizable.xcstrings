@@ -1,0 +1,1536 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "word_hint.ACEITE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fatty liquid used for cooking."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liquido graso usado para cocinar."
+          }
+        }
+      }
+    },
+    "word_hint.ALBAHACA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aromatic herb used in cooking."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hierba aromatica usada en cocina."
+          }
+        }
+      }
+    },
+    "word_hint.ALMENDRA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edible seed with a hard shell."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Semilla comestible con cascara dura."
+          }
+        }
+      }
+    },
+    "word_hint.ARBOL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large plant with trunk and branches."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planta grande con tronco y ramas."
+          }
+        }
+      }
+    },
+    "word_hint.ARENA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Small grains found on beaches or deserts."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Granitos que forman playas o desiertos."
+          }
+        }
+      }
+    },
+    "word_hint.ARROZ": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grain cereal widely used in meals."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cereal en grano muy usado en comidas."
+          }
+        }
+      }
+    },
+    "word_hint.AUTOPISTA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "High-speed multi-lane road."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Via rapida de varios carriles."
+          }
+        }
+      }
+    },
+    "word_hint.AVENA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cereal used in breakfasts."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cereal usado en desayunos."
+          }
+        }
+      }
+    },
+    "word_hint.AVION": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vehicle that flies."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vehiculo que vuela."
+          }
+        }
+      }
+    },
+    "word_hint.BANANA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Long yellow fruit."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruta alargada y amarilla."
+          }
+        }
+      }
+    },
+    "word_hint.BARRIO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Area of a city with its own identity."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zona de una ciudad con identidad propia."
+          }
+        }
+      }
+    },
+    "word_hint.BICICLETA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-wheel vehicle with pedals."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vehiculo de dos ruedas con pedales."
+          }
+        }
+      }
+    },
+    "word_hint.BOSQUE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dense area of trees."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conjunto denso de arboles."
+          }
+        }
+      }
+    },
+    "word_hint.BUS": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large passenger vehicle."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vehiculo grande para pasajeros."
+          }
+        }
+      }
+    },
+    "word_hint.CAFE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drink made from roasted beans."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bebida hecha con granos tostados."
+          }
+        }
+      }
+    },
+    "word_hint.CALLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Urban road between buildings."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Via urbana entre edificios."
+          }
+        }
+      }
+    },
+    "word_hint.CAMINO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Road or path from one place to another."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Via o senda para ir de un lugar a otro."
+          }
+        }
+      }
+    },
+    "word_hint.CARRO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Four-wheel vehicle."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vehiculo de cuatro ruedas."
+          }
+        }
+      }
+    },
+    "word_hint.CARTEL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign or poster with information."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placa o anuncio con informacion."
+          }
+        }
+      }
+    },
+    "word_hint.CEREZA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Small red fruit with a pit."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruta pequena roja con hueso."
+          }
+        }
+      }
+    },
+    "word_hint.CHOCOLATE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sweet made from cacao."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dulce hecho con cacao."
+          }
+        }
+      }
+    },
+    "word_hint.CIELO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visible space above Earth."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espacio visible sobre la Tierra."
+          }
+        }
+      }
+    },
+    "word_hint.CINE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Place to watch movies."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lugar para ver peliculas."
+          }
+        }
+      }
+    },
+    "word_hint.CIUDAD": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large urban settlement."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asentamiento grande y urbano."
+          }
+        }
+      }
+    },
+    "word_hint.COCO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tropical fruit with a hard shell."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruto tropical con cascara dura."
+          }
+        }
+      }
+    },
+    "word_hint.ENSALADA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mix of fresh vegetables."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mezcla de vegetales frescos."
+          }
+        }
+      }
+    },
+    "word_hint.ESTACION": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Departure and arrival place for transport."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lugar de salida y llegada de transporte."
+          }
+        }
+      }
+    },
+    "word_hint.ESTRELLA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Celestial body that emits light."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuerpo celeste que emite luz."
+          }
+        }
+      }
+    },
+    "word_hint.FLOR": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Part of a plant that produces seeds."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parte de la planta que produce semillas."
+          }
+        }
+      }
+    },
+    "word_hint.FUEGO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Combustion that produces heat and light."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Combustion que produce calor y luz."
+          }
+        }
+      }
+    },
+    "word_hint.GALLETA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baked crunchy sweet snack."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dulce horneado y crujiente."
+          }
+        }
+      }
+    },
+    "word_hint.HORIZONTE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line where sky and land seem to meet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Linea donde parece unirse cielo y tierra."
+          }
+        }
+      }
+    },
+    "word_hint.ISLA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Land surrounded by water."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tierra rodeada de agua."
+          }
+        }
+      }
+    },
+    "word_hint.LAGO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inland body of water."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuerpo de agua interior."
+          }
+        }
+      }
+    },
+    "word_hint.LECHE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutritious white liquid from mammals."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liquido blanco nutritivo de mamiferos."
+          }
+        }
+      }
+    },
+    "word_hint.LIBRO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bound set of pages."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conjunto de paginas encuadernadas."
+          }
+        }
+      }
+    },
+    "word_hint.LIMON": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Very sour citrus fruit."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruta citrica muy acida."
+          }
+        }
+      }
+    },
+    "word_hint.LLUVIA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Water that falls from clouds."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agua que cae de las nubes."
+          }
+        }
+      }
+    },
+    "word_hint.LUNA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Earth's natural satellite."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satelite natural de la Tierra."
+          }
+        }
+      }
+    },
+    "word_hint.MANGO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sweet and juicy tropical fruit."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruta tropical dulce y jugosa."
+          }
+        }
+      }
+    },
+    "word_hint.MANZANA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Round crisp fruit."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruta redonda y crujiente."
+          }
+        }
+      }
+    },
+    "word_hint.MAPA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Graphic representation of a place."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Representacion grafica de un lugar."
+          }
+        }
+      }
+    },
+    "word_hint.MAR": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large body of salt water."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gran extension de agua salada."
+          }
+        }
+      }
+    },
+    "word_hint.METRO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Underground urban transport."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transporte subterraneo en ciudades."
+          }
+        }
+      }
+    },
+    "word_hint.MIEL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sweet substance made by bees."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sustancia dulce producida por abejas."
+          }
+        }
+      }
+    },
+    "word_hint.MOCHILA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bag carried on the back."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bolso que se lleva en la espalda."
+          }
+        }
+      }
+    },
+    "word_hint.MONTE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Natural elevation of terrain."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elevacion natural del terreno."
+          }
+        }
+      }
+    },
+    "word_hint.MOTOR": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Machine that generates motion."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maquina que genera movimiento."
+          }
+        }
+      }
+    },
+    "word_hint.MUSEO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Place where art or history is displayed."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lugar donde se exhibe arte o historia."
+          }
+        }
+      }
+    },
+    "word_hint.MUSGO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Small plant that grows in damp places."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planta pequena que crece en lugares humedos."
+          }
+        }
+      }
+    },
+    "word_hint.NARANJA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Round sweet citrus fruit."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruta citrica redonda y dulce."
+          }
+        }
+      }
+    },
+    "word_hint.NIEVE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frozen water that falls from the sky."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agua congelada que cae del cielo."
+          }
+        }
+      }
+    },
+    "word_hint.NUBE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mass of water vapor in the sky."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masa de vapor de agua en el cielo."
+          }
+        }
+      }
+    },
+    "word_hint.PAN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Baked food made from flour."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alimento horneado a base de harina."
+          }
+        }
+      }
+    },
+    "word_hint.PAPAYA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tropical fruit with orange flesh."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruta tropical de pulpa naranja."
+          }
+        }
+      }
+    },
+    "word_hint.PARQUE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Green area for leisure."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Area verde para ocio."
+          }
+        }
+      }
+    },
+    "word_hint.PASEO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activity of walking around."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actividad de caminar o recorrer."
+          }
+        }
+      }
+    },
+    "word_hint.PASTA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Food made from flour and water dough."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masa alimenticia de harina y agua."
+          }
+        }
+      }
+    },
+    "word_hint.PERA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sweet pear-shaped fruit."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruta dulce de forma alargada."
+          }
+        }
+      }
+    },
+    "word_hint.PIMIENTO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smooth colorful vegetable."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hortaliza de piel lisa y colorida."
+          }
+        }
+      }
+    },
+    "word_hint.PLANETA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Body that orbits a star."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuerpo que orbita una estrella."
+          }
+        }
+      }
+    },
+    "word_hint.PLAYA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sandy shore by the sea."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orilla de arena junto al mar."
+          }
+        }
+      }
+    },
+    "word_hint.PLAZA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open public space in a city."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espacio publico abierto en la ciudad."
+          }
+        }
+      }
+    },
+    "word_hint.PRIMAVERA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Season between winter and summer."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estacion del anio entre invierno y verano."
+          }
+        }
+      }
+    },
+    "word_hint.PUENTE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Structure crossing a river or road."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estructura que cruza un rio o via."
+          }
+        }
+      }
+    },
+    "word_hint.PUERTA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Element that opens or closes a passage."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elemento que abre o cierra un paso."
+          }
+        }
+      }
+    },
+    "word_hint.QUESO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dairy product made from milk."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lacteo curado o fresco hecho de leche."
+          }
+        }
+      }
+    },
+    "word_hint.RAMA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Part of a tree that grows from the trunk."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parte del arbol que sale del tronco."
+          }
+        }
+      }
+    },
+    "word_hint.RIO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Natural stream of water."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corriente natural de agua."
+          }
+        }
+      }
+    },
+    "word_hint.ROCA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large hard stone."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Piedra grande y dura."
+          }
+        }
+      }
+    },
+    "word_hint.RUTA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planned route to a destination."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Camino planificado para ir a un destino."
+          }
+        }
+      }
+    },
+    "word_hint.SAL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mineral seasoning that enhances flavor."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Condimento mineral que realza el sabor."
+          }
+        }
+      }
+    },
+    "word_hint.SELVA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Very dense tropical forest."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bosque tropical muy denso."
+          }
+        }
+      }
+    },
+    "word_hint.SEMAFORO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traffic light signal."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Senal luminosa para regular el paso."
+          }
+        }
+      }
+    },
+    "word_hint.SOL": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Star that lights Earth."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estrella que ilumina la Tierra."
+          }
+        }
+      }
+    },
+    "word_hint.SOPA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warm liquid dish."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comida liquida y caliente."
+          }
+        }
+      }
+    },
+    "word_hint.TAXI": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Individual public service vehicle."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vehiculo de servicio publico individual."
+          }
+        }
+      }
+    },
+    "word_hint.TIERRA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ground where plants grow."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suelo donde crecen las plantas."
+          }
+        }
+      }
+    },
+    "word_hint.TOMATE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Red fruit used in salads and sauces."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruto rojo usado en ensaladas y salsas."
+          }
+        }
+      }
+    },
+    "word_hint.TORRE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tall and narrow construction."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Construccion alta y estrecha."
+          }
+        }
+      }
+    },
+    "word_hint.TORTILLA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dish made with egg or corn dough."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparacion de huevo o de masa de maiz."
+          }
+        }
+      }
+    },
+    "word_hint.TRAFICO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Circulation of vehicles."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Circulacion de vehiculos."
+          }
+        }
+      }
+    },
+    "word_hint.TREN": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vehicle that runs on rails."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vehiculo que va sobre vias."
+          }
+        }
+      }
+    },
+    "word_hint.TRUENO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loud sound after lightning."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sonido fuerte tras un rayo."
+          }
+        }
+      }
+    },
+    "word_hint.UVA": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Small fruit that grows in bunches."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fruto pequeno que crece en racimos."
+          }
+        }
+      }
+    },
+    "word_hint.VALLE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low area between hills or mountains."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zona baja entre montes."
+          }
+        }
+      }
+    },
+    "word_hint.VIAJE": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trip from one place to another."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desplazamiento de un lugar a otro."
+          }
+        }
+      }
+    },
+    "word_hint.VIENTO": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Movement of air."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Movimiento del aire."
+          }
+        }
+      }
+    },
+    "word_hint.YOGUR": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creamy fermented dairy food."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lacteo fermentado y cremoso."
+          }
+        }
+      }
+    },
+    "word_hint.missing": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No definition"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin definición"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

@@ -1,5 +1,6 @@
 import SwiftUI
 import DesignSystem
+import Core
 
 public struct DailyPuzzleDayCarouselView: View {
     public let offsets: [Int]
@@ -124,15 +125,20 @@ private struct DailyPuzzleDayCarouselItem: View {
     }
 
     private var weekdayText: String {
-        let weekdays = ["dom", "lun", "mar", "mie", "jue", "vie", "sab"]
-        let index = max(0, min(weekdays.count - 1, Calendar.current.component(.weekday, from: date) - 1))
-        return weekdays[index].uppercased()
+        let locale = AppLocalization.currentLocale
+        return date
+            .formatted(
+                .dateTime
+                    .locale(locale)
+                    .weekday(.abbreviated)
+            )
+            .uppercased(with: locale)
     }
 
     @ViewBuilder
     private var statusView: some View {
         if isLocked, let hoursUntilAvailable {
-            Text("\(hoursUntilAvailable)h")
+            Text(DailyPuzzleStrings.hoursShort(hoursUntilAvailable))
                 .font(TypographyTokens.caption)
                 .foregroundStyle(ColorTokens.textSecondary)
                 .lineLimit(1)
@@ -142,30 +148,7 @@ private struct DailyPuzzleDayCarouselItem: View {
                 .font(TypographyTokens.footnote)
                 .foregroundStyle(ThemeGradients.brushWarm)
         } else {
-            DailyPuzzleDayProgressIndicator(progress: progress)
+            DSCircularProgressRing(progress: progress)
         }
-    }
-}
-
-private struct DailyPuzzleDayProgressIndicator: View {
-    let progress: Double
-
-    var body: some View {
-        let clamped = min(max(progress, 0), 1)
-
-        ZStack {
-            Circle()
-                .stroke(ColorTokens.gridLine.opacity(0.75), lineWidth: 2)
-
-            Circle()
-                .trim(from: 0, to: clamped)
-                .stroke(
-                    ThemeGradients.brushWarm,
-                    style: StrokeStyle(lineWidth: 2, lineCap: .round)
-                )
-                .rotationEffect(.degrees(-90))
-        }
-        .frame(width: 14, height: 14)
-        .animation(.easeInOut(duration: 0.2), value: clamped)
     }
 }

@@ -27,6 +27,7 @@ public final class SettingsViewModel {
             gridSize: model.gridSize,
             appearanceMode: model.appearanceMode,
             wordHintMode: model.wordHintMode,
+            appLanguage: model.appLanguage,
             dailyRefreshMinutes: model.dailyRefreshMinutes,
             enableCelebrations: model.enableCelebrations,
             enableHaptics: model.enableHaptics,
@@ -41,6 +42,7 @@ public final class SettingsViewModel {
         settings.gridSize = PuzzleFactory.clampGridSize(values.gridSize)
         settings.appearanceMode = values.appearanceMode
         settings.wordHintMode = values.wordHintMode
+        settings.appLanguage = AppLanguage.resolved()
         settings.dailyRefreshMinutes = DailyRefreshClock.clampMinutes(values.dailyRefreshMinutes)
         settings.enableCelebrations = values.enableCelebrations
         settings.enableHaptics = values.enableHaptics
@@ -62,6 +64,7 @@ public final class SettingsViewModel {
             gridSize: settings.gridSize,
             appearanceMode: settings.appearanceMode,
             wordHintMode: settings.wordHintMode,
+            appLanguage: settings.appLanguage,
             dailyRefreshMinutes: settings.dailyRefreshMinutes,
             enableCelebrations: settings.enableCelebrations,
             enableHaptics: settings.enableHaptics,

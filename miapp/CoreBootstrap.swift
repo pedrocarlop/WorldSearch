@@ -4,6 +4,8 @@ import Core
 
 enum CoreBootstrap {
     static let shared: CoreContainer = CoreContainer.live {
-        WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConfig.widgetKind)
+        Task { @MainActor in
+            WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConfig.widgetKind)
+        }
     }
 }

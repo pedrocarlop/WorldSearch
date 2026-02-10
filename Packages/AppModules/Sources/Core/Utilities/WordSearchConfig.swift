@@ -21,6 +21,7 @@ public enum WordSearchConfig {
     public static let appearanceModeKey = "puzzle_theme_mode_v1"
     public static let gridSizeKey = "puzzle_grid_size_v1"
     public static let wordHintModeKey = "puzzle_word_hint_mode_v1"
+    public static let appLanguageKey = "puzzle_app_language_v1"
     public static let dailyRefreshMinutesKey = "puzzle_daily_refresh_minutes_v1"
 
     public static let enableCelebrationsKey = "puzzle_celebrations_enabled_v1"

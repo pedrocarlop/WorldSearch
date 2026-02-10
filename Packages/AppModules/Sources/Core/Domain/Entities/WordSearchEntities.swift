@@ -202,10 +202,40 @@ public enum WordHintMode: String, CaseIterable, Codable, Sendable {
     case definition
 }
 
+public enum AppLanguage: String, CaseIterable, Codable, Sendable {
+    case english = "en"
+    case spanish = "es"
+    case french = "fr"
+    case portuguese = "pt"
+
+    public var localeIdentifier: String {
+        rawValue
+    }
+
+    public var locale: Locale {
+        Locale(identifier: localeIdentifier)
+    }
+
+    public static func resolved(from locale: Locale = .autoupdatingCurrent) -> AppLanguage {
+        let normalized = locale.identifier.lowercased()
+        if normalized.hasPrefix("es") {
+            return .spanish
+        }
+        if normalized.hasPrefix("fr") {
+            return .french
+        }
+        if normalized.hasPrefix("pt") {
+            return .portuguese
+        }
+        return .english
+    }
+}
+
 public struct AppSettings: Hashable, Codable, Sendable {
     public var gridSize: Int
     public var appearanceMode: AppearanceMode
     public var wordHintMode: WordHintMode
+    public var appLanguage: AppLanguage
     public var dailyRefreshMinutes: Int
     public var enableCelebrations: Bool
     public var enableHaptics: Bool
@@ -216,6 +246,7 @@ public struct AppSettings: Hashable, Codable, Sendable {
         gridSize: Int,
         appearanceMode: AppearanceMode,
         wordHintMode: WordHintMode,
+        appLanguage: AppLanguage,
         dailyRefreshMinutes: Int,
         enableCelebrations: Bool,
         enableHaptics: Bool,
@@ -225,6 +256,7 @@ public struct AppSettings: Hashable, Codable, Sendable {
         self.gridSize = gridSize
         self.appearanceMode = appearanceMode
         self.wordHintMode = wordHintMode
+        self.appLanguage = appLanguage
         self.dailyRefreshMinutes = dailyRefreshMinutes
         self.enableCelebrations = enableCelebrations
         self.enableHaptics = enableHaptics
@@ -236,6 +268,7 @@ public struct AppSettings: Hashable, Codable, Sendable {
         gridSize: 7,
         appearanceMode: .system,
         wordHintMode: .word,
+        appLanguage: .english,
         dailyRefreshMinutes: 9 * 60,
         enableCelebrations: true,
         enableHaptics: true,

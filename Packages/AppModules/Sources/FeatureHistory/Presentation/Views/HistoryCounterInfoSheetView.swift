@@ -11,18 +11,18 @@ public enum HistoryCounterInfoKind: String, Identifiable, Sendable {
     var title: String {
         switch self {
         case .completedPuzzles:
-            return "Puzzles completados"
+            return HistoryStrings.completedPuzzlesTitle
         case .streak:
-            return "Racha actual"
+            return HistoryStrings.streakTitle
         }
     }
 
     var explanation: String {
         switch self {
         case .completedPuzzles:
-            return "Muestra cuantos retos diarios has terminado en total desde que instalaste la app."
+            return HistoryStrings.completedPuzzlesExplanation
         case .streak:
-            return "Cuenta los dias seguidos en los que completas el reto del dia actual. Si un dia no lo completas, la racha se reinicia."
+            return HistoryStrings.streakExplanation
         }
     }
 }

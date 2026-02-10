@@ -59,28 +59,16 @@ public struct DailyPuzzleChallengeCardView: View {
             return lockMessage
         }
         if isCompleted {
-            return "Completado"
+            return DailyPuzzleStrings.completed
         }
-        return "\(completedWordsCount) de \(totalWords) completadas"
+        return DailyPuzzleStrings.challengeProgress(found: completedWordsCount, total: totalWords)
     }
 
     public var body: some View {
         ZStack {
             DSCard {
                 VStack(spacing: SpacingTokens.sm + 6) {
-                    VStack(spacing: SpacingTokens.xxs - 2) {
-                        Text(Self.weekdayFormatter.string(from: date).capitalized)
-                            .font(TypographyTokens.caption)
-                            .foregroundStyle(ColorTokens.textSecondary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.55)
-
-                        Text(monthDayText)
-                            .font(TypographyTokens.displayTitle)
-                            .foregroundStyle(ColorTokens.textPrimary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                    }
+                    header
 
                     GeometryReader { geometry in
                         let gridSide = min(geometry.size.width, geometry.size.height)
@@ -127,31 +115,31 @@ public struct DailyPuzzleChallengeCardView: View {
         .scaleEffect(isLaunching ? 1.02 : 1)
         .animation(.easeInOut(duration: MotionTokens.fastDuration), value: isLocked)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Reto \(puzzleNumber), \(statusLabel)")
+        .accessibilityLabel(DailyPuzzleStrings.challengeAccessibilityLabel(number: puzzleNumber, status: statusLabel))
+    }
+
+    private var header: some View {
+        VStack(spacing: SpacingTokens.xxs - 2) {
+            Text(weekdayText)
+                .font(TypographyTokens.caption)
+                .foregroundStyle(ColorTokens.textSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.55)
+
+            Text(monthDayText)
+                .font(TypographyTokens.displayTitle)
+                .foregroundStyle(ColorTokens.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
     }
 
     @ViewBuilder
     private var statusBadge: some View {
         if isLocked {
-            ZStack {
-                Circle()
-                    .fill(ColorTokens.surfacePrimary.opacity(0.78))
-                    .frame(width: badgeSize, height: badgeSize)
-                Image(systemName: "lock.fill")
-                    .font(TypographyTokens.titleSmall)
-                    .foregroundStyle(ColorTokens.textPrimary)
-            }
-            .allowsHitTesting(false)
+            DSStatusBadge(kind: .locked, size: badgeSize)
         } else if isCompleted {
-            ZStack {
-                Circle()
-                    .fill(ColorTokens.surfacePrimary.opacity(0.78))
-                    .frame(width: badgeSize, height: badgeSize)
-                Image(systemName: "checkmark.seal.fill")
-                    .font(TypographyTokens.titleSmall)
-                    .foregroundStyle(ThemeGradients.brushWarm)
-            }
-            .allowsHitTesting(false)
+            DSStatusBadge(kind: .completed, size: badgeSize)
         }
     }
 
@@ -161,28 +149,33 @@ public struct DailyPuzzleChallengeCardView: View {
 
     private var lockMessage: String {
         if let hoursUntilAvailable {
-            return "Disponible en \(hoursUntilAvailable)h"
+            return DailyPuzzleStrings.challengeAvailableIn(hours: hoursUntilAvailable)
         }
-        return "Disponible pronto"
+        return DailyPuzzleStrings.challengeAvailableSoon
     }
 
     private var monthDayText: String {
-        Self.monthDayFormatter.string(from: date).uppercased()
+        let locale = AppLocalization.currentLocale
+        return date
+            .formatted(
+                .dateTime
+                    .locale(locale)
+                    .day()
+                    .month(.abbreviated)
+            )
+            .uppercased(with: locale)
     }
 
-    private static let weekdayFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "es_ES")
-        formatter.dateFormat = "EEEE"
-        return formatter
-    }()
-
-    private static let monthDayFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "es_ES")
-        formatter.dateFormat = "d MMM"
-        return formatter
-    }()
+    private var weekdayText: String {
+        let locale = AppLocalization.currentLocale
+        return date
+            .formatted(
+                .dateTime
+                    .locale(locale)
+                    .weekday(.wide)
+            )
+            .capitalized(with: locale)
+    }
 }
 
 private struct DailyPuzzleChallengeCardGridPreview: View {
@@ -224,19 +217,40 @@ private struct DailyPuzzleChallengeCardGridPreview: View {
             feedback: nil,
             solvedWordOutlines: outlines,
             anchor: nil,
-            palette: SharedWordSearchBoardPalette(
-                boardBackground: ColorTokens.surfacePaperGrid,
-                boardCellBackground: ColorTokens.surfacePaperMuted,
-                boardGridStroke: ColorTokens.boardGridStroke,
-                boardOuterStroke: ColorTokens.boardOuterStroke,
-                letterColor: ColorTokens.textPrimary,
-                selectionFill: ColorTokens.selectionFill,
-                foundOutlineStroke: ColorTokens.boardGridStroke,
-                feedbackCorrect: ColorTokens.feedbackCorrect,
-                feedbackIncorrect: ColorTokens.feedbackIncorrect,
-                anchorBorder: ColorTokens.accentPrimary
-            )
+            palette: WordSearchBoardStylePreset.challengePreview
         )
         .scaleEffect(0.96)
+    }
+}
+
+#Preview("Challenge Card States") {
+    PreviewThemeProvider {
+        VStack(spacing: SpacingTokens.md) {
+            DailyPuzzleChallengeCardView(
+                date: .now,
+                puzzleNumber: 1,
+                grid: Array(repeating: Array(repeating: "A", count: 8), count: 8),
+                words: ["ARBOL", "RIO", "LUNA", "NUBE"],
+                foundWords: ["ARBOL"],
+                solvedPositions: [],
+                isLocked: false,
+                hoursUntilAvailable: nil,
+                isLaunching: false
+            ) {}
+            .frame(width: 320, height: 360)
+
+            DailyPuzzleChallengeCardView(
+                date: .now.addingTimeInterval(86_400),
+                puzzleNumber: 2,
+                grid: Array(repeating: Array(repeating: "B", count: 8), count: 8),
+                words: ["ARBOL", "RIO", "LUNA", "NUBE"],
+                foundWords: [],
+                solvedPositions: [],
+                isLocked: true,
+                hoursUntilAvailable: 5,
+                isLaunching: false
+            ) {}
+            .frame(width: 320, height: 360)
+        }
     }
 }

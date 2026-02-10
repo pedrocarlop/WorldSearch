@@ -137,11 +137,14 @@ final class DataLayerTests: XCTestCase {
         let repository = LocalSettingsRepository(store: store)
         let loadUseCase = LoadSettingsUseCase(settingsRepository: repository)
         let saveUseCase = SaveSettingsUseCase(settingsRepository: repository)
+        let expectedLanguage = AppLanguage.resolved()
+        let nonDeviceLanguage = AppLanguage.allCases.first(where: { $0 != expectedLanguage }) ?? .english
 
         var settings = loadUseCase.execute()
         settings.gridSize = 9
         settings.appearanceMode = .dark
         settings.wordHintMode = .definition
+        settings.appLanguage = nonDeviceLanguage
         settings.dailyRefreshMinutes = 300
         settings.enableCelebrations = false
         settings.enableHaptics = false
@@ -153,11 +156,60 @@ final class DataLayerTests: XCTestCase {
         XCTAssertEqual(reloaded.gridSize, 9)
         XCTAssertEqual(reloaded.appearanceMode, .dark)
         XCTAssertEqual(reloaded.wordHintMode, .definition)
+        XCTAssertEqual(reloaded.appLanguage, expectedLanguage)
         XCTAssertEqual(reloaded.dailyRefreshMinutes, 300)
         XCTAssertFalse(reloaded.enableCelebrations)
         XCTAssertFalse(reloaded.enableHaptics)
         XCTAssertTrue(reloaded.enableSound)
         XCTAssertEqual(reloaded.celebrationIntensity, .high)
+    }
+
+    func testSavingLanguageUpdatesAppLocalizationEvenWithInMemoryStore() {
+        withIsolatedLanguageDefaults {
+            let expectedLanguage = AppLanguage.resolved()
+            let nonDeviceLanguage = AppLanguage.allCases.first(where: { $0 != expectedLanguage }) ?? .english
+            AppLocalization.setCurrentLanguage(nonDeviceLanguage)
+            XCTAssertEqual(AppLocalization.currentLanguage, nonDeviceLanguage)
+
+            let store = InMemoryKeyValueStore()
+            let repository = LocalSettingsRepository(store: store)
+
+            var settings = repository.load()
+            settings.appLanguage = nonDeviceLanguage
+            repository.save(settings)
+
+            XCTAssertEqual(AppLocalization.currentLanguage, expectedLanguage)
+
+            let implicitLanguagePuzzle = PuzzleFactory.puzzle(
+                for: DayKey(offset: 0),
+                gridSize: 9
+            )
+            let explicitResolvedPuzzle = PuzzleFactory.puzzle(
+                for: DayKey(offset: 0),
+                gridSize: 9,
+                locale: expectedLanguage.locale
+            )
+
+            XCTAssertEqual(
+                implicitLanguagePuzzle.words.map(\.text),
+                explicitResolvedPuzzle.words.map(\.text)
+            )
+        }
+    }
+
+    func testLoadSettingsUsesDeviceLanguageEvenWhenStoredValueDiffers() {
+        withIsolatedLanguageDefaults {
+            let expectedLanguage = AppLanguage.resolved()
+            let nonDeviceLanguage = AppLanguage.allCases.first(where: { $0 != expectedLanguage }) ?? .english
+            let store = InMemoryKeyValueStore()
+            store.set(nonDeviceLanguage.rawValue, forKey: WordSearchConfig.appLanguageKey)
+
+            let repository = LocalSettingsRepository(store: store)
+            let loaded = repository.load()
+
+            XCTAssertEqual(loaded.appLanguage, expectedLanguage)
+            XCTAssertEqual(AppLocalization.currentLanguage, expectedLanguage)
+        }
     }
 
     func testToggleSharedHelpUseCaseTogglesFlag() {
@@ -311,5 +363,34 @@ final class DataLayerTests: XCTestCase {
 
         XCTAssertEqual(resolved?.gridSize, 9)
         XCTAssertEqual(resolved?.foundWords, ["DOG"])
+    }
+
+    private func withIsolatedLanguageDefaults(_ body: () -> Void) {
+        let key = WordSearchConfig.appLanguageKey
+        let suiteDefaults = UserDefaults(suiteName: WordSearchConfig.suiteName)
+        let previousSuiteValue = suiteDefaults?.string(forKey: key)
+        let previousStandardValue = UserDefaults.standard.string(forKey: key)
+
+        suiteDefaults?.removeObject(forKey: key)
+        UserDefaults.standard.removeObject(forKey: key)
+        AppLocalization.resetCachedLanguageForTesting()
+
+        defer {
+            if let previousSuiteValue {
+                suiteDefaults?.set(previousSuiteValue, forKey: key)
+            } else {
+                suiteDefaults?.removeObject(forKey: key)
+            }
+
+            if let previousStandardValue {
+                UserDefaults.standard.set(previousStandardValue, forKey: key)
+            } else {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
+
+            AppLocalization.resetCachedLanguageForTesting()
+        }
+
+        body()
     }
 }

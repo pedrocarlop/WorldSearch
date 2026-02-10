@@ -143,6 +143,14 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
             return makeState(puzzleIndex: state.puzzleIndex, gridSize: size)
         }
 
+        // Rebuild when the persisted state was generated in a different app language.
+        let expected = PuzzleFactory.puzzle(for: DayKey(offset: state.puzzleIndex), gridSize: size)
+        let expectedWords = expected.words.map(\.text)
+
+        guard state.words == expectedWords else {
+            return makeState(puzzleIndex: state.puzzleIndex, gridSize: size)
+        }
+
         return state
     }
 

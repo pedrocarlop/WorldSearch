@@ -22,6 +22,11 @@ public final class LocalSettingsRepository: SettingsRepository {
 
         let appearanceMode = AppearanceMode(rawValue: store.string(forKey: WordSearchConfig.appearanceModeKey) ?? "") ?? .system
         let wordHintMode = WordHintMode(rawValue: store.string(forKey: WordSearchConfig.wordHintModeKey) ?? "") ?? .word
+        let appLanguage = AppLanguage.resolved()
+        if store.string(forKey: WordSearchConfig.appLanguageKey) != appLanguage.rawValue {
+            store.set(appLanguage.rawValue, forKey: WordSearchConfig.appLanguageKey)
+        }
+        AppLocalization.setCurrentLanguage(appLanguage)
 
         let storedMinutes = store.object(forKey: WordSearchConfig.dailyRefreshMinutesKey) as? Int
         let dailyRefreshMinutes: Int
@@ -45,6 +50,7 @@ public final class LocalSettingsRepository: SettingsRepository {
             gridSize: gridSize,
             appearanceMode: appearanceMode,
             wordHintMode: wordHintMode,
+            appLanguage: appLanguage,
             dailyRefreshMinutes: dailyRefreshMinutes,
             enableCelebrations: enableCelebrations,
             enableHaptics: enableHaptics,
@@ -54,9 +60,12 @@ public final class LocalSettingsRepository: SettingsRepository {
     }
 
     public func save(_ settings: AppSettings) {
+        let appLanguage = AppLanguage.resolved()
         store.set(PuzzleFactory.clampGridSize(settings.gridSize), forKey: WordSearchConfig.gridSizeKey)
         store.set(settings.appearanceMode.rawValue, forKey: WordSearchConfig.appearanceModeKey)
         store.set(settings.wordHintMode.rawValue, forKey: WordSearchConfig.wordHintModeKey)
+        store.set(appLanguage.rawValue, forKey: WordSearchConfig.appLanguageKey)
+        AppLocalization.setCurrentLanguage(appLanguage)
         store.set(DailyRefreshClock.clampMinutes(settings.dailyRefreshMinutes), forKey: WordSearchConfig.dailyRefreshMinutesKey)
         store.set(settings.enableCelebrations, forKey: WordSearchConfig.enableCelebrationsKey)
         store.set(settings.enableHaptics, forKey: WordSearchConfig.enableHapticsKey)

@@ -1,7 +1,7 @@
 import Foundation
 
 public enum PuzzleFactory {
-    private static let themes: [[String]] = [
+    private static let canonicalThemes: [[String]] = [
         [
             "ARBOL", "TIERRA", "NUBE", "MAR", "SOL", "RIO", "FLOR", "LUNA", "MONTE", "VALLE",
             "BOSQUE", "RAMA", "ROCA", "PLAYA", "NIEVE", "VIENTO", "TRUENO", "FUEGO", "ARENA",
@@ -22,16 +22,332 @@ public enum PuzzleFactory {
         ]
     ]
 
+    private static let englishTranslations: [String: String] = [
+        "ACEITE": "OIL",
+        "ALBAHACA": "BASIL",
+        "ALMENDRA": "ALMOND",
+        "ARBOL": "TREE",
+        "ARENA": "SAND",
+        "ARROZ": "RICE",
+        "AUTOPISTA": "HIGHWAY",
+        "AVENA": "OATMEAL",
+        "AVION": "AIRPLANE",
+        "BANANA": "BANANA",
+        "BARRIO": "DISTRICT",
+        "BICICLETA": "BICYCLE",
+        "BOSQUE": "FOREST",
+        "BUS": "BUS",
+        "CAFE": "COFFEE",
+        "CALLE": "STREET",
+        "CAMINO": "PATH",
+        "CARRO": "CAR",
+        "CARTEL": "SIGN",
+        "CEREZA": "CHERRY",
+        "CHOCOLATE": "CHOCOLATE",
+        "CIELO": "SKY",
+        "CINE": "CINEMA",
+        "CIUDAD": "CITY",
+        "COCO": "COCONUT",
+        "ENSALADA": "SALAD",
+        "ESTACION": "STATION",
+        "ESTRELLA": "STAR",
+        "FLOR": "FLOWER",
+        "FUEGO": "FIRE",
+        "GALLETA": "COOKIE",
+        "HORIZONTE": "HORIZON",
+        "ISLA": "ISLAND",
+        "LAGO": "LAKE",
+        "LECHE": "MILK",
+        "LIBRO": "BOOK",
+        "LIMON": "LEMON",
+        "LLUVIA": "RAIN",
+        "LUNA": "MOON",
+        "MANGO": "MANGO",
+        "MANZANA": "APPLE",
+        "MAPA": "MAP",
+        "MAR": "OCEAN",
+        "METRO": "SUBWAY",
+        "MIEL": "HONEY",
+        "MOCHILA": "BACKPACK",
+        "MONTE": "HILL",
+        "MOTOR": "ENGINE",
+        "MUSEO": "MUSEUM",
+        "MUSGO": "MOSS",
+        "NARANJA": "ORANGE",
+        "NIEVE": "SNOW",
+        "NUBE": "CLOUD",
+        "PAN": "BREAD",
+        "PAPAYA": "PAPAYA",
+        "PARQUE": "PARK",
+        "PASEO": "WALK",
+        "PASTA": "PASTA",
+        "PERA": "PEAR",
+        "PIMIENTO": "PEPPER",
+        "PLANETA": "PLANET",
+        "PLAYA": "BEACH",
+        "PLAZA": "SQUARE",
+        "PRIMAVERA": "SPRING",
+        "PUENTE": "BRIDGE",
+        "PUERTA": "DOOR",
+        "QUESO": "CHEESE",
+        "RAMA": "BRANCH",
+        "RIO": "RIVER",
+        "ROCA": "ROCK",
+        "RUTA": "ROUTE",
+        "SAL": "SALT",
+        "SELVA": "JUNGLE",
+        "SEMAFORO": "SIGNAL",
+        "SOL": "SUN",
+        "SOPA": "SOUP",
+        "TAXI": "TAXI",
+        "TIERRA": "EARTH",
+        "TOMATE": "TOMATO",
+        "TORRE": "TOWER",
+        "TORTILLA": "OMELET",
+        "TRAFICO": "TRAFFIC",
+        "TREN": "TRAIN",
+        "TRUENO": "THUNDER",
+        "UVA": "GRAPE",
+        "VALLE": "VALLEY",
+        "VIAJE": "TRAVEL",
+        "VIENTO": "WIND",
+        "YOGUR": "YOGURT"
+    ]
+
+    private static let frenchTranslations: [String: String] = [
+        "ACEITE": "HUILE",
+        "ALBAHACA": "BASILIC",
+        "ALMENDRA": "AMANDE",
+        "ARBOL": "ARBRE",
+        "ARENA": "SABLE",
+        "ARROZ": "RIZ",
+        "AUTOPISTA": "AUTOROUTE",
+        "AVENA": "AVOINE",
+        "AVION": "AVION",
+        "BANANA": "BANANE",
+        "BARRIO": "QUARTIER",
+        "BICICLETA": "VELO",
+        "BOSQUE": "FORET",
+        "BUS": "AUTOBUS",
+        "CAFE": "CAFE",
+        "CALLE": "RUE",
+        "CAMINO": "CHEMIN",
+        "CARRO": "VOITURE",
+        "CARTEL": "PANNEAU",
+        "CEREZA": "CERISE",
+        "CHOCOLATE": "CHOCOLAT",
+        "CIELO": "CIEL",
+        "CINE": "CINEMA",
+        "CIUDAD": "VILLE",
+        "COCO": "COCO",
+        "ENSALADA": "SALADE",
+        "ESTACION": "GARE",
+        "ESTRELLA": "ETOILE",
+        "FLOR": "FLEUR",
+        "FUEGO": "FEU",
+        "GALLETA": "BISCUIT",
+        "HORIZONTE": "HORIZON",
+        "ISLA": "ILE",
+        "LAGO": "LAC",
+        "LECHE": "LAIT",
+        "LIBRO": "LIVRE",
+        "LIMON": "CITRON",
+        "LLUVIA": "PLUIE",
+        "LUNA": "LUNE",
+        "MANGO": "MANGUE",
+        "MANZANA": "POMME",
+        "MAPA": "CARTE",
+        "MAR": "MER",
+        "METRO": "METRO",
+        "MIEL": "MIEL",
+        "MOCHILA": "SAC",
+        "MONTE": "COLLINE",
+        "MOTOR": "MOTEUR",
+        "MUSEO": "MUSEE",
+        "MUSGO": "MOUSSE",
+        "NARANJA": "ORANGE",
+        "NIEVE": "NEIGE",
+        "NUBE": "NUAGE",
+        "PAN": "PAIN",
+        "PAPAYA": "PAPAYE",
+        "PARQUE": "PARC",
+        "PASEO": "BALADE",
+        "PASTA": "PATES",
+        "PERA": "POIRE",
+        "PIMIENTO": "POIVRON",
+        "PLANETA": "PLANETE",
+        "PLAYA": "PLAGE",
+        "PLAZA": "PLACE",
+        "PRIMAVERA": "PRINTEMPS",
+        "PUENTE": "PONT",
+        "PUERTA": "PORTE",
+        "QUESO": "FROMAGE",
+        "RAMA": "BRANCHE",
+        "RIO": "RIVIERE",
+        "ROCA": "ROCHER",
+        "RUTA": "ITINERAIRE",
+        "SAL": "SEL",
+        "SELVA": "JUNGLE",
+        "SEMAFORO": "FEU",
+        "SOL": "SOLEIL",
+        "SOPA": "SOUPE",
+        "TAXI": "TAXI",
+        "TIERRA": "TERRE",
+        "TOMATE": "TOMATE",
+        "TORRE": "TOUR",
+        "TORTILLA": "OMELETTE",
+        "TRAFICO": "TRAFIC",
+        "TREN": "TRAIN",
+        "TRUENO": "TONNERRE",
+        "UVA": "RAISIN",
+        "VALLE": "VALLEE",
+        "VIAJE": "VOYAGE",
+        "VIENTO": "VENT",
+        "YOGUR": "YAOURT"
+    ]
+
+    private static let portugueseTranslations: [String: String] = [
+        "ACEITE": "OLEO",
+        "ALBAHACA": "MANJERICAO",
+        "ALMENDRA": "AMENDOA",
+        "ARBOL": "ARVORE",
+        "ARENA": "AREIA",
+        "ARROZ": "ARROZ",
+        "AUTOPISTA": "AUTOESTRADA",
+        "AVENA": "AVEIA",
+        "AVION": "AVIAO",
+        "BANANA": "BANANA",
+        "BARRIO": "BAIRRO",
+        "BICICLETA": "BICICLETA",
+        "BOSQUE": "FLORESTA",
+        "BUS": "ONIBUS",
+        "CAFE": "CAFE",
+        "CALLE": "RUA",
+        "CAMINO": "CAMINHO",
+        "CARRO": "CARRO",
+        "CARTEL": "CARTAZ",
+        "CEREZA": "CEREJA",
+        "CHOCOLATE": "CHOCOLATE",
+        "CIELO": "CEU",
+        "CINE": "CINEMA",
+        "CIUDAD": "CIDADE",
+        "COCO": "COCO",
+        "ENSALADA": "SALADA",
+        "ESTACION": "ESTACAO",
+        "ESTRELLA": "ESTRELA",
+        "FLOR": "FLOR",
+        "FUEGO": "FOGO",
+        "GALLETA": "BISCOITO",
+        "HORIZONTE": "HORIZONTE",
+        "ISLA": "ILHA",
+        "LAGO": "LAGO",
+        "LECHE": "LEITE",
+        "LIBRO": "LIVRO",
+        "LIMON": "LIMAO",
+        "LLUVIA": "CHUVA",
+        "LUNA": "LUA",
+        "MANGO": "MANGA",
+        "MANZANA": "MACA",
+        "MAPA": "MAPA",
+        "MAR": "MAR",
+        "METRO": "METRO",
+        "MIEL": "MEL",
+        "MOCHILA": "MOCHILA",
+        "MONTE": "COLINA",
+        "MOTOR": "MOTOR",
+        "MUSEO": "MUSEU",
+        "MUSGO": "MUSGO",
+        "NARANJA": "LARANJA",
+        "NIEVE": "NEVE",
+        "NUBE": "NUVEM",
+        "PAN": "PAO",
+        "PAPAYA": "PAPAIA",
+        "PARQUE": "PARQUE",
+        "PASEO": "PASSEIO",
+        "PASTA": "MASSA",
+        "PERA": "PERA",
+        "PIMIENTO": "PIMENTAO",
+        "PLANETA": "PLANETA",
+        "PLAYA": "PRAIA",
+        "PLAZA": "PRACA",
+        "PRIMAVERA": "PRIMAVERA",
+        "PUENTE": "PONTE",
+        "PUERTA": "PORTA",
+        "QUESO": "QUEIJO",
+        "RAMA": "RAMO",
+        "RIO": "RIO",
+        "ROCA": "ROCHA",
+        "RUTA": "ROTA",
+        "SAL": "SAL",
+        "SELVA": "SELVA",
+        "SEMAFORO": "SEMAFORO",
+        "SOL": "SOL",
+        "SOPA": "SOPA",
+        "TAXI": "TAXI",
+        "TIERRA": "TERRA",
+        "TOMATE": "TOMATE",
+        "TORRE": "TORRE",
+        "TORTILLA": "OMELETE",
+        "TRAFICO": "TRAFEGO",
+        "TREN": "TREM",
+        "TRUENO": "TROVAO",
+        "UVA": "UVA",
+        "VALLE": "VALE",
+        "VIAJE": "VIAGEM",
+        "VIENTO": "VENTO",
+        "YOGUR": "IOGURTE"
+    ]
+
+    private static let spanishThemes: [[String]] = canonicalThemes.map { theme in
+        theme.map(WordSearchNormalization.normalizedWord)
+    }
+
+    private static let englishThemes: [[String]] = localizedThemes(using: englishTranslations)
+    private static let frenchThemes: [[String]] = localizedThemes(using: frenchTranslations)
+    private static let portugueseThemes: [[String]] = localizedThemes(using: portugueseTranslations)
+
+    private static func localizedThemes(using translations: [String: String]) -> [[String]] {
+        canonicalThemes.map { theme in
+            theme.map { rawWord in
+                let canonical = WordSearchNormalization.normalizedWord(rawWord)
+                let translated = translations[canonical] ?? canonical
+                return WordSearchNormalization.normalizedWord(translated)
+            }
+        }
+    }
+
+    private static let canonicalByLocalizedWord: [String: String] = {
+        var map: [String: String] = [:]
+        for theme in canonicalThemes {
+            for rawWord in theme {
+                let canonical = WordSearchNormalization.normalizedWord(rawWord)
+                map[canonical] = canonical
+            }
+        }
+
+        for translations in [englishTranslations, frenchTranslations, portugueseTranslations] {
+            for (canonical, translated) in translations {
+                map[WordSearchNormalization.normalizedWord(translated)] = canonical
+            }
+        }
+        return map
+    }()
+
+    public static func canonicalWord(for localizedWord: String) -> String? {
+        let normalized = WordSearchNormalization.normalizedWord(localizedWord)
+        return canonicalByLocalizedWord[normalized]
+    }
+
     public static func normalizedPuzzleIndex(_ offset: Int) -> Int {
-        let count = max(themes.count, 1)
+        let count = max(canonicalThemes.count, 1)
         let value = offset % count
         return value >= 0 ? value : value + count
     }
 
-    public static func puzzle(for dayKey: DayKey, gridSize: Int) -> Puzzle {
+    public static func puzzle(for dayKey: DayKey, gridSize: Int, locale: Locale? = nil) -> Puzzle {
         let normalizedIndex = normalizedPuzzleIndex(dayKey.offset)
         let clampedGridSize = clampGridSize(gridSize)
-        let wordsPool = themes[normalizedIndex]
+        let wordsPool = themedWords(for: normalizedIndex, locale: locale)
         let seed = stableSeed(dayOffset: dayKey.offset, gridSize: clampedGridSize)
 
         let selectedWords = selectWords(from: wordsPool, gridSize: clampedGridSize, seed: seed)
@@ -58,6 +374,20 @@ public enum PuzzleFactory {
     private static func targetWordCount(for gridSize: Int) -> Int {
         let size = clampGridSize(gridSize)
         return min(10, max(5, 5 + (size - WordSearchConfig.minGridSize)))
+    }
+
+    private static func themedWords(for index: Int, locale: Locale?) -> [String] {
+        let resolvedLocale = locale ?? AppLocalization.currentLocale
+        switch AppLanguage.resolved(from: resolvedLocale) {
+        case .spanish:
+            return spanishThemes[index]
+        case .french:
+            return frenchThemes[index]
+        case .portuguese:
+            return portugueseThemes[index]
+        case .english:
+            return englishThemes[index]
+        }
     }
 
     private static func selectWords(from pool: [String], gridSize: Int, seed: UInt64) -> [String] {

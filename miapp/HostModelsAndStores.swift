@@ -1,6 +1,7 @@
 import Foundation
 import UIKit
 import AudioToolbox
+import Core
 
 enum HostHaptics {
     static func wordSuccess() {
@@ -49,14 +50,10 @@ enum HostSoundPlayer {
 }
 
 enum HostDateFormatter {
-    private static let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "es_ES")
-        formatter.dateFormat = "d MMM"
-        return formatter
-    }()
-
     static func monthDay(for date: Date) -> String {
-        formatter.string(from: date)
+        let formatter = DateFormatter()
+        formatter.locale = AppLocalization.currentLocale
+        formatter.setLocalizedDateFormatFromTemplate("d MMM")
+        return formatter.string(from: date)
     }
 }

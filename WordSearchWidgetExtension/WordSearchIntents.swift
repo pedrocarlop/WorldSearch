@@ -24,7 +24,9 @@ struct ToggleCellIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         _ = WordSearchWidgetContainer.shared.applyTap(row: row, col: col, now: Date())
-        WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConstants.widgetKind)
+        await MainActor.run {
+            WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConstants.widgetKind)
+        }
         return .result()
     }
 }
@@ -37,8 +39,9 @@ struct ToggleHelpIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         _ = WordSearchWidgetContainer.shared.toggleHelp(now: Date())
-
-        WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConstants.widgetKind)
+        await MainActor.run {
+            WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConstants.widgetKind)
+        }
         return .result()
     }
 }
@@ -51,8 +54,9 @@ struct DismissHintIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         _ = WordSearchWidgetContainer.shared.dismissHint(now: Date())
-
-        WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConstants.widgetKind)
+        await MainActor.run {
+            WidgetCenter.shared.reloadTimelines(ofKind: WordSearchConstants.widgetKind)
+        }
         return .result()
     }
 }
@@ -75,7 +79,7 @@ enum WordSearchDailyRefreshSettings {
     static func formattedTimeLabel() -> String {
         let boundary = date(for: minutesFromMidnight(), reference: Date())
         let formatter = DateFormatter()
-        formatter.locale = Locale.current
+        formatter.locale = AppLocalization.currentLocale
         formatter.timeStyle = .short
         formatter.dateStyle = .none
         return formatter.string(from: boundary)

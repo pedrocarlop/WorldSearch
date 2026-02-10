@@ -229,11 +229,7 @@ public struct DailyPuzzleGameScreenView: View {
 
     public var body: some View {
         ZStack {
-            ThemeGradients.paperBackground
-                .ignoresSafeArea()
-
-            DSGridBackgroundView(spacing: SpacingTokens.xxxl, opacity: 0.09)
-                .ignoresSafeArea()
+            DSPageBackgroundView(gridOpacity: 0.09)
 
             GeometryReader { geometry in
                 let side = min(geometry.size.width - SpacingTokens.xl, 420)
@@ -300,7 +296,7 @@ public struct DailyPuzzleGameScreenView: View {
                     Button(action: onClose) {
                         Image(systemName: "chevron.down")
                     }
-                    .accessibilityLabel("Cerrar")
+                    .accessibilityLabel(DailyPuzzleStrings.close)
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -309,7 +305,7 @@ public struct DailyPuzzleGameScreenView: View {
                 } label: {
                     Image(systemName: "arrow.counterclockwise")
                 }
-                .accessibilityLabel("Reiniciar reto")
+                .accessibilityLabel(DailyPuzzleStrings.resetChallenge)
             }
         }
         .onAppear {
@@ -326,17 +322,20 @@ public struct DailyPuzzleGameScreenView: View {
             completionOverlayTask?.cancel()
             completionOverlayTask = nil
         }
-        .alert("Reiniciar reto", isPresented: $showResetAlert) {
-            Button("Cancelar", role: .cancel) {}
-            Button("Reiniciar", role: .destructive) {
+        .alert(DailyPuzzleStrings.resetAlertTitle, isPresented: $showResetAlert) {
+            Button(DailyPuzzleStrings.resetAlertCancel, role: .cancel) {}
+            Button(DailyPuzzleStrings.resetAlertConfirm, role: .destructive) {
                 resetProgress()
             }
         } message: {
-            Text("Se borrara el progreso de este dia.")
+            Text(DailyPuzzleStrings.resetAlertMessage)
         }
     }
 
-    private var objectivesView: some View {
+}
+
+private extension DailyPuzzleGameScreenView {
+    var objectivesView: some View {
         DailyPuzzleWordsView(
             words: puzzle.words.map(\.text),
             foundWords: gameSession.foundWords,
@@ -529,7 +528,7 @@ public struct DailyPuzzleGameScreenView: View {
             isVisible: true,
             showsBackdrop: false,
             showsToast: false,
-            streakLabel: streakCount.map { "Racha \($0)" }
+            streakLabel: streakCount.map(DailyPuzzleStrings.streakLabel(_:))
         )
 
         onCompletionFeedback(preferences)
@@ -575,112 +574,5 @@ public struct DailyPuzzleGameScreenView: View {
         if !cancelScheduledTask {
             completionOverlayTask = nil
         }
-    }
-}
-
-private struct DailyPuzzleCompletionOverlayView: View {
-    let showBackdrop: Bool
-    let showToast: Bool
-    let streakLabel: String?
-    let reduceMotion: Bool
-    let reduceTransparency: Bool
-    let onTapDismiss: () -> Void
-
-    private var toastTransition: AnyTransition {
-        reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.96))
-    }
-
-    var body: some View {
-        ZStack {
-            if showBackdrop {
-                Rectangle()
-                    .fill(
-                        reduceTransparency
-                            ? AnyShapeStyle(ColorTokens.surfacePrimary.opacity(0.9))
-                            : AnyShapeStyle(.regularMaterial)
-                    )
-                    .ignoresSafeArea()
-                    .transition(.opacity)
-
-                ColorTokens.overlayDim
-                    .ignoresSafeArea()
-                    .transition(.opacity)
-            }
-
-            if showToast {
-                DailyPuzzleCompletionToast(
-                    streakLabel: streakLabel,
-                    reduceTransparency: reduceTransparency
-                )
-                .transition(toastTransition)
-            }
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            onTapDismiss()
-        }
-    }
-}
-
-private struct DailyPuzzleCompletionToast: View {
-    let streakLabel: String?
-    let reduceTransparency: Bool
-
-    private var accessibilityText: String {
-        if let streakLabel {
-            return "Completado. \(streakLabel)"
-        }
-        return "Completado"
-    }
-
-    var body: some View {
-        VStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(
-                        reduceTransparency
-                            ? AnyShapeStyle(ColorTokens.surfaceSecondary)
-                            : AnyShapeStyle(.thinMaterial)
-                    )
-                    .frame(width: 54, height: 54)
-
-                Circle()
-                    .stroke(ColorTokens.textPrimary.opacity(0.24), lineWidth: 1)
-                    .frame(width: 54, height: 54)
-
-                Image(systemName: "checkmark")
-                    .font(TypographyTokens.titleSmall.weight(.bold))
-                    .foregroundStyle(ColorTokens.textPrimary)
-            }
-
-            Text("Completado")
-                .font(TypographyTokens.titleMedium.weight(.semibold))
-                .foregroundStyle(ColorTokens.textPrimary)
-
-            if let streakLabel {
-                Text(streakLabel)
-                    .font(TypographyTokens.callout)
-                    .foregroundStyle(ColorTokens.textSecondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .padding(.horizontal, SpacingTokens.lg)
-        .padding(.vertical, SpacingTokens.lg)
-        .background(
-            RoundedRectangle(cornerRadius: RadiusTokens.overlayRadius, style: .continuous)
-                .fill(
-                    reduceTransparency
-                        ? AnyShapeStyle(ColorTokens.surfaceSecondary)
-                        : AnyShapeStyle(.ultraThinMaterial)
-                )
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: RadiusTokens.overlayRadius, style: .continuous)
-                .stroke(ColorTokens.textPrimary.opacity(0.24), lineWidth: 1)
-        )
-        .shadow(color: ColorTokens.inkPrimary.opacity(0.08), radius: 8, x: 0, y: 3)
-        .padding(.horizontal, SpacingTokens.lg)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(accessibilityText)
     }
 }

@@ -21,22 +21,34 @@ let package = Package(
         ),
         .target(
             name: "Core",
-            path: "Sources/Core"
+            path: "Sources/Core",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .target(
             name: "FeatureDailyPuzzle",
             dependencies: ["Core", "DesignSystem"],
-            path: "Sources/FeatureDailyPuzzle"
+            path: "Sources/FeatureDailyPuzzle",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .target(
             name: "FeatureHistory",
             dependencies: ["Core", "DesignSystem"],
-            path: "Sources/FeatureHistory"
+            path: "Sources/FeatureHistory",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .target(
             name: "FeatureSettings",
             dependencies: ["Core", "DesignSystem"],
-            path: "Sources/FeatureSettings"
+            path: "Sources/FeatureSettings",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .testTarget(
             name: "CoreTests",

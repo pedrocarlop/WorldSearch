@@ -1,0 +1,122 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "history.completed.explanation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shows how many daily challenges you have completed in total since installing the app."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muestra cuántos retos diarios has terminado en total desde que instalaste la app."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Montre combien de defis quotidiens vous avez termines depuis linstallation de lapp."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra quantos desafios diarios voce concluiu desde a instalacao da app."
+          }
+        }
+      }
+    },
+    "history.completed.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completed puzzles"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puzzles completados"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puzzles termines"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puzzles concluidos"
+          }
+        }
+      }
+    },
+    "history.streak.explanation": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Counts consecutive days where you complete the current daily challenge. If you miss a day, the streak resets."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuenta los días seguidos en los que completas el reto del día actual. Si un día no lo completas, la racha se reinicia."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compte les jours consecutifs ou vous terminez le defi du jour. Si vous manquez un jour, la serie est remise a zero."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conta os dias seguidos em que voce conclui o desafio atual. Se falhar um dia, a sequencia reinicia."
+          }
+        }
+      }
+    },
+    "history.streak.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current streak"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Racha actual"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serie actuelle"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sequencia atual"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

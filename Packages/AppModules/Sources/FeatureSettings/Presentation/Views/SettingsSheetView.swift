@@ -1,11 +1,15 @@
 import SwiftUI
 import Core
 import DesignSystem
+#if canImport(UIKit)
+import UIKit
+#endif
 
 public struct SettingsSheetValues: Equatable {
     public var gridSize: Int
     public var appearanceMode: AppearanceMode
     public var wordHintMode: WordHintMode
+    public var appLanguage: AppLanguage
     public var dailyRefreshMinutes: Int
     public var enableCelebrations: Bool
     public var enableHaptics: Bool
@@ -16,6 +20,7 @@ public struct SettingsSheetValues: Equatable {
         gridSize: Int,
         appearanceMode: AppearanceMode,
         wordHintMode: WordHintMode,
+        appLanguage: AppLanguage,
         dailyRefreshMinutes: Int,
         enableCelebrations: Bool,
         enableHaptics: Bool,
@@ -25,6 +30,7 @@ public struct SettingsSheetValues: Equatable {
         self.gridSize = gridSize
         self.appearanceMode = appearanceMode
         self.wordHintMode = wordHintMode
+        self.appLanguage = appLanguage
         self.dailyRefreshMinutes = dailyRefreshMinutes
         self.enableCelebrations = enableCelebrations
         self.enableHaptics = enableHaptics
@@ -35,6 +41,7 @@ public struct SettingsSheetValues: Equatable {
 
 public struct SettingsSheetView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @State private var gridSize: Int
     @State private var appearanceMode: AppearanceMode
     @State private var wordHintMode: WordHintMode
@@ -69,78 +76,36 @@ public struct SettingsSheetView: View {
     public var body: some View {
         NavigationStack {
             Form {
-                Section("Dificultad") {
-                    Stepper(value: $gridSize, in: WordSearchConfig.minGridSize...WordSearchConfig.maxGridSize) {
-                        Text("Tamano de sopa: \(gridSize)x\(gridSize)")
-                    }
-                    Text("A mayor tamano, mas dificultad. En el widget las letras y el area tactil se reducen para que entre la cuadricula.")
-                        .font(TypographyTokens.footnote)
-                        .foregroundStyle(ColorTokens.textSecondary)
-                    Text("El nuevo tamano solo se aplica a retos futuros. Los retos ya creados mantienen su tamano para no perder progreso.")
-                        .font(TypographyTokens.footnote)
-                        .foregroundStyle(ColorTokens.textSecondary)
-                }
-
-                Section("Apariencia") {
-                    Picker("Tema", selection: $appearanceMode) {
-                        ForEach(AppearanceMode.allCases, id: \.self) { mode in
-                            Text(appearanceTitle(for: mode)).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                }
-
-                Section("Pistas") {
-                    Picker("Modo", selection: $wordHintMode) {
-                        ForEach(WordHintMode.allCases, id: \.self) { mode in
-                            Text(wordHintTitle(for: mode)).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    Text("En definicion, veras la descripcion sin mostrar la palabra.")
-                        .font(TypographyTokens.footnote)
-                        .foregroundStyle(ColorTokens.textSecondary)
-                }
-
-                Section("Horario") {
-                    DatePicker(
-                        "Nueva sopa del dia",
-                        selection: $dailyRefreshTime,
-                        displayedComponents: .hourAndMinute
-                    )
-                    Text("Por defecto se renueva a las 09:00.")
-                        .font(TypographyTokens.footnote)
-                        .foregroundStyle(ColorTokens.textSecondary)
-                }
-
-                Section("Celebraciones") {
-                    Toggle("Animaciones de celebracion", isOn: $enableCelebrations)
-                    Toggle("Haptics", isOn: $enableHaptics)
-                    Toggle("Sonido", isOn: $enableSound)
-                    Picker("Intensidad", selection: $celebrationIntensity) {
-                        ForEach(CelebrationIntensity.allCases, id: \.self) { intensity in
-                            Text(celebrationTitle(for: intensity)).tag(intensity)
-                        }
-                    }
-                    Text("Si Reduce Motion esta activo, se desactivan las particulas.")
-                        .font(TypographyTokens.footnote)
-                        .foregroundStyle(ColorTokens.textSecondary)
-                }
+                DifficultySection(gridSize: $gridSize)
+                AppearanceSection(appearanceMode: $appearanceMode)
+                LanguageSection(
+                    appLanguage: AppLanguage.resolved(),
+                    onOpenSettings: openAppSettings
+                )
+                HintsSection(wordHintMode: $wordHintMode)
+                ScheduleSection(dailyRefreshTime: $dailyRefreshTime)
+                CelebrationsSection(
+                    enableCelebrations: $enableCelebrations,
+                    enableHaptics: $enableHaptics,
+                    enableSound: $enableSound,
+                    celebrationIntensity: $celebrationIntensity
+                )
             }
-            .navigationTitle("Ajustes")
+            .navigationTitle(SettingsStrings.title)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancelar") {
+                    Button(SettingsStrings.cancel) {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Guardar") {
+                    Button(SettingsStrings.save) {
                         onSave(
                             SettingsSheetValues(
                                 gridSize: gridSize,
                                 appearanceMode: appearanceMode,
                                 wordHintMode: wordHintMode,
+                                appLanguage: AppLanguage.resolved(),
                                 dailyRefreshMinutes: minutesFromMidnight(dailyRefreshTime),
                                 enableCelebrations: enableCelebrations,
                                 enableHaptics: enableHaptics,
@@ -162,34 +127,159 @@ public struct SettingsSheetView: View {
         return hour * 60 + minute
     }
 
-    private func appearanceTitle(for mode: AppearanceMode) -> String {
-        switch mode {
-        case .system:
-            return "Sistema"
-        case .light:
-            return "Claro"
-        case .dark:
-            return "Oscuro"
+    private func openAppSettings() {
+#if canImport(UIKit)
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        openURL(url)
+#endif
+    }
+}
+
+private struct DifficultySection: View {
+    @Binding var gridSize: Int
+
+    var body: some View {
+        Section(SettingsStrings.difficultySection) {
+            Stepper(value: $gridSize, in: WordSearchConfig.minGridSize...WordSearchConfig.maxGridSize) {
+                Text(SettingsStrings.gridSize(gridSize))
+            }
+            SettingsSectionFootnote(SettingsStrings.difficultyHintPrimary)
+            SettingsSectionFootnote(SettingsStrings.difficultyHintSecondary)
         }
+    }
+}
+
+private struct AppearanceSection: View {
+    @Binding var appearanceMode: AppearanceMode
+
+    var body: some View {
+        Section(SettingsStrings.appearanceSection) {
+            Picker(SettingsStrings.themePickerTitle, selection: $appearanceMode) {
+                ForEach(AppearanceMode.allCases, id: \.self) { mode in
+                    Text(SettingsStrings.appearanceTitle(for: mode)).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+}
+
+private struct LanguageSection: View {
+    let appLanguage: AppLanguage
+    let onOpenSettings: () -> Void
+
+    @State private var showsManagedLanguageAlert = false
+
+    var body: some View {
+        Section(SettingsStrings.languageSection) {
+            Button {
+                showsManagedLanguageAlert = true
+            } label: {
+                HStack(spacing: SpacingTokens.xs) {
+                    Text(SettingsStrings.languagePickerTitle)
+                    Spacer(minLength: SpacingTokens.sm)
+                    Text(SettingsStrings.languageTitle(for: appLanguage))
+                        .foregroundStyle(ColorTokens.textSecondary)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(TypographyTokens.caption.weight(.semibold))
+                        .foregroundStyle(ColorTokens.textSecondary)
+                }
+            }
+            .buttonStyle(.plain)
+        }
+        .alert(SettingsStrings.languageDeviceManagedTitle, isPresented: $showsManagedLanguageAlert) {
+            Button(SettingsStrings.languageOpenSettings) {
+                onOpenSettings()
+            }
+            Button(SettingsStrings.cancel, role: .cancel) {}
+        } message: {
+            Text(SettingsStrings.languageDeviceManagedMessage)
+        }
+    }
+}
+
+private struct HintsSection: View {
+    @Binding var wordHintMode: WordHintMode
+
+    var body: some View {
+        Section(SettingsStrings.hintsSection) {
+            Picker(SettingsStrings.hintModePickerTitle, selection: $wordHintMode) {
+                ForEach(WordHintMode.allCases, id: \.self) { mode in
+                    Text(SettingsStrings.wordHintTitle(for: mode)).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            SettingsSectionFootnote(SettingsStrings.definitionHint)
+        }
+    }
+}
+
+private struct ScheduleSection: View {
+    @Binding var dailyRefreshTime: Date
+
+    var body: some View {
+        Section(SettingsStrings.scheduleSection) {
+            DatePicker(
+                SettingsStrings.refreshPickerTitle,
+                selection: $dailyRefreshTime,
+                displayedComponents: .hourAndMinute
+            )
+
+            SettingsSectionFootnote(SettingsStrings.refreshHint)
+        }
+    }
+}
+
+private struct CelebrationsSection: View {
+    @Binding var enableCelebrations: Bool
+    @Binding var enableHaptics: Bool
+    @Binding var enableSound: Bool
+    @Binding var celebrationIntensity: CelebrationIntensity
+
+    var body: some View {
+        Section(SettingsStrings.celebrationsSection) {
+            Toggle(SettingsStrings.celebrationsToggle, isOn: $enableCelebrations)
+            Toggle(SettingsStrings.hapticsToggle, isOn: $enableHaptics)
+            Toggle(SettingsStrings.soundToggle, isOn: $enableSound)
+
+            Picker(SettingsStrings.intensityPickerTitle, selection: $celebrationIntensity) {
+                ForEach(CelebrationIntensity.allCases, id: \.self) { intensity in
+                    Text(SettingsStrings.celebrationTitle(for: intensity)).tag(intensity)
+                }
+            }
+
+            SettingsSectionFootnote(SettingsStrings.reduceMotionHint)
+        }
+    }
+}
+
+private struct SettingsSectionFootnote: View {
+    let text: String
+
+    init(_ text: String) {
+        self.text = text
     }
 
-    private func wordHintTitle(for mode: WordHintMode) -> String {
-        switch mode {
-        case .word:
-            return "Palabra"
-        case .definition:
-            return "Definicion"
-        }
+    var body: some View {
+        Text(text)
+            .font(TypographyTokens.footnote)
+            .foregroundStyle(ColorTokens.textSecondary)
     }
+}
 
-    private func celebrationTitle(for intensity: CelebrationIntensity) -> String {
-        switch intensity {
-        case .low:
-            return "Baja"
-        case .medium:
-            return "Media"
-        case .high:
-            return "Alta"
-        }
-    }
+#Preview("Settings Sheet") {
+    SettingsSheetView(
+        values: SettingsSheetValues(
+            gridSize: 10,
+            appearanceMode: .system,
+            wordHintMode: .definition,
+            appLanguage: .english,
+            dailyRefreshMinutes: 9 * 60,
+            enableCelebrations: true,
+            enableHaptics: true,
+            enableSound: false,
+            celebrationIntensity: .medium
+        )
+    ) { _ in }
 }
