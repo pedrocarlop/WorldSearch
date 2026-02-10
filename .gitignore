@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# SwiftPM
+.build/
+Packages/**/.build/
+Packages/**/.swiftpm/
+
+# Xcode
+DerivedData/
+build/
+*.xcuserstate
+*.moved-aside
+*.xcscmblueprint
+*.xccheckout
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Fastlane reports
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
