@@ -568,7 +568,7 @@ private extension DailyPuzzleGameScreenView {
         fxManager.play(
             FXEvent(
                 type: .wordSuccessWave,
-                timestamp: Date().timeIntervalSince1970,
+                timestamp: ProcessInfo.processInfo.systemUptime,
                 gridBounds: localGridBounds,
                 pathPoints: centers,
                 cellCenters: centers,
