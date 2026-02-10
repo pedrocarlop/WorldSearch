@@ -40,15 +40,30 @@ private struct DailyPuzzleSelectionFeedback: Identifiable {
     let positions: [GridPosition]
 }
 
+private struct DailyPuzzleEntryState {
+    var boardVisible = false
+    var bottomVisible = false
+    var didRun = false
+}
+
+private struct DailyPuzzleCompletionOverlayState {
+    var isVisible = false
+    var showsBackdrop = false
+    var showsToast = false
+    var streakLabel: String?
+
+    static let hidden = DailyPuzzleCompletionOverlayState()
+}
+
 private struct DailyPuzzleCelebrationConfig {
-    let popDuration: TimeInterval
-    let particleDuration: TimeInterval
-    let maxConcurrentCelebrations: Int
+    let brushDuration: TimeInterval
+    let waveDuration: TimeInterval
+    let sparkleTailDuration: TimeInterval
 
     static let `default` = DailyPuzzleCelebrationConfig(
-        popDuration: 0.18,
-        particleDuration: 0.42,
-        maxConcurrentCelebrations: 2
+        brushDuration: 0.18,
+        waveDuration: 0.42,
+        sparkleTailDuration: 0.16
     )
 }
 
@@ -69,21 +84,21 @@ private final class DailyPuzzleCelebrationController: ObservableObject {
         guard preferences.enableCelebrations else { return }
         guard !pathCells.isEmpty else { return }
 
-        let activeParticles = boardCelebrations.filter { $0.showsParticles }.count
-        let shouldShowParticles = !reduceMotion && activeParticles < config.maxConcurrentCelebrations
-
         let celebration = DailyPuzzleBoardCelebration(
             positions: pathCells,
             intensity: preferences.intensity,
-            showsParticles: shouldShowParticles,
-            popDuration: config.popDuration,
-            particleDuration: config.particleDuration,
+            popDuration: config.brushDuration,
+            particleDuration: config.waveDuration,
             reduceMotion: reduceMotion
         )
 
         boardCelebrations.append(celebration)
 
-        let removalDelay = max(config.popDuration, config.particleDuration) + 0.08
+        let adjustedWaveDuration = max(
+            config.waveDuration * preferences.intensity.sequenceWaveFactor,
+            Double(pathCells.count) * 0.045
+        )
+        let removalDelay = config.brushDuration + adjustedWaveDuration + config.sparkleTailDuration
         Task {
             try? await Task.sleep(nanoseconds: UInt64(removalDelay * 1_000_000_000))
             await MainActor.run {
@@ -95,7 +110,38 @@ private final class DailyPuzzleCelebrationController: ObservableObject {
     }
 }
 
+private extension CelebrationIntensity {
+    var sequenceWaveFactor: Double {
+        switch self {
+        case .low:
+            return 1.08
+        case .medium:
+            return 1
+        case .high:
+            return 0.9
+        }
+    }
+}
+
 public struct DailyPuzzleGameScreenView: View {
+    private enum Constants {
+        static let entryBoardDuration: Double = 0.22
+        static let entryBottomSpringResponse: Double = 0.34
+        static let entryBottomSpringDamping: Double = 0.88
+        static let entryBottomDelayNanos: UInt64 = 90_000_000
+
+        static let feedbackShowDuration: Double = 0.2
+        static let feedbackHideDelayNanos: UInt64 = 650_000_000
+
+        static let completionBackdropDuration: Double = 0.12
+        static let completionToastDelayNanos: UInt64 = 120_000_000
+        static let completionAutoDismissDelayNanos: UInt64 = 1_500_000_000
+        static let completionHideToastDuration: Double = 0.14
+        static let completionHideToastDelayNanos: UInt64 = 100_000_000
+        static let completionHideBackdropDuration: Double = 0.1
+        static let completionHideBackdropDelayNanos: UInt64 = 110_000_000
+    }
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
@@ -122,13 +168,10 @@ public struct DailyPuzzleGameScreenView: View {
     @State private var selectionFeedback: DailyPuzzleSelectionFeedback?
     @State private var feedbackNonce = 0
     @State private var showResetAlert = false
-    @State private var showEntryBoard = false
-    @State private var showEntryBottom = false
-    @State private var didRunEntry = false
-    @State private var isCompletedOverlayVisible = false
-    @State private var showCompletedBackdrop = false
-    @State private var showCompletedToast = false
-    @State private var completedStreakLabel: String?
+    @State private var entryState = DailyPuzzleEntryState()
+    @State private var completionOverlay = DailyPuzzleCompletionOverlayState.hidden
+    @State private var entryTransitionTask: Task<Void, Never>?
+    @State private var feedbackDismissTask: Task<Void, Never>?
     @State private var completionOverlayTask: Task<Void, Never>?
 
     public init(
@@ -186,13 +229,16 @@ public struct DailyPuzzleGameScreenView: View {
 
     public var body: some View {
         ZStack {
-            ColorTokens.backgroundPrimary
+            ThemeGradients.paperBackground
+                .ignoresSafeArea()
+
+            DSGridBackgroundView(spacing: SpacingTokens.xxxl, opacity: 0.09)
                 .ignoresSafeArea()
 
             GeometryReader { geometry in
-                let side = min(geometry.size.width - 32, 420)
+                let side = min(geometry.size.width - SpacingTokens.xl, 420)
 
-                VStack(spacing: 22) {
+                VStack(spacing: SpacingTokens.lg) {
                     DailyPuzzleGameBoardView(
                         grid: puzzle.grid.letters,
                         words: puzzle.words.map(\.text),
@@ -215,26 +261,26 @@ public struct DailyPuzzleGameScreenView: View {
                         guard !isCompleted else { return }
                         handleDragEnded()
                     }
-                    .opacity(showEntryBoard ? 1 : 0)
-                    .scaleEffect(showEntryBoard ? 1 : 0.98)
+                    .opacity(entryState.boardVisible ? 1 : 0)
+                    .scaleEffect(entryState.boardVisible ? 1 : 0.98)
 
                     objectivesView
-                        .offset(y: showEntryBottom ? 0 : 24)
-                        .opacity(showEntryBottom ? 1 : 0)
+                        .offset(y: entryState.bottomVisible ? 0 : 24)
+                        .opacity(entryState.bottomVisible ? 1 : 0)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                         .clipped()
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
+                .padding(.horizontal, SpacingTokens.md)
+                .padding(.top, SpacingTokens.sm)
                 .padding(.bottom, 0)
             }
-            .allowsHitTesting(!isCompletedOverlayVisible)
+            .allowsHitTesting(!completionOverlay.isVisible)
 
-            if isCompletedOverlayVisible {
+            if completionOverlay.isVisible {
                 DailyPuzzleCompletionOverlayView(
-                    showBackdrop: showCompletedBackdrop,
-                    showToast: showCompletedToast,
-                    streakLabel: completedStreakLabel,
+                    showBackdrop: completionOverlay.showsBackdrop,
+                    showToast: completionOverlay.showsToast,
+                    streakLabel: completionOverlay.streakLabel,
                     reduceMotion: reduceMotion,
                     reduceTransparency: reduceTransparency,
                     onTapDismiss: {
@@ -273,6 +319,10 @@ public struct DailyPuzzleGameScreenView: View {
             runEntryTransition()
         }
         .onDisappear {
+            entryTransitionTask?.cancel()
+            entryTransitionTask = nil
+            feedbackDismissTask?.cancel()
+            feedbackDismissTask = nil
             completionOverlayTask?.cancel()
             completionOverlayTask = nil
         }
@@ -386,12 +436,13 @@ public struct DailyPuzzleGameScreenView: View {
     }
 
     private func resetProgress() {
+        entryTransitionTask?.cancel()
+        entryTransitionTask = nil
+        feedbackDismissTask?.cancel()
+        feedbackDismissTask = nil
         completionOverlayTask?.cancel()
         completionOverlayTask = nil
-        isCompletedOverlayVisible = false
-        showCompletedBackdrop = false
-        showCompletedToast = false
-        completedStreakLabel = nil
+        completionOverlay = .hidden
         gameSession.reset()
         activeSelection = []
         dragAnchor = nil
@@ -411,22 +462,29 @@ public struct DailyPuzzleGameScreenView: View {
     }
 
     private func runEntryTransition() {
-        guard !didRunEntry else { return }
-        didRunEntry = true
+        guard !entryState.didRun else { return }
+        entryState.didRun = true
 
         if reduceMotion {
-            showEntryBoard = true
-            showEntryBottom = true
+            entryState.boardVisible = true
+            entryState.bottomVisible = true
             return
         }
 
-        Task { @MainActor in
-            withAnimation(.easeInOut(duration: 0.22)) {
-                showEntryBoard = true
+        entryTransitionTask?.cancel()
+        entryTransitionTask = Task { @MainActor in
+            withAnimation(.easeInOut(duration: Constants.entryBoardDuration)) {
+                entryState.boardVisible = true
             }
-            try? await Task.sleep(nanoseconds: 90_000_000)
-            withAnimation(.spring(response: 0.34, dampingFraction: 0.88)) {
-                showEntryBottom = true
+            try? await Task.sleep(nanoseconds: Constants.entryBottomDelayNanos)
+            guard !Task.isCancelled else { return }
+            withAnimation(
+                .spring(
+                    response: Constants.entryBottomSpringResponse,
+                    dampingFraction: Constants.entryBottomSpringDamping
+                )
+            ) {
+                entryState.bottomVisible = true
             }
         }
     }
@@ -434,15 +492,17 @@ public struct DailyPuzzleGameScreenView: View {
     private func showFeedback(kind: DailyPuzzleSelectionFeedbackKind, positions: [GridPosition]) {
         feedbackNonce += 1
         let currentNonce = feedbackNonce
-        withAnimation(.easeOut(duration: 0.2)) {
+        withAnimation(.easeOut(duration: Constants.feedbackShowDuration)) {
             selectionFeedback = DailyPuzzleSelectionFeedback(kind: kind, positions: positions)
         }
 
-        Task {
-            try? await Task.sleep(nanoseconds: 650_000_000)
+        feedbackDismissTask?.cancel()
+        feedbackDismissTask = Task {
+            try? await Task.sleep(nanoseconds: Constants.feedbackHideDelayNanos)
+            guard !Task.isCancelled else { return }
             guard currentNonce == feedbackNonce else { return }
             await MainActor.run {
-                withAnimation(.easeOut(duration: 0.2)) {
+                withAnimation(.easeOut(duration: Constants.feedbackShowDuration)) {
                     selectionFeedback = nil
                 }
             }
@@ -465,24 +525,27 @@ public struct DailyPuzzleGameScreenView: View {
         preferences: DailyPuzzleCelebrationPreferences
     ) {
         completionOverlayTask?.cancel()
-        completedStreakLabel = streakCount.map { "Racha \($0)" }
-        isCompletedOverlayVisible = true
-        showCompletedToast = false
+        completionOverlay = DailyPuzzleCompletionOverlayState(
+            isVisible: true,
+            showsBackdrop: false,
+            showsToast: false,
+            streakLabel: streakCount.map { "Racha \($0)" }
+        )
 
         onCompletionFeedback(preferences)
 
-        withAnimation(.easeInOut(duration: 0.12)) {
-            showCompletedBackdrop = true
+        withAnimation(.easeInOut(duration: Constants.completionBackdropDuration)) {
+            completionOverlay.showsBackdrop = true
         }
 
         completionOverlayTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 120_000_000)
+            try? await Task.sleep(nanoseconds: Constants.completionToastDelayNanos)
             guard !Task.isCancelled else { return }
             withAnimation(reduceMotion ? .easeInOut(duration: 0.16) : .easeOut(duration: 0.2)) {
-                showCompletedToast = true
+                completionOverlay.showsToast = true
             }
 
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            try? await Task.sleep(nanoseconds: Constants.completionAutoDismissDelayNanos)
             guard !Task.isCancelled else { return }
             await dismissCompletionOverlay(cancelScheduledTask: false)
         }
@@ -495,20 +558,20 @@ public struct DailyPuzzleGameScreenView: View {
             completionOverlayTask = nil
         }
 
-        withAnimation(.easeInOut(duration: 0.14)) {
-            showCompletedToast = false
+        withAnimation(.easeInOut(duration: Constants.completionHideToastDuration)) {
+            completionOverlay.showsToast = false
         }
 
-        try? await Task.sleep(nanoseconds: 100_000_000)
+        try? await Task.sleep(nanoseconds: Constants.completionHideToastDelayNanos)
 
-        withAnimation(.easeInOut(duration: 0.1)) {
-            showCompletedBackdrop = false
+        withAnimation(.easeInOut(duration: Constants.completionHideBackdropDuration)) {
+            completionOverlay.showsBackdrop = false
         }
 
-        try? await Task.sleep(nanoseconds: 110_000_000)
+        try? await Task.sleep(nanoseconds: Constants.completionHideBackdropDelayNanos)
 
-        isCompletedOverlayVisible = false
-        completedStreakLabel = nil
+        completionOverlay.isVisible = false
+        completionOverlay.streakLabel = nil
         if !cancelScheduledTask {
             completionOverlayTask = nil
         }
@@ -533,13 +596,13 @@ private struct DailyPuzzleCompletionOverlayView: View {
                 Rectangle()
                     .fill(
                         reduceTransparency
-                            ? AnyShapeStyle(ColorTokens.surfacePrimary.opacity(0.88))
+                            ? AnyShapeStyle(ColorTokens.surfacePrimary.opacity(0.9))
                             : AnyShapeStyle(.regularMaterial)
                     )
                     .ignoresSafeArea()
                     .transition(.opacity)
 
-                Color.primary.opacity(0.12)
+                ColorTokens.overlayDim
                     .ignoresSafeArea()
                     .transition(.opacity)
             }
@@ -592,19 +655,19 @@ private struct DailyPuzzleCompletionToast: View {
 
             Text("Completado")
                 .font(TypographyTokens.titleMedium.weight(.semibold))
-                .foregroundStyle(.primary)
+                .foregroundStyle(ColorTokens.textPrimary)
 
             if let streakLabel {
                 Text(streakLabel)
                     .font(TypographyTokens.callout)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ColorTokens.textSecondary)
                     .multilineTextAlignment(.center)
             }
         }
-        .padding(.horizontal, 28)
-        .padding(.vertical, 24)
+        .padding(.horizontal, SpacingTokens.lg)
+        .padding(.vertical, SpacingTokens.lg)
         .background(
-            RoundedRectangle(cornerRadius: 30, style: .continuous)
+            RoundedRectangle(cornerRadius: RadiusTokens.overlayRadius, style: .continuous)
                 .fill(
                     reduceTransparency
                         ? AnyShapeStyle(ColorTokens.surfaceSecondary)
@@ -612,11 +675,11 @@ private struct DailyPuzzleCompletionToast: View {
                 )
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 30, style: .continuous)
+            RoundedRectangle(cornerRadius: RadiusTokens.overlayRadius, style: .continuous)
                 .stroke(ColorTokens.textPrimary.opacity(0.24), lineWidth: 1)
         )
-        .shadow(color: Color(.separator).opacity(0.42), radius: 18, x: 0, y: 8)
-        .padding(.horizontal, 24)
+        .shadow(color: ColorTokens.inkPrimary.opacity(0.08), radius: 8, x: 0, y: 3)
+        .padding(.horizontal, SpacingTokens.lg)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityText)
     }

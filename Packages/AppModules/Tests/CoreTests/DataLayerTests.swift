@@ -189,4 +189,68 @@ final class DataLayerTests: XCTestCase {
         XCTAssertNil(result.nextHintWord)
         XCTAssertNil(result.nextHintExpiresAt)
     }
+
+    func testProgressRecordResolverPrefersPreferredGridSizeKey() {
+        let preferred = AppProgressRecord(
+            dayOffset: 3,
+            gridSize: 7,
+            foundWords: ["CAT"],
+            solvedPositions: [],
+            startedAt: 10,
+            endedAt: 20
+        )
+        let newerOtherGrid = AppProgressRecord(
+            dayOffset: 3,
+            gridSize: 9,
+            foundWords: ["DOG"],
+            solvedPositions: [],
+            startedAt: 100,
+            endedAt: 120
+        )
+        let records: [String: AppProgressRecord] = [
+            AppProgressRecordKey.make(dayOffset: preferred.dayOffset, gridSize: preferred.gridSize): preferred,
+            AppProgressRecordKey.make(dayOffset: newerOtherGrid.dayOffset, gridSize: newerOtherGrid.gridSize): newerOtherGrid
+        ]
+
+        let resolved = ProgressRecordResolver.resolve(
+            dayOffset: 3,
+            preferredGridSize: 7,
+            records: records
+        )
+
+        XCTAssertEqual(resolved?.gridSize, 7)
+        XCTAssertEqual(resolved?.foundWords, ["CAT"])
+    }
+
+    func testProgressRecordResolverFallsBackToMostRecentActivity() {
+        let older = AppProgressRecord(
+            dayOffset: 8,
+            gridSize: 7,
+            foundWords: ["CAT"],
+            solvedPositions: [],
+            startedAt: 10,
+            endedAt: 40
+        )
+        let newer = AppProgressRecord(
+            dayOffset: 8,
+            gridSize: 9,
+            foundWords: ["DOG"],
+            solvedPositions: [],
+            startedAt: 50,
+            endedAt: 80
+        )
+        let records: [String: AppProgressRecord] = [
+            AppProgressRecordKey.make(dayOffset: older.dayOffset, gridSize: older.gridSize): older,
+            AppProgressRecordKey.make(dayOffset: newer.dayOffset, gridSize: newer.gridSize): newer
+        ]
+
+        let resolved = ProgressRecordResolver.resolve(
+            dayOffset: 8,
+            preferredGridSize: 10,
+            records: records
+        )
+
+        XCTAssertEqual(resolved?.gridSize, 9)
+        XCTAssertEqual(resolved?.foundWords, ["DOG"])
+    }
 }

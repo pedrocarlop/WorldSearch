@@ -36,4 +36,31 @@ final class DailyPuzzleHomeScreenViewModelTests: XCTestCase {
         XCTAssertEqual(Set(record?.foundWords ?? []), ["CAT"])
         XCTAssertEqual(Set(record?.solvedPositions ?? []), Set(shared.solvedPositions))
     }
+
+    func testChallengeCardsFollowCarouselOffsets() {
+        let now = Date(timeIntervalSince1970: 30_000)
+        let core = CoreContainer(store: InMemoryKeyValueStore())
+        let viewModel = DailyPuzzleHomeScreenViewModel(
+            core: core,
+            preferredGridSize: 7,
+            now: now
+        )
+
+        XCTAssertEqual(viewModel.challengeCards.map(\.offset), viewModel.carouselOffsets)
+        XCTAssertTrue(viewModel.challengeCards.contains { !$0.words.isEmpty })
+    }
+
+    func testUnlockTapUpdatesCachedChallengeCardLockState() {
+        let core = CoreContainer(store: InMemoryKeyValueStore())
+        let viewModel = DailyPuzzleHomeScreenViewModel(core: core, preferredGridSize: 7)
+        let lockedOffset = viewModel.todayOffset + 1
+
+        XCTAssertTrue(viewModel.challengeCards.contains { $0.offset == lockedOffset && $0.isLocked })
+
+        for _ in 0..<10 {
+            _ = viewModel.handleChallengeCardTap(offset: lockedOffset)
+        }
+
+        XCTAssertTrue(viewModel.challengeCards.contains { $0.offset == lockedOffset && !$0.isLocked })
+    }
 }

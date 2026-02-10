@@ -9,11 +9,6 @@ public struct DailyPuzzleContainer {
     }
 
     @MainActor
-    public func makeRootViewModel() -> DailyPuzzleHomeViewModel {
-        DailyPuzzleHomeViewModel(container: core)
-    }
-
-    @MainActor
     public func makeHomeScreenViewModel(initialGridSize: Int) -> DailyPuzzleHomeScreenViewModel {
         DailyPuzzleHomeScreenViewModel(
             core: core,
