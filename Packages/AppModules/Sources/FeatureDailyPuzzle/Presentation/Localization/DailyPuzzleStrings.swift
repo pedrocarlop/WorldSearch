@@ -140,6 +140,43 @@ public enum DailyPuzzleStrings {
         return messages[safeIndex]
     }
 
+    public static var firstExperienceDragMessage: String {
+        localized(
+            "daily.first_experience.drag_message",
+            default: "Arrastra sobre el tablero para seleccionar palabras."
+        )
+    }
+
+    public static func firstExperienceObjectivesMessage(for mode: WordHintMode) -> String {
+        switch mode {
+        case .word:
+            return localized(
+                "daily.first_experience.objectives_words_message",
+                default: "Usa esta lista de palabras para completar el puzzle."
+            )
+        case .definition:
+            return localized(
+                "daily.first_experience.objectives_definitions_message",
+                default: "Usa estas descripciones para deducir y completar el puzzle."
+            )
+        }
+    }
+
+    public static var firstExperienceDifficultyMessage: String {
+        localized(
+            "daily.first_experience.difficulty_message",
+            default: "Puedes cambiar el nivel de dificultad en los ajustes de la aplicación."
+        )
+    }
+
+    public static var firstExperienceNext: String {
+        localized("daily.first_experience.next", default: "Siguiente")
+    }
+
+    public static var firstExperienceSkipAll: String {
+        localized("daily.first_experience.skip_all", default: "Omitir todo")
+    }
+
     private static func localized(_ key: String, default value: String) -> String {
         AppLocalization.localized(key, default: value, bundle: .module)
     }

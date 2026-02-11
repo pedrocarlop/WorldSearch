@@ -237,6 +237,7 @@ public struct DailyPuzzleChallengeCardView: View {
                 onPlay()
             }
             .frame(width: playButtonWidth)
+            .accessibilityIdentifier("dailyPuzzle.playButton")
             .overlay {
                 playButtonSparkleOverlay
             }

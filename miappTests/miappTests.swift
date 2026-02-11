@@ -26,6 +26,7 @@
 
 import CoreGraphics
 import XCTest
+import Core
 @testable import miapp
 
 final class miappTests: XCTestCase {

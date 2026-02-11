@@ -219,6 +219,8 @@ public struct DailyPuzzleGameScreenView: View {
     public let onWordFeedback: (DailyPuzzleCelebrationPreferences) -> Void
     public let onCompletionFeedback: (DailyPuzzleCelebrationPreferences) -> Void
     public let onSharedStateMutation: () -> Void
+    public let showsFirstExperience: Bool
+    public let onFirstExperienceCompleted: () -> Void
     public let toolbarActionTransitionNamespace: Namespace.ID?
 
     @StateObject private var celebrationController = DailyPuzzleCelebrationController()
@@ -239,6 +241,7 @@ public struct DailyPuzzleGameScreenView: View {
     @State private var feedbackDismissTask: Task<Void, Never>?
     @State private var completionOverlayTask: Task<Void, Never>?
     @State private var wordToastDismissTask: Task<Void, Never>?
+    @State private var firstExperienceState: DailyPuzzleFirstExperienceState
 
     public init(
         core: CoreContainer,
@@ -256,6 +259,8 @@ public struct DailyPuzzleGameScreenView: View {
         onWordFeedback: @escaping (DailyPuzzleCelebrationPreferences) -> Void = { _ in },
         onCompletionFeedback: @escaping (DailyPuzzleCelebrationPreferences) -> Void = { _ in },
         onSharedStateMutation: @escaping () -> Void = {},
+        showsFirstExperience: Bool = false,
+        onFirstExperienceCompleted: @escaping () -> Void = {},
         toolbarActionTransitionNamespace: Namespace.ID? = nil
     ) {
         self.core = core
@@ -273,6 +278,8 @@ public struct DailyPuzzleGameScreenView: View {
         self.onWordFeedback = onWordFeedback
         self.onCompletionFeedback = onCompletionFeedback
         self.onSharedStateMutation = onSharedStateMutation
+        self.showsFirstExperience = showsFirstExperience
+        self.onFirstExperienceCompleted = onFirstExperienceCompleted
         self.toolbarActionTransitionNamespace = toolbarActionTransitionNamespace
 
         let initialFoundWords = Set(initialProgress?.foundWords ?? [])
@@ -289,6 +296,7 @@ public struct DailyPuzzleGameScreenView: View {
                 endedAt: initialProgress?.endedDate
             )
         )
+        _firstExperienceState = State(initialValue: DailyPuzzleFirstExperienceState(enabled: showsFirstExperience))
     }
 
     private var isCompleted: Bool {
@@ -321,10 +329,10 @@ public struct DailyPuzzleGameScreenView: View {
                             celebrations: celebrationController.boardCelebrations,
                             sideLength: side
                         ) { position in
-                            guard !isCompleted else { return }
+                            guard !isCompleted, !isFirstExperienceActive else { return }
                             handleDragChanged(position)
                         } onDragEnded: {
-                            guard !isCompleted else { return }
+                            guard !isCompleted, !isFirstExperienceActive else { return }
                             handleDragEnded()
                         }
                         .background {
@@ -354,12 +362,66 @@ public struct DailyPuzzleGameScreenView: View {
                         .opacity(entryState.bottomVisible ? 1 : 0)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                         .clipped()
+                        .overlay {
+                            if firstExperienceState.isObjectivesHighlightVisible {
+                                RoundedRectangle(cornerRadius: RadiusTokens.overlayRadius, style: .continuous)
+                                    .fill(ColorTokens.accentAmberStrong.opacity(0.08))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: RadiusTokens.overlayRadius, style: .continuous)
+                                            .dsInnerStroke(ColorTokens.accentAmberStrong.opacity(0.65), lineWidth: 2)
+                                    )
+                                    .padding(.vertical, SpacingTokens.xxs)
+                                    .allowsHitTesting(false)
+                                    .accessibilityElement(children: .ignore)
+                                    .accessibilityIdentifier("dailyPuzzle.firstExperience.objectivesHighlight")
+                            }
+                        }
                 }
                 .padding(.horizontal, SpacingTokens.md)
                 .padding(.top, SpacingTokens.sm)
                 .padding(.bottom, 0)
             }
             .allowsHitTesting(!completionOverlay.isVisible)
+
+            if isFirstExperienceActive, !completionOverlay.isVisible {
+                Color.clear
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        advanceFirstExperienceStep()
+                    }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityIdentifier("dailyPuzzle.firstExperience.tapCatcher")
+                    .zIndex(3)
+            }
+
+            if let firstExperienceStep, !completionOverlay.isVisible {
+                VStack {
+                    if firstExperienceToastPlacement == .bottom {
+                        Spacer(minLength: 0)
+                    }
+
+                    DailyPuzzleFirstExperienceToastView(
+                        message: firstExperienceMessage,
+                        placement: firstExperienceToastPlacement,
+                        onNext: {
+                            advanceFirstExperienceStep()
+                        },
+                        onSkipAll: {
+                            skipFirstExperience()
+                        }
+                    )
+                    .accessibilityIdentifier(firstExperienceStepAccessibilityIdentifier)
+
+                    if firstExperienceToastPlacement == .top {
+                        Spacer(minLength: 0)
+                    }
+                }
+                .padding(.top, SpacingTokens.md)
+                .padding(.bottom, SpacingTokens.lg)
+                .padding(.horizontal, SpacingTokens.lg)
+                .transition(.move(edge: firstExperienceToastPlacement == .top ? .top : .bottom).combined(with: .opacity))
+                .zIndex(4)
+            }
 
             if let wordToast, !completionOverlay.isVisible {
                 VStack {
@@ -405,6 +467,7 @@ public struct DailyPuzzleGameScreenView: View {
                         Image(systemName: "chevron.down")
                     }
                     .accessibilityLabel(DailyPuzzleStrings.close)
+                    .accessibilityIdentifier("dailyPuzzle.closeButton")
                 }
             }
             if #available(iOS 26.0, *), let toolbarActionTransitionNamespace {
@@ -459,6 +522,50 @@ public struct DailyPuzzleGameScreenView: View {
 }
 
 private extension DailyPuzzleGameScreenView {
+    var isFirstExperienceActive: Bool {
+        firstExperienceState.isActive
+    }
+
+    var firstExperienceStep: DailyPuzzleFirstExperienceStep? {
+        firstExperienceState.step
+    }
+
+    var firstExperienceToastPlacement: DailyPuzzleFirstExperienceToastView.Placement {
+        guard let firstExperienceStep else { return .top }
+        switch firstExperienceStep {
+        case .dragToSelect:
+            return .top
+        case .objectivesHint, .difficultyHint:
+            return .bottom
+        }
+    }
+
+    var firstExperienceMessage: String {
+        guard let firstExperienceStep else { return "" }
+        switch firstExperienceStep {
+        case .dragToSelect:
+            return DailyPuzzleStrings.firstExperienceDragMessage
+        case .objectivesHint:
+            return DailyPuzzleStrings.firstExperienceObjectivesMessage(for: wordHintMode)
+        case .difficultyHint:
+            return DailyPuzzleStrings.firstExperienceDifficultyMessage
+        }
+    }
+
+    var firstExperienceStepAccessibilityIdentifier: String {
+        guard let firstExperienceStep else {
+            return "dailyPuzzle.firstExperience.toast.unknown"
+        }
+        switch firstExperienceStep {
+        case .dragToSelect:
+            return "dailyPuzzle.firstExperience.toast.step1"
+        case .objectivesHint:
+            return "dailyPuzzle.firstExperience.toast.step2"
+        case .difficultyHint:
+            return "dailyPuzzle.firstExperience.toast.step3"
+        }
+    }
+
     var activeSelectionText: String {
         let letters = puzzle.grid.letters
         guard !letters.isEmpty else { return "" }
@@ -481,6 +588,7 @@ private extension DailyPuzzleGameScreenView {
     }
 
     private func handleDragChanged(_ position: GridPosition) {
+        guard !isFirstExperienceActive else { return }
         if dragAnchor == nil {
             dragAnchor = position
             activeSelection = [position]
@@ -501,6 +609,7 @@ private extension DailyPuzzleGameScreenView {
     }
 
     private func handleDragEnded() {
+        guard !isFirstExperienceActive else { return }
         let selection = activeSelection
         dragAnchor = nil
         guard selection.count >= 2 else {
@@ -509,6 +618,19 @@ private extension DailyPuzzleGameScreenView {
         }
         finalizeSelection(selection)
         activeSelection = []
+    }
+
+    private func advanceFirstExperienceStep() {
+        guard firstExperienceState.isActive else { return }
+        let didComplete = firstExperienceState.advance()
+        guard didComplete else { return }
+        onFirstExperienceCompleted()
+    }
+
+    private func skipFirstExperience() {
+        let didSkip = firstExperienceState.skipAll()
+        guard didSkip else { return }
+        onFirstExperienceCompleted()
     }
 
     private func finalizeSelection(_ positions: [GridPosition]) {
