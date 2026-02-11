@@ -21,6 +21,7 @@ final class WordSuccessScanlineEffect: FXEffect {
     }
 
     private let alphaPipeline: MTLRenderPipelineState
+    private let additivePipeline: MTLRenderPipelineState
     private let uniformBuffer: MTLBuffer
     private let uniformStride: Int
 
@@ -32,8 +33,13 @@ final class WordSuccessScanlineEffect: FXEffect {
         !lines.isEmpty
     }
 
-    init?(device: MTLDevice, alphaPipeline: MTLRenderPipelineState) {
+    init?(
+        device: MTLDevice,
+        alphaPipeline: MTLRenderPipelineState,
+        additivePipeline: MTLRenderPipelineState
+    ) {
         self.alphaPipeline = alphaPipeline
+        self.additivePipeline = additivePipeline
 
         uniformStride = MemoryLayout<FXOverlayUniforms>.stride.alignedTo256
         let bufferLength = uniformStride * Constants.maxConcurrentLines
@@ -102,7 +108,7 @@ final class WordSuccessScanlineEffect: FXEffect {
             let hide = 1 - smoothStep(falloffStart, Constants.duration, age)
             let fade = reveal * hide
 
-            let uniforms = FXOverlayUniforms(
+            let baseUniforms = FXOverlayUniforms(
                 resolution: resolution,
                 center: SIMD2<Float>(Float(line.center.x), Float(line.center.y)),
                 progress: progress,
@@ -124,14 +130,42 @@ final class WordSuccessScanlineEffect: FXEffect {
                 params: SIMD2<Float>(trailLength, coreThickness)
             )
 
+            let additiveUniforms = FXOverlayUniforms(
+                resolution: resolution,
+                center: baseUniforms.center,
+                progress: min(1.0, progress + 0.012),
+                maxRadius: line.length,
+                ringWidth: 0,
+                alpha: max(0, fade) * (0.22 + 0.2 * line.intensity),
+                intensity: min(1.25 as Float, line.intensity + 0.16),
+                debugEnabled: baseUniforms.debugEnabled,
+                pathStart: baseUniforms.pathStart,
+                pathEnd: baseUniforms.pathEnd,
+                bounds: baseUniforms.bounds,
+                time: time,
+                effectKind: FXEffectKind.scanline,
+                params: SIMD2<Float>(trailLength * 0.55, max(0.8, coreThickness - 0.15))
+            )
+
             let offset = index * uniformStride
             let pointer = uniformBuffer.contents().advanced(by: offset)
-            var mutableUniforms = uniforms
-            withUnsafeBytes(of: &mutableUniforms) { bytes in
+            var mutableBaseUniforms = baseUniforms
+            withUnsafeBytes(of: &mutableBaseUniforms) { bytes in
                 guard let baseAddress = bytes.baseAddress else { return }
                 pointer.copyMemory(from: baseAddress, byteCount: bytes.count)
             }
 
+            encoder.setRenderPipelineState(alphaPipeline)
+            encoder.setFragmentBuffer(uniformBuffer, offset: offset, index: 0)
+            encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
+
+            var mutableAdditiveUniforms = additiveUniforms
+            withUnsafeBytes(of: &mutableAdditiveUniforms) { bytes in
+                guard let baseAddress = bytes.baseAddress else { return }
+                pointer.copyMemory(from: baseAddress, byteCount: bytes.count)
+            }
+
+            encoder.setRenderPipelineState(additivePipeline)
             encoder.setFragmentBuffer(uniformBuffer, offset: offset, index: 0)
             encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
         }

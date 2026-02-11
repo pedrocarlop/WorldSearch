@@ -30,10 +30,18 @@ public final class MetalFXRenderer: NSObject, MTKViewDelegate {
         guard let pipelines = Self.makePipelines(device: device, pixelFormat: view.colorPixelFormat) else {
             return nil
         }
-        guard let waveEffect = WordSuccessWaveEffect(device: device, alphaPipeline: pipelines.alpha) else {
+        guard let waveEffect = WordSuccessWaveEffect(
+            device: device,
+            alphaPipeline: pipelines.alpha,
+            additivePipeline: pipelines.additive
+        ) else {
             return nil
         }
-        guard let scanlineEffect = WordSuccessScanlineEffect(device: device, alphaPipeline: pipelines.alpha) else {
+        guard let scanlineEffect = WordSuccessScanlineEffect(
+            device: device,
+            alphaPipeline: pipelines.alpha,
+            additivePipeline: pipelines.additive
+        ) else {
             return nil
         }
 

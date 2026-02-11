@@ -103,13 +103,22 @@ float4 renderWaveFragment(FXVertexOut input, constant FXOverlayUniforms &uniform
 
     float dist = distance(pixel, uniforms.center);
     float radius = uniforms.progress * uniforms.maxRadius;
-    float ring = smoothstepFx(radius, radius - uniforms.ringWidth, dist);
+    float ringWidth = max(uniforms.ringWidth, 1.0);
+    float ringOuter = smoothstepFx(radius + ringWidth * 0.45, radius - ringWidth, dist);
+    float ringInner = smoothstepFx(radius - ringWidth * 0.22, radius - ringWidth * 1.32, dist);
+    float ringTail = smoothstepFx(radius + ringWidth * 1.24, radius + ringWidth * 0.16, dist);
+    float ring = ringOuter * 0.72 + ringInner * 0.33 + ringTail * 0.2;
 
-    float waveFade = 1.0 - smoothstepFx(0.78, 1.0, uniforms.progress);
-    float grain = 0.92 + 0.08 * noise(pixel * 0.035 + uniforms.time * 0.1);
-    float alpha = ring * waveFade * uniforms.alpha * grain;
+    float waveFade = (1.0 - smoothstepFx(0.72, 1.0, uniforms.progress));
+    float radialPhase = dist * 0.085 - uniforms.time * 8.6;
+    float shimmer = 0.86 + 0.14 * sin(radialPhase + uniforms.progress * 5.2);
+    float grain = 0.88 + 0.12 * noise((pixel - uniforms.center) * 0.045 + uniforms.time * 0.22);
+    float alpha = ring * waveFade * uniforms.alpha * shimmer * grain;
 
-    float3 baseColor = mix(float3(0.94, 0.83, 0.52), float3(1.0, 0.92, 0.68), uniforms.intensity);
+    float chroma = 0.5 + 0.5 * sin(radialPhase * 0.76 + uniforms.intensity * 2.4);
+    float3 warm = mix(float3(0.94, 0.83, 0.52), float3(1.0, 0.92, 0.68), uniforms.intensity);
+    float3 cool = mix(float3(0.62, 0.90, 1.0), float3(0.72, 0.96, 1.0), uniforms.intensity);
+    float3 baseColor = mix(warm, cool, chroma * 0.11);
 
     if (uniforms.debugEnabled > 0.5) {
         float centerMark = 1.0 - smoothstepFx(0.0, 4.0, distance(pixel, uniforms.center));
@@ -145,16 +154,24 @@ float4 renderScanlineFragment(FXVertexOut input, constant FXOverlayUniforms &uni
     float axialMask = max(headMask, trailMask * 0.82 + leadMask * 0.2);
 
     float inSegment = step(0.0, projection) * step(projection, axisLength);
-    float perpendicularDistance = fabs(rel.x * direction.y - rel.y * direction.x);
+    float signedPerpendicularDistance = rel.x * direction.y - rel.y * direction.x;
+    float perpendicularDistance = fabs(signedPerpendicularDistance);
     float coreThickness = max(uniforms.params.y, 0.2);
     float core = 1.0 - smoothstepFx(coreThickness, coreThickness + 0.85, perpendicularDistance);
     float glow = 1.0 - smoothstepFx(coreThickness * 3.4, coreThickness * 6.1, perpendicularDistance);
+    float edgeGlow = 1.0 - smoothstepFx(coreThickness * 1.7, coreThickness * 3.2, perpendicularDistance);
 
     float pulse = 0.95 + 0.05 * sin(uniforms.time * 20.0 + uniforms.progress * 6.0);
-    float alpha = inSegment * axialMask * (core * 0.9 + glow * 0.48) * uniforms.alpha * pulse;
+    float grain = 0.9 + 0.1 * noise(pixel * 0.065 + uniforms.time * 0.9);
+    float alpha = inSegment * axialMask * (core * 0.9 + glow * 0.48) * uniforms.alpha * pulse * grain;
 
     float3 color = mix(float3(0.98, 0.92, 0.70), float3(1.0, 0.99, 0.86), uniforms.intensity);
+    float side = smoothstepFx(-1.0, 1.0, signedPerpendicularDistance);
+    float3 fringeA = float3(0.96, 0.80, 1.0);
+    float3 fringeB = float3(0.72, 1.0, 0.93);
+    float3 fringeColor = mix(fringeA, fringeB, side);
     color += glow * 0.06 + headMask * 0.08;
+    color = mix(color, fringeColor, edgeGlow * 0.12 * uniforms.intensity);
 
     if (uniforms.debugEnabled > 0.5) {
         float centerMark = 1.0 - smoothstepFx(0.0, 4.0, distance(pixel, uniforms.center));
