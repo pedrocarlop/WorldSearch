@@ -309,6 +309,7 @@ public struct DailyPuzzleGameScreenView: View {
                             foundWords: gameSession.foundWords,
                             solvedPositions: gameSession.solvedPositions,
                             activePositions: activeSelection,
+                            selectionText: activeSelectionText,
                             feedback: selectionFeedback.map {
                                 DailyPuzzleBoardFeedback(
                                     id: $0.id,
@@ -438,6 +439,18 @@ public struct DailyPuzzleGameScreenView: View {
 }
 
 private extension DailyPuzzleGameScreenView {
+    var activeSelectionText: String {
+        let letters = puzzle.grid.letters
+        guard !letters.isEmpty else { return "" }
+
+        return activeSelection.compactMap { position in
+            guard position.row >= 0, position.row < letters.count else { return nil }
+            guard position.col >= 0, position.col < letters[position.row].count else { return nil }
+            return letters[position.row][position.col]
+        }
+        .joined()
+    }
+
     var objectivesView: some View {
         DailyPuzzleWordsView(
             words: puzzle.words.map(\.text),

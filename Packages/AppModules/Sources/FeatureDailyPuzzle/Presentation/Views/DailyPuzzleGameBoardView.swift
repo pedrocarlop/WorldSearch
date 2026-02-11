@@ -68,7 +68,10 @@ public struct DailyPuzzleBoardCelebration: Identifiable, Sendable {
 
 public struct DailyPuzzleGameBoardView: View {
     private static let defaultLoupeConfiguration = DailyPuzzleLoupeConfiguration(
-        magnification: 1.42
+        size: CGSize(width: 180, height: 56),
+        magnification: 1,
+        offset: CGSize(width: 0, height: -72),
+        edgePadding: 10
     )
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -78,6 +81,7 @@ public struct DailyPuzzleGameBoardView: View {
     public let foundWords: Set<String>
     public let solvedPositions: Set<GridPosition>
     public let activePositions: [GridPosition]
+    public let selectionText: String
     public let feedback: DailyPuzzleBoardFeedback?
     public let celebrations: [DailyPuzzleBoardCelebration]
     public let sideLength: CGFloat
@@ -107,6 +111,7 @@ public struct DailyPuzzleGameBoardView: View {
         foundWords: Set<String>,
         solvedPositions: Set<GridPosition>,
         activePositions: [GridPosition],
+        selectionText: String,
         feedback: DailyPuzzleBoardFeedback?,
         celebrations: [DailyPuzzleBoardCelebration],
         sideLength: CGFloat,
@@ -120,6 +125,7 @@ public struct DailyPuzzleGameBoardView: View {
         self.foundWords = foundWords
         self.solvedPositions = solvedPositions
         self.activePositions = activePositions
+        self.selectionText = selectionText
         self.feedback = feedback
         self.celebrations = celebrations
         self.sideLength = sideLength
@@ -168,22 +174,20 @@ public struct DailyPuzzleGameBoardView: View {
                     DailyPuzzleLoupeView(
                         state: $loupeState,
                         configuration: loupeConfiguration,
-                        boardSize: CGSize(width: sideLength, height: sideLength)
-                    ) {
-                        boardLayer(cellSize: cellSize)
-                    }
+                        selectedText: selectionText
+                    )
                 }
                 .gesture(
                     DragGesture(minimumDistance: 0)
                         .onChanged { value in
+                            if let position = position(for: value.location, cellSize: cellSize) {
+                                onDragChanged(position)
+                            }
                             loupeState.update(
                                 fingerLocation: value.location,
                                 in: boardBounds,
                                 configuration: loupeConfiguration
                             )
-                            if let position = position(for: value.location, cellSize: cellSize) {
-                                onDragChanged(position)
-                            }
                         }
                         .onEnded { _ in
                             loupeState.hide()

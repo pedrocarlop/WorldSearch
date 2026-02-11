@@ -9,30 +9,6 @@ script = ""
 name = "Run"
 icon = "run"
 command = '''
-# 1) Ir a la carpeta del proyecto
-cd /Users/pedrocarrascolopezbrea/Projects/miapp
-
-# 2) Ver dispositivos y copiar el UDID del iPhone conectado
-xcrun devicectl list devices
-
-# 3) Compilar para iPhone (Debug)
-# Si tienes .xcworkspace:
-xcodebuild -workspace miapp.xcworkspace -scheme miapp -configuration Debug -sdk iphoneos -derivedDataPath /tmp/miapp-dd build
-# Si tienes .xcodeproj (cambia según tu caso):
-# xcodebuild -project miapp.xcodeproj -scheme miapp -configuration Debug -sdk iphoneos -derivedDataPath /tmp/miapp-dd build
-
-# 4) Instalar la .app en el iPhone (sustituye <UDID>)
-APP_PATH="$(find /tmp/miapp-dd/Build/Products/Debug-iphoneos -maxdepth 1 -name '*.app' -print -quit)"
-xcrun devicectl device install app --device <UDID> "$APP_PATH"
-
-# 5) Lanzar la app (sustituye el bundle id real)
-xcrun devicectl device launch app --terminate-existing --device <UDID> com.tu.bundleid.miapp
-'''
-
-[[actions]]
-name = "Run"
-icon = "tool"
-command = '''
 cd /Users/pedrocarrascolopezbrea/Projects/miapp
 ls *.xcodeproj 2>/dev/null
 ls *.xcworkspace 2>/dev/null
