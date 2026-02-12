@@ -71,6 +71,10 @@ public enum DailyPuzzleStrings {
         localized("daily.action.close", default: "Cerrar")
     }
 
+    public static var moreActions: String {
+        localized("daily.action.more", default: "Mas opciones")
+    }
+
     public static var resetChallenge: String {
         localized("daily.action.reset", default: "Reiniciar reto")
     }

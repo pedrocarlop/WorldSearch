@@ -21,6 +21,7 @@ import SwiftUI
 
 public enum ThemeTypography {
     public static let displayTitle = TypographyTokens.displayTitle
+    public static let challengeCardDate = TypographyTokens.challengeCardDate
     public static let screenTitle = TypographyTokens.screenTitle
     public static let sectionTitle = TypographyTokens.sectionTitle
     public static let body = TypographyTokens.body

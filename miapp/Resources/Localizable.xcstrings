@@ -117,35 +117,6 @@
         }
       }
     },
-    "app.home.title": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Daily word search"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sopa diaria"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sopa quotidienne"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sopa diaria"
-          }
-        }
-      }
-    },
     "app.settings.open_accessibility": {
       "extractionState": "manual",
       "localizations": {

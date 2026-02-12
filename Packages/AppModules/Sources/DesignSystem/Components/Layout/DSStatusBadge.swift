@@ -58,7 +58,7 @@ public struct DSStatusBadge: View {
     private var iconStyle: AnyShapeStyle {
         switch kind {
         case .locked:
-            return AnyShapeStyle(ColorTokens.textPrimary)
+            return AnyShapeStyle(ColorTokens.gridLine)
         case .completed:
             return AnyShapeStyle(ThemeGradients.brushWarm)
         }

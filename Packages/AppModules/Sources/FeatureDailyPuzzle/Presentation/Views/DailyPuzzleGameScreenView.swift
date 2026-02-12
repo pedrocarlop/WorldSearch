@@ -20,6 +20,9 @@
 import SwiftUI
 import Core
 import DesignSystem
+#if canImport(UIKit)
+import UIKit
+#endif
 
 public struct DailyPuzzleSharedSyncContext: Sendable {
     public let puzzleIndex: Int
@@ -192,11 +195,6 @@ public struct DailyPuzzleGameScreenView: View {
 
         static let completionBackdropDuration: Double = 0.12
         static let completionToastDelayNanos: UInt64 = 120_000_000
-        static let completionAutoDismissDelayNanos: UInt64 = 1_500_000_000
-        static let completionHideToastDuration: Double = 0.14
-        static let completionHideToastDelayNanos: UInt64 = 100_000_000
-        static let completionHideBackdropDuration: Double = 0.1
-        static let completionHideBackdropDelayNanos: UInt64 = 110_000_000
 
         static let wordToastShowDuration: Double = 0.2
         static let wordToastHideDuration: Double = 0.22
@@ -210,6 +208,8 @@ public struct DailyPuzzleGameScreenView: View {
 
         static let rotateButtonSize: CGFloat = 56
         static let rotateButtonBottomInset: CGFloat = 32
+        static let rotateButtonLift: CGFloat = 16
+        static let rotateButtonLeftShift: CGFloat = 8
         static let wordHintEasterEggTapThreshold = 10
     }
 
@@ -386,19 +386,21 @@ public struct DailyPuzzleGameScreenView: View {
             }
             .allowsHitTesting(!completionOverlay.isVisible)
 
-            VStack {
-                Spacer()
-                HStack {
+            if shouldShowRotateBoardButton {
+                VStack {
                     Spacer()
-                    rotateBoardButton
+                    HStack {
+                        Spacer()
+                        rotateBoardButton
+                    }
                 }
+                .padding(.trailing, SpacingTokens.md + Constants.rotateButtonLeftShift)
+                .padding(.bottom, Constants.rotateButtonBottomInset + Constants.rotateButtonLift)
+                .ignoresSafeArea(edges: .bottom)
+                .offset(y: entryState.bottomVisible ? 0 : 12)
+                .opacity(entryState.bottomVisible ? 1 : 0)
+                .zIndex(1)
             }
-            .padding(.trailing, SpacingTokens.md)
-            .padding(.bottom, Constants.rotateButtonBottomInset)
-            .ignoresSafeArea(edges: .bottom)
-            .offset(y: entryState.bottomVisible ? 0 : 12)
-            .opacity(entryState.bottomVisible ? 1 : 0)
-            .zIndex(1)
 
             if let wordToast, !completionOverlay.isVisible {
                 VStack {
@@ -421,14 +423,10 @@ public struct DailyPuzzleGameScreenView: View {
                     reduceMotion: reduceMotion,
                     reduceTransparency: reduceTransparency,
                     onClose: {
-                        Task { @MainActor in
-                            await dismissCompletionOverlay()
-                        }
+                        handleCompletionOverlayExit()
                     },
                     onContinue: {
-                        Task { @MainActor in
-                            await dismissCompletionOverlay()
-                        }
+                        handleCompletionOverlayExit()
                     }
                 )
                 .transition(.opacity)
@@ -436,6 +434,7 @@ public struct DailyPuzzleGameScreenView: View {
         }
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(completionOverlay.isVisible ? .hidden : .visible, for: .navigationBar)
         .toolbar {
             if let onClose {
                 ToolbarItem(placement: .topBarLeading) {
@@ -446,12 +445,20 @@ public struct DailyPuzzleGameScreenView: View {
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showResetAlert = true
+                Menu {
+                    Button(role: .destructive) {
+                        showResetAlert = true
+                    } label: {
+                        Label {
+                            Text(DailyPuzzleStrings.resetChallenge)
+                        } icon: {
+                            resetChallengeMenuIcon
+                        }
+                    }
                 } label: {
-                    Image(systemName: "arrow.counterclockwise")
+                    Image(systemName: "ellipsis")
                 }
-                .accessibilityLabel(DailyPuzzleStrings.resetChallenge)
+                .accessibilityLabel(DailyPuzzleStrings.moreActions)
             }
         }
         .onAppear {
@@ -487,6 +494,26 @@ public struct DailyPuzzleGameScreenView: View {
 }
 
 private extension DailyPuzzleGameScreenView {
+    @ViewBuilder
+    var resetChallengeMenuIcon: some View {
+#if canImport(UIKit)
+        if let originalRedIcon = UIImage(systemName: "arrow.counterclockwise")?
+            .withTintColor(UIColor(ColorTokens.error), renderingMode: .alwaysOriginal) {
+            Image(uiImage: originalRedIcon)
+        } else {
+            Image(systemName: "arrow.counterclockwise")
+                .foregroundStyle(ColorTokens.error)
+        }
+#else
+        Image(systemName: "arrow.counterclockwise")
+            .foregroundStyle(ColorTokens.error)
+#endif
+    }
+
+    var shouldShowRotateBoardButton: Bool {
+        !isCompleted && !completionOverlay.isVisible
+    }
+
     var activeSelectionText: String {
         let letters = puzzle.grid.letters
         guard !letters.isEmpty else { return "" }
@@ -515,7 +542,7 @@ private extension DailyPuzzleGameScreenView {
         Button {
             rotateBoardCounterClockwise()
         } label: {
-            Image(systemName: "arrow.counterclockwise.square")
+            Image(systemName: "arrow.counterclockwise")
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(ColorTokens.surfacePaper)
                 .frame(width: Constants.rotateButtonSize, height: Constants.rotateButtonSize)
@@ -528,7 +555,8 @@ private extension DailyPuzzleGameScreenView {
                                 .dsInnerStroke(ColorTokens.borderSoft.opacity(0.34), lineWidth: 1)
                         }
                 }
-                .shadow(color: ColorTokens.inkPrimary.opacity(0.22), radius: 10, x: 0, y: 5)
+                .shadow(color: ColorTokens.inkPrimary.opacity(0.30), radius: 14, x: 0, y: 8)
+                .shadow(color: ColorTokens.accentAmberStrong.opacity(0.22), radius: 10, x: 0, y: 4)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(DailyPuzzleStrings.rotateBoard)
@@ -952,36 +980,17 @@ private extension DailyPuzzleGameScreenView {
             withAnimation(reduceMotion ? .easeInOut(duration: 0.16) : .easeOut(duration: 0.2)) {
                 completionOverlay.showsToast = true
             }
-
-            try? await Task.sleep(nanoseconds: Constants.completionAutoDismissDelayNanos)
-            guard !Task.isCancelled else { return }
-            await dismissCompletionOverlay(cancelScheduledTask: false)
         }
     }
 
     @MainActor
-    private func dismissCompletionOverlay(cancelScheduledTask: Bool = true) async {
-        if cancelScheduledTask {
-            completionOverlayTask?.cancel()
-            completionOverlayTask = nil
-        }
+    private func handleCompletionOverlayExit() {
+        completionOverlayTask?.cancel()
+        completionOverlayTask = nil
+        completionOverlay = .hidden
 
-        withAnimation(.easeInOut(duration: Constants.completionHideToastDuration)) {
-            completionOverlay.showsToast = false
-        }
-
-        try? await Task.sleep(nanoseconds: Constants.completionHideToastDelayNanos)
-
-        withAnimation(.easeInOut(duration: Constants.completionHideBackdropDuration)) {
-            completionOverlay.showsBackdrop = false
-        }
-
-        try? await Task.sleep(nanoseconds: Constants.completionHideBackdropDelayNanos)
-
-        completionOverlay.isVisible = false
-        completionOverlay.streakLabel = nil
-        if !cancelScheduledTask {
-            completionOverlayTask = nil
+        if let onClose {
+            onClose()
         }
     }
 }

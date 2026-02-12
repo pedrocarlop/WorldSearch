@@ -27,7 +27,7 @@ public struct DailyPuzzleWordsView: View {
     public let displayMode: WordHintMode
     public let onWordTapped: (String) -> Void
 
-    private let topFadeHeight: CGFloat = 14
+    private let edgeFadeHeight: CGFloat = 14
 
     private struct OrderedWord: Identifiable {
         let id: Int
@@ -99,23 +99,36 @@ public struct DailyPuzzleWordsView: View {
             .padding(.top, SpacingTokens.xs)
             .padding(.bottom, SpacingTokens.sm)
         }
-        .mask(alignment: .top) {
+        .mask {
             VStack(spacing: 0) {
                 ThemeGradients.wordListTopFade
-                    .frame(height: topFadeHeight)
+                    .frame(height: edgeFadeHeight)
                 Rectangle()
                     .fill(Color.black)
+                ThemeGradients.wordListTopFade
+                    .frame(height: edgeFadeHeight)
+                    .scaleEffect(x: -1, y: -1, anchor: .center)
             }
         }
     }
 }
 
 private struct WordChip: View {
+    private enum ShineConstants {
+        static let width: CGFloat = 42
+        static let rotation: Double = 18
+        static let travelPadding: CGFloat = 104
+        static let duration: TimeInterval = 0.72
+        static let cleanupDelay: TimeInterval = 0.12
+    }
+
     let word: String
     let isFound: Bool
     let allowMultiline: Bool
     let expandsHorizontally: Bool
     let onTap: () -> Void
+
+    @State private var activeShineIDs: [UUID] = []
 
     private var chipFillStyle: AnyShapeStyle {
         if isFound {
@@ -162,16 +175,81 @@ private struct WordChip: View {
             RoundedRectangle(cornerRadius: RadiusTokens.chipRadius, style: .continuous)
                 .dsInnerStroke(chipStroke, lineWidth: 1)
         )
+        .overlay {
+            if !activeShineIDs.isEmpty {
+                ZStack {
+                    ForEach(activeShineIDs, id: \.self) { shineID in
+                        WordChipTapShineView {
+                            removeShine(id: shineID)
+                        }
+                    }
+                }
+                .clipShape(RoundedRectangle(cornerRadius: RadiusTokens.chipRadius, style: .continuous))
+                .allowsHitTesting(false)
+            }
+        }
         .scaleEffect(isFound ? 1.0 : 0.98)
         .animation(MotionTokens.celebrate, value: isFound)
         .contentShape(RoundedRectangle(cornerRadius: RadiusTokens.chipRadius, style: .continuous))
-        .onTapGesture(perform: onTap)
+        .onTapGesture {
+            triggerShine()
+            onTap()
+        }
 
         if expandsHorizontally {
             chipContent
                 .frame(maxWidth: .infinity, alignment: allowMultiline ? .leading : .center)
         } else {
             chipContent
+        }
+    }
+
+    private func triggerShine() {
+        activeShineIDs.append(UUID())
+    }
+
+    private func removeShine(id: UUID) {
+        activeShineIDs.removeAll { $0 == id }
+    }
+
+    private struct WordChipTapShineView: View {
+        let onFinished: () -> Void
+
+        @State private var shineOffset: CGFloat = 0
+
+        var body: some View {
+            GeometryReader { proxy in
+                let travelDistance = max(proxy.size.width, proxy.size.height) + ShineConstants.travelPadding
+                let shineHeight = max(proxy.size.height * 2.4, 112)
+
+                RoundedRectangle(cornerRadius: RadiusTokens.infiniteRadius, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                .clear,
+                                ColorTokens.surfacePaper.opacity(0.52),
+                                .clear
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(width: ShineConstants.width, height: shineHeight)
+                    .rotationEffect(.degrees(ShineConstants.rotation))
+                    .offset(x: shineOffset)
+                    .blendMode(.screen)
+                    .onAppear {
+                        shineOffset = -travelDistance
+                        withAnimation(.easeOut(duration: ShineConstants.duration)) {
+                            shineOffset = travelDistance
+                        }
+                        DispatchQueue.main.asyncAfter(
+                            deadline: .now() + ShineConstants.duration + ShineConstants.cleanupDelay
+                        ) {
+                            onFinished()
+                        }
+                    }
+            }
         }
     }
 }

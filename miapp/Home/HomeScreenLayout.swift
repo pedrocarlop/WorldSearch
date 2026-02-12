@@ -123,10 +123,23 @@ struct HomeToolbarContent: ToolbarContent {
     let onSettingsTap: () -> Void
     let toolbarActionTransitionNamespace: Namespace.ID?
 
+    private var styledHomeTitle: Text {
+        Text(verbatim: "World")
+            .font(TypographyTokens.screenTitle.weight(.regular))
+            .foregroundColor(ColorTokens.textSecondary)
+        + Text(verbatim: "Crush")
+            .font(TypographyTokens.screenTitle.weight(.semibold))
+            .foregroundColor(ColorTokens.textPrimary)
+    }
+
     var body: some ToolbarContent {
         ToolbarItem(placement: .principal) {
-            Text(AppStrings.homeTitle)
-                .font(TypographyTokens.screenTitle)
+            styledHomeTitle
+                .lineLimit(1)
+                .minimumScaleFactor(0.45)
+                .allowsTightening(true)
+                .truncationMode(.tail)
+                .accessibilityLabel(AppStrings.homeTitle)
         }
 
         if #available(iOS 26.0, *), let toolbarActionTransitionNamespace {

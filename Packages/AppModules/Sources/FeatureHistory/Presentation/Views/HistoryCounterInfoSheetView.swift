@@ -27,6 +27,24 @@ public enum HistoryCounterInfoKind: String, Identifiable, Sendable {
 
     public var id: String { rawValue }
 
+    var systemImage: String {
+        switch self {
+        case .completedPuzzles:
+            return "checkmark.seal.fill"
+        case .streak:
+            return "flame.fill"
+        }
+    }
+
+    var iconGradient: LinearGradient {
+        switch self {
+        case .completedPuzzles:
+            return ThemeGradients.brushWarm
+        case .streak:
+            return ThemeGradients.brushWarmStrong
+        }
+    }
+
     var title: String {
         switch self {
         case .completedPuzzles:
@@ -47,21 +65,27 @@ public enum HistoryCounterInfoKind: String, Identifiable, Sendable {
 }
 
 public struct HistoryCounterInfoSheetView: View {
-    @State private var viewModel: HistorySummaryViewModel
-
     private let info: HistoryCounterInfoKind
 
-    public init(core: CoreContainer, info: HistoryCounterInfoKind) {
-        _viewModel = State(initialValue: HistorySummaryViewModel(core: core))
+    public init(core _: CoreContainer, info: HistoryCounterInfoKind) {
         self.info = info
     }
 
     public var body: some View {
-        VStack(spacing: SpacingTokens.lg) {
+        VStack(spacing: 0) {
+            Capsule(style: .continuous)
+                .fill(ColorTokens.borderDefault.opacity(0.9))
+                .frame(width: 40, height: 5)
+                .padding(.top, SpacingTokens.sm)
+                .padding(.bottom, SpacingTokens.xxxl)
+
             VStack(spacing: SpacingTokens.sm) {
+                Image(systemName: info.systemImage)
+                    .font(TypographyTokens.titleLarge.weight(.semibold))
+                    .foregroundStyle(info.iconGradient)
+                    .accessibilityHidden(true)
                 DSText(info.title, style: .titleSmall)
                     .multilineTextAlignment(.center)
-                DSText("\(displayValue)", style: .titleLarge)
                 DSText(info.explanation, style: .body, color: ColorTokens.textSecondary)
                     .multilineTextAlignment(.center)
             }
@@ -69,20 +93,8 @@ public struct HistoryCounterInfoSheetView: View {
 
             Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, alignment: .center)
-        .presentationDetents([.height(220), .medium])
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .presentationDetents([.height(280), .medium])
         .presentationDragIndicator(.hidden)
-        .onAppear {
-            viewModel.refresh()
-        }
-    }
-
-    private var displayValue: Int {
-        switch info {
-        case .completedPuzzles:
-            return viewModel.model.completedCount
-        case .streak:
-            return viewModel.model.currentStreak
-        }
     }
 }

@@ -63,6 +63,8 @@ struct DailyPuzzleCompletionOverlayView: View {
             }
             .padding(.horizontal, SpacingTokens.lg)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea()
         .safeAreaInset(edge: .bottom) {
             floatingContinueButton
         }
@@ -71,7 +73,7 @@ struct DailyPuzzleCompletionOverlayView: View {
     private var topNavigation: some View {
         HStack {
             Button(action: onClose) {
-                Image(systemName: "chevron.down")
+                Image(systemName: "xmark")
                     .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundStyle(ColorTokens.textPrimary)
                     .frame(width: 44, height: 44)

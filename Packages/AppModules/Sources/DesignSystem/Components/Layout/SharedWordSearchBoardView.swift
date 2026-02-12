@@ -198,8 +198,7 @@ public struct SharedWordSearchBoardView: View {
                 capsuleHeight: capsuleHeight,
                 lineWidth: lineWidth,
                 baseColor: baseColor,
-                revealColor: feedbackColor,
-                revealID: feedback.id
+                revealColor: feedbackColor
             )
         } else if let first = activePositions.first,
                   let last = activePositions.last {
@@ -209,8 +208,7 @@ public struct SharedWordSearchBoardView: View {
                 capsuleHeight: capsuleHeight,
                 lineWidth: lineWidth,
                 baseColor: baseColor,
-                revealColor: nil,
-                revealID: nil
+                revealColor: nil
             )
         }
     }
@@ -253,17 +251,12 @@ public struct SharedWordSearchBoardView: View {
 }
 
 private struct SharedWordSearchSelectionCapsule: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     let start: CGPoint
     let end: CGPoint
     let capsuleHeight: CGFloat
     let lineWidth: CGFloat
     let baseColor: Color
     let revealColor: Color?
-    let revealID: String?
-
-    @State private var revealProgress: CGFloat = 0
 
     var body: some View {
         let dx = end.x - start.x
@@ -271,8 +264,6 @@ private struct SharedWordSearchSelectionCapsule: View {
         let angle = Angle(radians: atan2(dy, dx))
         let centerPoint = CGPoint(x: (start.x + end.x) / 2, y: (start.y + end.y) / 2)
         let capsuleWidth = max(capsuleHeight, hypot(dx, dy) + capsuleHeight)
-        let revealWidth = capsuleWidth * revealProgress
-        let revealMaskWidth = min(capsuleWidth + lineWidth, max(0, revealWidth + lineWidth))
 
         return ZStack(alignment: .leading) {
             if revealColor == nil {
@@ -283,45 +274,10 @@ private struct SharedWordSearchSelectionCapsule: View {
             if let revealColor {
                 Capsule(style: .continuous)
                     .strokeBorder(revealColor, lineWidth: lineWidth, antialiased: true)
-                    .mask(alignment: .leading) {
-                        Rectangle()
-                            .frame(width: revealMaskWidth)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
             }
         }
             .frame(width: capsuleWidth, height: capsuleHeight)
             .rotationEffect(angle)
             .position(centerPoint)
-            .onAppear {
-                resetRevealState(animated: true)
-            }
-            .onChange(of: revealID) { _ in
-                resetRevealState(animated: true)
-            }
-            .onChange(of: revealColor != nil) { _ in
-                resetRevealState(animated: true)
-            }
-    }
-
-    private func resetRevealState(animated: Bool) {
-        guard revealColor != nil else {
-            revealProgress = 0
-            return
-        }
-
-        if reduceMotion {
-            revealProgress = 1
-            return
-        }
-
-        revealProgress = 0
-        if animated {
-            withAnimation(.easeOut(duration: MotionTokens.fastDuration)) {
-                revealProgress = 1
-            }
-        } else {
-            revealProgress = 1
-        }
     }
 }

@@ -30,7 +30,7 @@ public final class LocalSettingsRepository: SettingsRepository {
         let storedGrid = store.integer(forKey: WordSearchConfig.gridSizeKey)
         let gridSize: Int
         if storedGrid == 0 {
-            gridSize = WordSearchConfig.minGridSize
+            gridSize = PuzzleFactory.clampGridSize(WordSearchConfig.defaultGridSize)
             store.set(gridSize, forKey: WordSearchConfig.gridSizeKey)
         } else {
             gridSize = PuzzleFactory.clampGridSize(storedGrid)

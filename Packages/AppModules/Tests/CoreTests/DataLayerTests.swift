@@ -93,6 +93,19 @@ final class DataLayerTests: XCTestCase {
         XCTAssertEqual(settings.dailyRefreshMinutes, 0)
     }
 
+    func testSettingsRepositoryUsesConfiguredDefaultGridSizeWhenMissing() {
+        let store = InMemoryKeyValueStore()
+        let repository = LocalSettingsRepository(store: store)
+
+        let settings = repository.load()
+
+        XCTAssertEqual(settings.gridSize, WordSearchConfig.defaultGridSize)
+        XCTAssertEqual(
+            store.integer(forKey: WordSearchConfig.gridSizeKey),
+            WordSearchConfig.defaultGridSize
+        )
+    }
+
     func testLegacyMigrationPath() throws {
         let store = InMemoryKeyValueStore()
 

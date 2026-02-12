@@ -21,9 +21,7 @@ import Foundation
 import Core
 
 enum AppStrings {
-    static var homeTitle: String {
-        localized("app.home.title", default: "Sopa diaria")
-    }
+    static let homeTitle = "WorldCrush"
 
     static func completedCounterAccessibility(_ value: Int) -> String {
         String(

@@ -65,6 +65,7 @@ public enum WordSearchConfig {
 
     public static let minGridSize = 7
     public static let maxGridSize = 12
+    public static let defaultGridSize = 10
 
     public static let defaultDailyRefreshMinutes = 9 * 60
     public static let maxMinutesFromMidnight = 23 * 60 + 59
