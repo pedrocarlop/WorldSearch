@@ -10,7 +10,7 @@ You get one puzzle each day. Complete it, build your streak, and come back tomor
 ## ✨ Core Principles
 
 - 🧩 **One Puzzle Per Day**  
-  No endless levels. No infinite scrolling. Just one carefully generated daily challenge.
+  No endless levels. Just one carefully generated daily challenge.
 
 - 📅 **Daily Streaks**  
   Complete your puzzle every day to grow your streak.
@@ -23,17 +23,6 @@ You get one puzzle each day. Complete it, build your streak, and come back tomor
 
 - 🔒 **No Login Required**  
   No accounts. No sign-ups. No friction.
-
----
-
-## 📲 Add the Widget
-
-1. Long press your iPhone Home Screen  
-2. Tap the **+** button (top right)  
-3. Search for **WorldCrush**  
-4. Select a widget size  
-5. Tap **Add Widget**  
-6. Tap the widget anytime to open today’s puzzle instantly  
 
 ---
 
@@ -55,7 +44,6 @@ Come back tomorrow.
 
 - Built with Swift & SwiftUI  
 - iOS native widget support  
-- Local progress tracking  
 - No external accounts required  
 
 ---
@@ -66,7 +54,7 @@ For questions, feedback, or support:
 
 **pedro.design.engineer@gmail.com**
 
-We aim to respond within 48 hours.
+I aim to respond within 48 hours.
 
 ---
 
