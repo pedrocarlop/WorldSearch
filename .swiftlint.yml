@@ -1,12 +1,12 @@
 included:
   - Packages/AppModules/Sources
   - Packages/AppModules/Tests
-  - miapp
+  - WorldCrush
   - WordSearchWidgetExtension
 
 excluded:
   - Packages/AppModules/.build
-  - miapp.xcodeproj
+  - WorldCrush.xcodeproj
   - Docs
 
 disabled_rules:

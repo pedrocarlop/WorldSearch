@@ -1,9 +1,9 @@
 /*
  BEGINNER NOTES (AUTO):
- - Archivo: miapp/LoupeStateModels.swift
+ - Archivo: WorldCrush/WorldCrushApp.swift
  - Rol principal: Soporte general de arquitectura: tipos, configuracion o pegamento entre modulos.
  - Flujo simplificado: Entrada: contexto de modulo. | Proceso: ejecutar responsabilidad local del archivo. | Salida: tipo/valor usado por otras piezas.
- - Tipos clave en este archivo: (sin tipos principales declarados en este archivo; puede contener extensiones o constantes)
+ - Tipos clave en este archivo: WorldCrushApp
  - Funciones clave en este archivo: (sin funciones directas visibles; revisa propiedades/constantes/extensiones)
  - Como leerlo sin experiencia:
    1) Busca primero los tipos clave para entender 'quien vive aqui'.
@@ -17,7 +17,25 @@
    - return = devuelve un resultado y cierra esa funcion.
 */
 
-import Core
+//
+//  WorldCrushApp.swift
+//  WorldCrush
+//
+//  Created by Pedro Carrasco lopez brea on 8/2/26.
+//
 
-typealias LoupeConfiguration = Core.LoupeConfiguration
-typealias LoupeState = Core.LoupeState
+import SwiftUI
+import DesignSystem
+
+@main
+struct WorldCrushApp: App {
+    @StateObject private var container = AppContainer.live
+
+    var body: some Scene {
+        WindowGroup {
+            ThemeProvider {
+                ContentView(container: container)
+            }
+        }
+    }
+}

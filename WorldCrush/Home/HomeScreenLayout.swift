@@ -1,6 +1,6 @@
 /*
  BEGINNER NOTES (AUTO):
- - Archivo: miapp/Home/HomeScreenLayout.swift
+ - Archivo: WorldCrush/Home/HomeScreenLayout.swift
  - Rol principal: Soporte general de arquitectura: tipos, configuracion o pegamento entre modulos.
  - Flujo simplificado: Entrada: contexto de modulo. | Proceso: ejecutar responsabilidad local del archivo. | Salida: tipo/valor usado por otras piezas.
  - Tipos clave en este archivo: HomeScreenLayout,HomeToolbarContent

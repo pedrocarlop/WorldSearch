@@ -20,7 +20,7 @@
 import Foundation
 
 public enum WordSearchConfig {
-    public static let suiteName = "group.com.pedrocarrasco.miapp"
+    public static let suiteName = "group.com.pedrocarrasco.WorldCrush"
     public static let widgetKind = "WordSearchWidget"
 
     public static let stateKey = "puzzle_state_v3"

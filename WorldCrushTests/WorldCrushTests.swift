@@ -1,9 +1,9 @@
 /*
  BEGINNER NOTES (AUTO):
- - Archivo: miappTests/miappTests.swift
+ - Archivo: WorldCrushTests/WorldCrushTests.swift
  - Rol principal: Valida comportamiento. Ejecuta escenarios y comprueba resultados esperados.
  - Flujo simplificado: Entrada: datos de prueba y condiciones iniciales. | Proceso: ejecutar metodo/flujo bajo test. | Salida: aserciones que deben cumplirse.
- - Tipos clave en este archivo: miappTests
+ - Tipos clave en este archivo: WorldCrushTests
  - Funciones clave en este archivo: testLoupeStateVisibility,testLoupeStateClampsPosition testLoupeStateSmoothingLerpsTowardTarget
  - Como leerlo sin experiencia:
    1) Busca primero los tipos clave para entender 'quien vive aqui'.
@@ -18,8 +18,8 @@
 */
 
 //
-//  miappTests.swift
-//  miappTests
+//  WorldCrushTests.swift
+//  WorldCrushTests
 //
 //  Created by Pedro Carrasco lopez brea on 8/2/26.
 //
@@ -27,9 +27,9 @@
 import CoreGraphics
 import XCTest
 import Core
-@testable import miapp
+@testable import WorldCrush
 
-final class miappTests: XCTestCase {
+final class WorldCrushTests: XCTestCase {
     func testLoupeStateVisibility() {
         var state = LoupeState(configuration: .default)
         let bounds = CGRect(x: 0, y: 0, width: 200, height: 200)

@@ -1,6 +1,6 @@
 /*
  BEGINNER NOTES (AUTO):
- - Archivo: miapp/Localization/AppStrings.swift
+ - Archivo: WorldCrush/Localization/AppStrings.swift
  - Rol principal: Centraliza textos traducibles y acceso seguro a mensajes de UI.
  - Flujo simplificado: Entrada: clave de texto e idioma activo. | Proceso: resolver recurso localizado. | Salida: string final para mostrar en UI.
  - Tipos clave en este archivo: AppStrings

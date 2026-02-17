@@ -1,9 +1,9 @@
 /*
  BEGINNER NOTES (AUTO):
- - Archivo: miappUITests/miappUITestsLaunchTests.swift
+ - Archivo: WorldCrushUITests/WorldCrushUITestsLaunchTests.swift
  - Rol principal: Valida comportamiento. Ejecuta escenarios y comprueba resultados esperados.
  - Flujo simplificado: Entrada: datos de prueba y condiciones iniciales. | Proceso: ejecutar metodo/flujo bajo test. | Salida: aserciones que deben cumplirse.
- - Tipos clave en este archivo: miappUITestsLaunchTests
+ - Tipos clave en este archivo: WorldCrushUITestsLaunchTests
  - Funciones clave en este archivo: setUpWithError,testLaunch
  - Como leerlo sin experiencia:
    1) Busca primero los tipos clave para entender 'quien vive aqui'.
@@ -18,15 +18,15 @@
 */
 
 //
-//  miappUITestsLaunchTests.swift
-//  miappUITests
+//  WorldCrushUITestsLaunchTests.swift
+//  WorldCrushUITests
 //
 //  Created by Pedro Carrasco lopez brea on 8/2/26.
 //
 
 import XCTest
 
-final class miappUITestsLaunchTests: XCTestCase {
+final class WorldCrushUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

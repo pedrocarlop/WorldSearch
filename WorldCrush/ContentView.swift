@@ -1,6 +1,6 @@
 /*
  BEGINNER NOTES (AUTO):
- - Archivo: miapp/ContentView.swift
+ - Archivo: WorldCrush/ContentView.swift
  - Rol principal: Define interfaz SwiftUI: estructura visual, estados observados y eventos del usuario.
  - Flujo simplificado: Entrada: estado observable + eventos de usuario. | Proceso: SwiftUI recalcula body y compone vistas. | Salida: interfaz actualizada en pantalla.
  - Tipos clave en este archivo: HostPresentedGame,HomePresentedSheet ContentView
@@ -19,7 +19,7 @@
 
 //
 //  ContentView.swift
-//  miapp
+//  WorldCrush
 //
 //  Created by Pedro Carrasco lopez brea on 8/2/26.
 //

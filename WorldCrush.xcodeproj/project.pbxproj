@@ -23,14 +23,14 @@
 			containerPortal = D900882E2F38A17100CB1506 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D90088352F38A17100CB1506;
-			remoteInfo = miapp;
+			remoteInfo = WorldCrush;
 		};
 		D90088502F38A17300CB1506 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D900882E2F38A17100CB1506 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = D90088352F38A17100CB1506;
-			remoteInfo = miapp;
+			remoteInfo = WorldCrush;
 		};
 		D901000A2F38A17100CB1506 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -56,26 +56,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		D90088362F38A17100CB1506 /* miapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = miapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D90088452F38A17300CB1506 /* miappTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = miappTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D900884F2F38A17300CB1506 /* miappUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = miappUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D90088362F38A17100CB1506 /* WorldCrush.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WorldCrush.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D90088452F38A17300CB1506 /* WorldCrushTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WorldCrushTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D900884F2F38A17300CB1506 /* WorldCrushUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WorldCrushUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D90100012F38A17100CB1506 /* WordSearchWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WordSearchWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		D90088382F38A17100CB1506 /* miapp */ = {
+		D90088382F38A17100CB1506 /* WorldCrush */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = miapp;
+			path = WorldCrush;
 			sourceTree = "<group>";
 		};
-		D90088482F38A17300CB1506 /* miappTests */ = {
+		D90088482F38A17300CB1506 /* WorldCrushTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = miappTests;
+			path = WorldCrushTests;
 			sourceTree = "<group>";
 		};
-		D90088522F38A17300CB1506 /* miappUITests */ = {
+		D90088522F38A17300CB1506 /* WorldCrushUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = miappUITests;
+			path = WorldCrushUITests;
 			sourceTree = "<group>";
 		};
 		D90100022F38A17100CB1506 /* WordSearchWidgetExtension */ = {
@@ -127,10 +127,10 @@
 		D900882D2F38A17100CB1506 = {
 			isa = PBXGroup;
 			children = (
-				D90088382F38A17100CB1506 /* miapp */,
+				D90088382F38A17100CB1506 /* WorldCrush */,
 				D90100022F38A17100CB1506 /* WordSearchWidgetExtension */,
-				D90088482F38A17300CB1506 /* miappTests */,
-				D90088522F38A17300CB1506 /* miappUITests */,
+				D90088482F38A17300CB1506 /* WorldCrushTests */,
+				D90088522F38A17300CB1506 /* WorldCrushUITests */,
 				D90088372F38A17100CB1506 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -138,10 +138,10 @@
 		D90088372F38A17100CB1506 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D90088362F38A17100CB1506 /* miapp.app */,
+				D90088362F38A17100CB1506 /* WorldCrush.app */,
 				D90100012F38A17100CB1506 /* WordSearchWidgetExtension.appex */,
-				D90088452F38A17300CB1506 /* miappTests.xctest */,
-				D900884F2F38A17300CB1506 /* miappUITests.xctest */,
+				D90088452F38A17300CB1506 /* WorldCrushTests.xctest */,
+				D900884F2F38A17300CB1506 /* WorldCrushUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -149,9 +149,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D90088352F38A17100CB1506 /* miapp */ = {
+		D90088352F38A17100CB1506 /* WorldCrush */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D90088592F38A17300CB1506 /* Build configuration list for PBXNativeTarget "miapp" */;
+			buildConfigurationList = D90088592F38A17300CB1506 /* Build configuration list for PBXNativeTarget "WorldCrush" */;
 			buildPhases = (
 				D90088322F38A17100CB1506 /* Sources */,
 				D90088332F38A17100CB1506 /* Frameworks */,
@@ -164,9 +164,9 @@
 				D90100092F38A17100CB1506 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D90088382F38A17100CB1506 /* miapp */,
+				D90088382F38A17100CB1506 /* WorldCrush */,
 			);
-			name = miapp;
+			name = WorldCrush;
 			packageProductDependencies = (
 				A10000102F39A00000CB1506 /* DesignSystem */,
 				A10000112F39A00000CB1506 /* Core */,
@@ -174,13 +174,13 @@
 				A10000132F39A00000CB1506 /* FeatureHistory */,
 				A10000142F39A00000CB1506 /* FeatureSettings */,
 			);
-			productName = miapp;
-			productReference = D90088362F38A17100CB1506 /* miapp.app */;
+			productName = WorldCrush;
+			productReference = D90088362F38A17100CB1506 /* WorldCrush.app */;
 			productType = "com.apple.product-type.application";
 		};
-		D90088442F38A17300CB1506 /* miappTests */ = {
+		D90088442F38A17300CB1506 /* WorldCrushTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D900885C2F38A17300CB1506 /* Build configuration list for PBXNativeTarget "miappTests" */;
+			buildConfigurationList = D900885C2F38A17300CB1506 /* Build configuration list for PBXNativeTarget "WorldCrushTests" */;
 			buildPhases = (
 				D90088412F38A17300CB1506 /* Sources */,
 				D90088422F38A17300CB1506 /* Frameworks */,
@@ -192,18 +192,18 @@
 				D90088472F38A17300CB1506 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D90088482F38A17300CB1506 /* miappTests */,
+				D90088482F38A17300CB1506 /* WorldCrushTests */,
 			);
-			name = miappTests;
+			name = WorldCrushTests;
 			packageProductDependencies = (
 			);
-			productName = miappTests;
-			productReference = D90088452F38A17300CB1506 /* miappTests.xctest */;
+			productName = WorldCrushTests;
+			productReference = D90088452F38A17300CB1506 /* WorldCrushTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		D900884E2F38A17300CB1506 /* miappUITests */ = {
+		D900884E2F38A17300CB1506 /* WorldCrushUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D900885F2F38A17300CB1506 /* Build configuration list for PBXNativeTarget "miappUITests" */;
+			buildConfigurationList = D900885F2F38A17300CB1506 /* Build configuration list for PBXNativeTarget "WorldCrushUITests" */;
 			buildPhases = (
 				D900884B2F38A17300CB1506 /* Sources */,
 				D900884C2F38A17300CB1506 /* Frameworks */,
@@ -215,13 +215,13 @@
 				D90088512F38A17300CB1506 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				D90088522F38A17300CB1506 /* miappUITests */,
+				D90088522F38A17300CB1506 /* WorldCrushUITests */,
 			);
-			name = miappUITests;
+			name = WorldCrushUITests;
 			packageProductDependencies = (
 			);
-			productName = miappUITests;
-			productReference = D900884F2F38A17300CB1506 /* miappUITests.xctest */;
+			productName = WorldCrushUITests;
+			productReference = D900884F2F38A17300CB1506 /* WorldCrushUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 		D90100032F38A17100CB1506 /* WordSearchWidgetExtension */ = {
@@ -274,7 +274,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D90088312F38A17100CB1506 /* Build configuration list for PBXProject "miapp" */;
+			buildConfigurationList = D90088312F38A17100CB1506 /* Build configuration list for PBXProject "WorldCrush" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -292,10 +292,10 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D90088352F38A17100CB1506 /* miapp */,
+				D90088352F38A17100CB1506 /* WorldCrush */,
 				D90100032F38A17100CB1506 /* WordSearchWidgetExtension */,
-				D90088442F38A17300CB1506 /* miappTests */,
-				D900884E2F38A17300CB1506 /* miappUITests */,
+				D90088442F38A17300CB1506 /* WorldCrushTests */,
+				D900884E2F38A17300CB1506 /* WorldCrushUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -365,12 +365,12 @@
 /* Begin PBXTargetDependency section */
 		D90088472F38A17300CB1506 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D90088352F38A17100CB1506 /* miapp */;
+			target = D90088352F38A17100CB1506 /* WorldCrush */;
 			targetProxy = D90088462F38A17300CB1506 /* PBXContainerItemProxy */;
 		};
 		D90088512F38A17300CB1506 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D90088352F38A17100CB1506 /* miapp */;
+			target = D90088352F38A17100CB1506 /* WorldCrush */;
 			targetProxy = D90088502F38A17300CB1506 /* PBXContainerItemProxy */;
 		};
 		D90100092F38A17100CB1506 /* PBXTargetDependency */ = {
@@ -505,19 +505,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = miapp/miapp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = WorldCrush/WorldCrush.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = MM9BHDUA97;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "miapp-Info.plist";
+				INFOPLIST_FILE = "WorldCrush-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pedrocarrasco.miapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedrocarrasco.WorldCrush;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -534,19 +534,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = miapp/miapp.entitlements;
+				CODE_SIGN_ENTITLEMENTS = WorldCrush/WorldCrush.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = MM9BHDUA97;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "miapp-Info.plist";
+				INFOPLIST_FILE = "WorldCrush-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pedrocarrasco.miapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedrocarrasco.WorldCrush;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -568,7 +568,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = pedrocarrasco.miappTests;
+				PRODUCT_BUNDLE_IDENTIFIER = pedrocarrasco.WorldCrushTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -576,7 +576,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/miapp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/miapp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WorldCrush.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WorldCrush";
 			};
 			name = Debug;
 		};
@@ -590,7 +590,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = pedrocarrasco.miappTests;
+				PRODUCT_BUNDLE_IDENTIFIER = pedrocarrasco.WorldCrushTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -598,7 +598,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/miapp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/miapp";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WorldCrush.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WorldCrush";
 			};
 			name = Release;
 		};
@@ -610,7 +610,7 @@
 				DEVELOPMENT_TEAM = MM9BHDUA97;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = pedrocarrasco.miappUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = pedrocarrasco.WorldCrushUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -618,7 +618,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = miapp;
+				TEST_TARGET_NAME = WorldCrush;
 			};
 			name = Debug;
 		};
@@ -630,7 +630,7 @@
 				DEVELOPMENT_TEAM = MM9BHDUA97;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = pedrocarrasco.miappUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = pedrocarrasco.WorldCrushUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -638,7 +638,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = miapp;
+				TEST_TARGET_NAME = WorldCrush;
 			};
 			name = Release;
 		};
@@ -653,7 +653,7 @@
 				INFOPLIST_FILE = "WordSearchWidgetExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pedrocarrasco.miapp.wordsearchwidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedrocarrasco.WorldCrush.wordsearchwidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -672,7 +672,7 @@
 				INFOPLIST_FILE = "WordSearchWidgetExtension-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pedrocarrasco.miapp.wordsearchwidget;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedrocarrasco.WorldCrush.wordsearchwidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -683,7 +683,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D90088312F38A17100CB1506 /* Build configuration list for PBXProject "miapp" */ = {
+		D90088312F38A17100CB1506 /* Build configuration list for PBXProject "WorldCrush" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D90088572F38A17300CB1506 /* Debug */,
@@ -692,7 +692,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D90088592F38A17300CB1506 /* Build configuration list for PBXNativeTarget "miapp" */ = {
+		D90088592F38A17300CB1506 /* Build configuration list for PBXNativeTarget "WorldCrush" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D900885A2F38A17300CB1506 /* Debug */,
@@ -701,7 +701,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D900885C2F38A17300CB1506 /* Build configuration list for PBXNativeTarget "miappTests" */ = {
+		D900885C2F38A17300CB1506 /* Build configuration list for PBXNativeTarget "WorldCrushTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D900885D2F38A17300CB1506 /* Debug */,
@@ -710,7 +710,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D900885F2F38A17300CB1506 /* Build configuration list for PBXNativeTarget "miappUITests" */ = {
+		D900885F2F38A17300CB1506 /* Build configuration list for PBXNativeTarget "WorldCrushUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D90088602F38A17300CB1506 /* Debug */,

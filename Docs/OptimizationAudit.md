@@ -1,10 +1,10 @@
 # Optimization Audit
 
 ## Scope reviewed
-- App target (`miapp`)
+- App target (`WorldCrush`)
 - Widget extension (`WordSearchWidgetExtension`)
 - Package modules (`Core`, `DesignSystem`, `FeatureDailyPuzzle`, `FeatureHistory`, `FeatureSettings`)
-- Existing tests in `Packages/AppModules/Tests` and `miappTests`
+- Existing tests in `Packages/AppModules/Tests` and `WorldCrushTests`
 
 ## Top issues addressed
 1. Expensive render-time puzzle/progress recomputation in home cards.

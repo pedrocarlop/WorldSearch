@@ -1,6 +1,6 @@
 /*
  BEGINNER NOTES (AUTO):
- - Archivo: miapp/AppContainer.swift
+ - Archivo: WorldCrush/AppContainer.swift
  - Rol principal: Gestiona inyeccion de dependencias: crea objetos y conecta capas.
  - Flujo simplificado: Entrada: configuracion/base objects. | Proceso: instanciar y cablear dependencias. | Salida: contenedor listo para usar.
  - Tipos clave en este archivo: AppContainer

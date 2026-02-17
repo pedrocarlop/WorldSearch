@@ -8,7 +8,7 @@ The codebase is organized into a modular clean architecture split across a local
 - `FeatureDailyPuzzle`: daily puzzle presentation/view model layer.
 - `FeatureHistory`: history and progress summary presentation/view model layer.
 - `FeatureSettings`: settings presentation/view model layer.
-- `App` target (`miapp`): composition root and app entrypoints.
+- `App` target (`WorldCrush`): composition root and app entrypoints.
 - `WordSearchWidgetExtension`: widget UI and intents that consume `Core` shared logic.
 - Shared board renderer (`SharedWordSearchBoardView`) lives in `DesignSystem` and is consumed by both app and widget.
 
@@ -23,7 +23,7 @@ The codebase is organized into a modular clean architecture split across a local
 - Daily puzzle selection/session transitions are orchestrated by `FeatureDailyPuzzle` (`DailyPuzzleGameSessionViewModel`), reducing game-rule logic inside SwiftUI views.
 
 ## Composition Root
-- `miappApp` initializes `AppContainer.live`.
+- `WorldCrushApp` initializes `AppContainer.live`.
 - `AppContainer` composes:
   - `CoreContainer` (single shared runtime instance)
   - `DailyPuzzleContainer`
@@ -33,7 +33,7 @@ The codebase is organized into a modular clean architecture split across a local
 
 ## Persistence and Compatibility
 All existing App Group and key names are preserved to maintain backward compatibility with persisted data:
-- Suite: `group.com.pedrocarrasco.miapp`
+- Suite: `group.com.pedrocarrasco.WorldCrush`
 - Shared state keys, progress keys, streak keys, settings keys, and legacy migration keys remain unchanged.
 
 ## Testing Strategy

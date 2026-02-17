@@ -1,7 +1,7 @@
 # Architecture Map
 
 ## Current structure
-- `miapp` (App target): composition root and host-only integrations (haptics/sound, navigation shell).
+- `WorldCrush` (App target): composition root and host-only integrations (haptics/sound, navigation shell).
 - `WordSearchWidgetExtension`: widget timeline + intents, reusing `Core` and `DesignSystem`.
 - `Packages/AppModules/Sources/DesignSystem`: tokens + reusable SwiftUI components.
 - `Packages/AppModules/Sources/Core`: domain entities/use-cases, repository protocols, data/persistence, shared utilities.
