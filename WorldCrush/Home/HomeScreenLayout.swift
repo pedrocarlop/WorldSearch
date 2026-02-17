@@ -32,7 +32,7 @@ struct HomeScreenLayout: View {
         static let minimumCarouselHeight: CGFloat = 260
         static let compactMinimumCarouselHeight: CGFloat = 220
         static let veryCompactMinimumCarouselHeight: CGFloat = 190
-        static let maximumCarouselHeight: CGFloat = 480
+        static let maximumCarouselHeight: CGFloat = 424
     }
 
     let challengeCards: [DailyPuzzleChallengeCardState]
@@ -177,7 +177,7 @@ struct HomeScreenLayout: View {
                     .padding(.top, cardToCalendarSpacing)
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             .padding(.vertical, verticalInset)
         }
     }
