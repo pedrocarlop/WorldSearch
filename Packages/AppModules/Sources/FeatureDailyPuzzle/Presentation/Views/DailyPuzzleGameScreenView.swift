@@ -210,6 +210,9 @@ public struct DailyPuzzleGameScreenView: View {
         static let rotateButtonBottomInset: CGFloat = 32
         static let rotateButtonLift: CGFloat = 16
         static let rotateButtonLeftShift: CGFloat = 8
+
+        static let boardMaximumSide: CGFloat = 420
+        static let reservedVerticalSpaceForObjectives: CGFloat = 176
         static let wordHintEasterEggTapThreshold = 10
     }
 
@@ -322,7 +325,13 @@ public struct DailyPuzzleGameScreenView: View {
             DSPageBackgroundView(gridOpacity: 0.09)
 
             GeometryReader { geometry in
-                let side = min(geometry.size.width - SpacingTokens.xl, 420)
+                let horizontalBoardLimit = max(geometry.size.width - SpacingTokens.xl, 0)
+                let verticalBoardLimit = max(
+                    geometry.size.height - Constants.reservedVerticalSpaceForObjectives,
+                    0
+                )
+                // Respect both width and height so compact/tight screens do not get clipped vertically.
+                let side = min(horizontalBoardLimit, verticalBoardLimit, Constants.boardMaximumSide)
 
                 VStack(spacing: SpacingTokens.lg) {
                     ZStack(alignment: .topLeading) {

@@ -24,8 +24,14 @@ import FeatureHistory
 
 struct HomeScreenLayout: View {
     private enum LayoutConstants {
+        static let compactHeightThreshold: CGFloat = 700
+        static let veryCompactHeightThreshold: CGFloat = 620
+
         static let dayCarouselHeight: CGFloat = 106
+        static let compactDayCarouselHeight: CGFloat = 92
         static let minimumCardHeight: CGFloat = 260
+        static let compactMinimumCardHeight: CGFloat = 220
+        static let veryCompactMinimumCardHeight: CGFloat = 190
         static let maximumCardHeight: CGFloat = 620
     }
 
@@ -45,27 +51,50 @@ struct HomeScreenLayout: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let verticalInset = SpacingTokens.xxxl
-            let interSectionSpacing = SpacingTokens.xxxl
-            let dayCarouselHeight = LayoutConstants.dayCarouselHeight
+            let isCompactHeight = geometry.size.height < LayoutConstants.compactHeightThreshold
+            let isVeryCompactHeight = geometry.size.height < LayoutConstants.veryCompactHeightThreshold
+
+            let verticalInset = min(
+                SpacingTokens.xxxl,
+                max(
+                    isVeryCompactHeight ? SpacingTokens.xs : SpacingTokens.md,
+                    geometry.size.height * (isVeryCompactHeight ? 0.04 : 0.065)
+                )
+            )
+            let interSectionSpacing = min(
+                SpacingTokens.xxxl,
+                max(
+                    SpacingTokens.xs,
+                    geometry.size.height * (isVeryCompactHeight ? 0.03 : 0.045)
+                )
+            )
+            let dayCarouselHeight = isCompactHeight
+                ? LayoutConstants.compactDayCarouselHeight
+                : LayoutConstants.dayCarouselHeight
+            let minimumCardHeight = isVeryCompactHeight
+                ? LayoutConstants.veryCompactMinimumCardHeight
+                : (isCompactHeight ? LayoutConstants.compactMinimumCardHeight : LayoutConstants.minimumCardHeight)
             let bannerHeight = showsWidgetOnboardingBanner ? WidgetOnboardingBannerView.preferredHeight : .zero
             let cardWidth = min(geometry.size.width * 0.80, 450)
-            let availableCardHeightWithBannerAndDayCarousel = geometry.size.height
+            let availableCardHeightWithDayCarousel = geometry.size.height
                 - (verticalInset * 2)
                 - bannerHeight
                 - dayCarouselHeight
                 - CGFloat(showsWidgetOnboardingBanner ? 2 : 1) * interSectionSpacing
-            let hidesDayCarouselForBanner = showsWidgetOnboardingBanner
-                && availableCardHeightWithBannerAndDayCarousel < LayoutConstants.minimumCardHeight
-            let showsDayCarousel = !hidesDayCarouselForBanner
+            let showsDayCarousel = availableCardHeightWithDayCarousel >= minimumCardHeight
             let sectionCount = 1 + (showsWidgetOnboardingBanner ? 1 : 0) + (showsDayCarousel ? 1 : 0)
             let spacingCount = max(sectionCount - 1, 0)
             let occupiedHeight = (verticalInset * 2)
                 + bannerHeight
                 + (showsDayCarousel ? dayCarouselHeight : .zero)
                 + CGFloat(spacingCount) * interSectionSpacing
-            let availableCardHeight = geometry.size.height - occupiedHeight
-            let cardHeight = min(max(availableCardHeight, LayoutConstants.minimumCardHeight), LayoutConstants.maximumCardHeight)
+            let availableCardHeight = max(geometry.size.height - occupiedHeight, 0)
+            let preferredCardHeight = min(
+                max(availableCardHeight, minimumCardHeight),
+                LayoutConstants.maximumCardHeight
+            )
+            // Never request more height than what is really available to avoid clipping on compact screens.
+            let cardHeight = min(preferredCardHeight, availableCardHeight)
             let focusedOffset = selectedOffset ?? todayOffset
             let carouselIndex = Binding<Int?>(
                 get: {
