@@ -31,6 +31,7 @@ WorldCrush is built around restraint:
 - Widget target: `WordSearchWidgetExtension`
 - Shared package modules: `Packages/AppModules` (`Core`, `DesignSystem`, `FeatureDailyPuzzle`, `FeatureHistory`, `FeatureSettings`)
 - Xcode Cloud scripts: `ci_scripts/`
+- GitHub Actions workflows: `.github/workflows/`
 
 ## Run Locally
 1. Open `WorldCrush.xcodeproj` in Xcode.
@@ -41,6 +42,7 @@ WorldCrush is built around restraint:
 - [Architecture](Docs/Architecture.md)
 - [Architecture Map](Docs/ArchitectureMap.md)
 - [Xcode Cloud Setup](Docs/XcodeCloud.md)
+- [GitHub to TestFlight Automation](Docs/TestFlightAutomation.md)
 - [Optimization Audit](Docs/OptimizationAudit.md)
 
 ## Support
