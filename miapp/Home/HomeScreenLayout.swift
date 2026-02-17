@@ -24,7 +24,7 @@ import FeatureHistory
 
 struct HomeScreenLayout: View {
     let challengeCards: [DailyPuzzleChallengeCardState]
-    let carouselOffsets: [Int]
+    let dayCarouselOffsets: [Int]
     @Binding var selectedOffset: Int?
     let todayOffset: Int
     let unlockedOffsets: Set<Int>
@@ -83,6 +83,7 @@ struct HomeScreenLayout: View {
                         foundWords: card.progress.foundWords,
                         solvedPositions: card.progress.solvedPositions,
                         isLocked: card.isLocked,
+                        isMissed: card.isMissed,
                         hoursUntilAvailable: card.hoursUntilAvailable,
                         isLaunching: launchingCardOffset == card.offset,
                         isFocused: card.offset == focusedOffset
@@ -97,7 +98,7 @@ struct HomeScreenLayout: View {
                 .frame(height: cardHeight)
 
                 DailyPuzzleDayCarouselView(
-                    offsets: carouselOffsets,
+                    offsets: dayCarouselOffsets,
                     selectedOffset: $selectedOffset,
                     todayOffset: todayOffset,
                     unlockedOffsets: unlockedOffsets,

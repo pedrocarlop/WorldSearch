@@ -75,10 +75,7 @@ public struct DailyPuzzleDayCarouselView: View {
                             )
                             .frame(width: itemWidth, height: itemHeight)
                             .onTapGesture {
-                                withAnimation(.snappy(duration: 0.28, extraBounce: 0.02)) {
-                                    selectedOffset = offset
-                                    proxy.scrollTo(offset, anchor: .center)
-                                }
+                                selectedOffset = offset
                                 onDayTap(offset)
                             }
                             .id(offset)
@@ -98,6 +95,11 @@ public struct DailyPuzzleDayCarouselView: View {
                     withAnimation(.snappy(duration: 0.28, extraBounce: 0.02)) {
                         proxy.scrollTo(target, anchor: .center)
                     }
+                }
+                .onChange(of: offsets) { _ in
+                    let target = selectedOffset ?? todayOffset
+                    guard offsets.contains(target) else { return }
+                    proxy.scrollTo(target, anchor: .center)
                 }
             }
         }

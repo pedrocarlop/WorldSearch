@@ -41,8 +41,9 @@ public extension View {
     }
 }
 
-public struct CarouselView<Item, Content: View>: View {
+public struct CarouselView<Item, ID: Hashable, Content: View>: View {
     private let items: [Item]
+    private let itemID: KeyPath<Item, ID>
     private let currentIndex: Binding<Int?>?
     private let itemWidth: CGFloat
     private let itemSpacing: CGFloat
@@ -54,12 +55,14 @@ public struct CarouselView<Item, Content: View>: View {
 
     public init(
         items: [Item],
+        id: KeyPath<Item, ID>,
         currentIndex: Binding<Int?>? = nil,
         itemWidth: CGFloat,
         itemSpacing: CGFloat = SpacingTokens.md,
         @ViewBuilder content: @escaping (Item) -> Content
     ) {
         self.items = items
+        self.itemID = id
         self.currentIndex = currentIndex
         self.itemWidth = itemWidth
         self.itemSpacing = itemSpacing
@@ -72,22 +75,29 @@ public struct CarouselView<Item, Content: View>: View {
             let activeIndex = resolvedActiveIndex
             let trackOffset = -CGFloat(activeIndex) * stride + dragTranslation + settleOffset
             let horizontalInset = max((geometry.size.width - itemWidth) / 2, 0)
+            let indexedItems = items.enumerated().map {
+                IndexedCarouselItem(
+                    index: $0.offset,
+                    item: $0.element,
+                    id: $0.element[keyPath: itemID]
+                )
+            }
 
             HStack(spacing: itemSpacing) {
-                ForEach(Array(items.indices), id: \.self) { index in
+                ForEach(indexedItems) { indexedItem in
                     let metrics = metricsForItem(
-                        at: index,
+                        at: indexedItem.index,
                         viewportWidth: geometry.size.width,
                         stride: stride,
                         trackOffset: trackOffset,
                         horizontalInset: horizontalInset
                     )
 
-                    content(items[index])
+                    content(indexedItem.item)
                         .frame(width: itemWidth)
                         .scaleEffect(metrics.scale)
                         .opacity(metrics.opacity)
-                        .offset(y: index == activeIndex ? CarouselConstants.focusLift : 0)
+                        .offset(y: indexedItem.index == activeIndex ? CarouselConstants.focusLift : 0)
                         .shadow(
                             color: ShadowTokens.cardAmbient.color.opacity(metrics.ambientOpacity),
                             radius: metrics.ambientRadius,
@@ -120,6 +130,25 @@ public struct CarouselView<Item, Content: View>: View {
         .onChange(of: externalIndex) { _ in
             reconcileIndexState()
         }
+    }
+}
+
+public extension CarouselView where Item: Identifiable, ID == Item.ID {
+    init(
+        items: [Item],
+        currentIndex: Binding<Int?>? = nil,
+        itemWidth: CGFloat,
+        itemSpacing: CGFloat = SpacingTokens.md,
+        @ViewBuilder content: @escaping (Item) -> Content
+    ) {
+        self.init(
+            items: items,
+            id: \.id,
+            currentIndex: currentIndex,
+            itemWidth: itemWidth,
+            itemSpacing: itemSpacing,
+            content: content
+        )
     }
 }
 
@@ -287,4 +316,10 @@ private struct CarouselItemMetrics {
     let ambientOpacity: CGFloat
     let dropOpacity: CGFloat
     let zIndex: Double
+}
+
+private struct IndexedCarouselItem<Item, ID: Hashable>: Identifiable {
+    let index: Int
+    let item: Item
+    let id: ID
 }

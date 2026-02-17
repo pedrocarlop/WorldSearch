@@ -102,7 +102,7 @@ struct ContentView: View {
 
                 HomeScreenLayout(
                     challengeCards: dailyPuzzleHomeViewModel.challengeCards,
-                    carouselOffsets: dailyPuzzleHomeViewModel.carouselOffsets,
+                    dayCarouselOffsets: dailyPuzzleHomeViewModel.dayCarouselOffsets,
                     selectedOffset: Binding(
                         get: { dailyPuzzleHomeViewModel.selectedOffset },
                         set: { dailyPuzzleHomeViewModel.setSelectedOffset($0) }
@@ -394,4 +394,3 @@ private extension AppearanceMode {
 #Preview {
     ContentView(container: AppContainer.live)
 }
-

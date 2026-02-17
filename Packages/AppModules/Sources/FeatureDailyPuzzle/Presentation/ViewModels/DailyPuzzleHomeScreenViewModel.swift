@@ -50,6 +50,7 @@ public struct DailyPuzzleChallengeCardState: Identifiable, Equatable, Sendable {
     public let words: [String]
     public let progress: DailyPuzzleProgressSnapshot
     public let isLocked: Bool
+    public let isMissed: Bool
     public let hoursUntilAvailable: Int?
 
     public init(
@@ -60,6 +61,7 @@ public struct DailyPuzzleChallengeCardState: Identifiable, Equatable, Sendable {
         words: [String],
         progress: DailyPuzzleProgressSnapshot,
         isLocked: Bool,
+        isMissed: Bool,
         hoursUntilAvailable: Int?
     ) {
         self.offset = offset
@@ -69,6 +71,7 @@ public struct DailyPuzzleChallengeCardState: Identifiable, Equatable, Sendable {
         self.words = words
         self.progress = progress
         self.isLocked = isLocked
+        self.isMissed = isMissed
         self.hoursUntilAvailable = hoursUntilAvailable
     }
 
@@ -88,8 +91,10 @@ public final class DailyPuzzleHomeScreenViewModel {
     public private(set) var selectedOffset: Int?
     public private(set) var sharedState: SharedPuzzleState
     public private(set) var appProgressRecords: [String: AppProgressRecord]
+    public private(set) var completedOffsets: Set<Int>
     public private(set) var easterUnlockedOffsets: Set<Int> = []
     public private(set) var carouselOffsets: [Int] = []
+    public private(set) var dayCarouselOffsets: [Int] = []
     public private(set) var challengeCards: [DailyPuzzleChallengeCardState] = []
 
     private let core: CoreContainer
@@ -112,6 +117,7 @@ public final class DailyPuzzleHomeScreenViewModel {
             preferredGridSize: preferredGridSize
         )
         self.appProgressRecords = core.loadAllProgressRecordsUseCase.execute()
+        self.completedOffsets = core.getCompletedOffsetsUseCase.execute()
         selectTodayIfNeeded()
         rebuildDerivedState(preferredGridSize: preferredGridSize, now: now)
     }
@@ -162,10 +168,12 @@ public final class DailyPuzzleHomeScreenViewModel {
             preferredGridSize: preferredGridSize
         )
         appProgressRecords = core.loadAllProgressRecordsUseCase.execute()
+        completedOffsets = core.getCompletedOffsetsUseCase.execute()
 
         if sharedState.isCompleted {
             let todayKey = DayKey(offset: todayOffset)
             core.markCompletedDayUseCase.execute(dayKey: todayKey)
+            completedOffsets.insert(todayKey.offset)
             _ = core.updateStreakUseCase.markCompleted(
                 dayKey: todayKey,
                 todayKey: todayKey
@@ -186,12 +194,24 @@ public final class DailyPuzzleHomeScreenViewModel {
     }
 
     public func isLocked(offset: Int) -> Bool {
-        offset > todayOffset && !easterUnlockedOffsets.contains(offset)
+        if let cached = challengeCards.first(where: { $0.offset == offset }) {
+            return cached.isLocked
+        }
+
+        if isFutureLocked(offset: offset) {
+            return true
+        }
+
+        return isMissed(offset: offset, preferredGridSize: currentPreferredGridSize)
     }
 
     public func handleChallengeCardTap(offset: Int) -> DailyPuzzleChallengeTapAction {
         if !isLocked(offset: offset) {
             return .openGame
+        }
+
+        guard isFutureLocked(offset: offset) else {
+            return .noAction
         }
 
         let nextCount = (easterTapCounts[offset] ?? 0) + 1
@@ -235,6 +255,13 @@ public final class DailyPuzzleHomeScreenViewModel {
 
         if let record = appProgressRecord(for: offset, preferredGridSize: preferredGridSize) {
             return progress(from: record, puzzle: puzzle)
+        }
+
+        if completedOffsets.contains(offset) {
+            return DailyPuzzleProgressSnapshot(
+                foundWords: Set(puzzle.words.map(\.text)),
+                solvedPositions: []
+            )
         }
 
         return .empty
@@ -296,6 +323,40 @@ public final class DailyPuzzleHomeScreenViewModel {
         )
     }
 
+    private func isFutureLocked(offset: Int) -> Bool {
+        offset > todayOffset && !easterUnlockedOffsets.contains(offset)
+    }
+
+    private func isMissed(offset: Int, preferredGridSize: Int) -> Bool {
+        guard offset < todayOffset else { return false }
+        return !isCompletedOffset(offset, preferredGridSize: preferredGridSize)
+    }
+
+    private func isCompletedOffset(_ offset: Int, preferredGridSize: Int) -> Bool {
+        let puzzle = puzzleForOffset(offset, preferredGridSize: preferredGridSize)
+        let progress = progressForOffset(
+            offset,
+            puzzle: puzzle,
+            preferredGridSize: preferredGridSize
+        )
+        return isCompleted(
+            offset: offset,
+            progress: progress,
+            words: puzzle.words.map(\.text)
+        )
+    }
+
+    private func isCompleted(
+        offset: Int,
+        progress: DailyPuzzleProgressSnapshot,
+        words: [String]
+    ) -> Bool {
+        if completedOffsets.contains(offset) {
+            return true
+        }
+        return progressFraction(progress: progress, words: words) >= 0.999
+    }
+
     private func progress(
         from sharedState: SharedPuzzleState,
         puzzle: Puzzle
@@ -341,10 +402,25 @@ public final class DailyPuzzleHomeScreenViewModel {
 
     private func rebuildDerivedState(preferredGridSize: Int, now: Date) {
         rebuildCarouselOffsets()
+        rebuildDayCarouselOffsets()
         rebuildChallengeCards(
             preferredGridSize: preferredGridSize,
             now: now
         )
+    }
+
+    private func rebuildDayCarouselOffsets() {
+        let expectedCount = maxOffset - minOffset + 1
+        guard
+            let lower = dayCarouselOffsets.first,
+            let upper = dayCarouselOffsets.last,
+            dayCarouselOffsets.count == expectedCount,
+            lower == minOffset,
+            upper == maxOffset
+        else {
+            dayCarouselOffsets = Array(minOffset...maxOffset)
+            return
+        }
     }
 
     private func rebuildCarouselOffsets() {
@@ -378,19 +454,27 @@ public final class DailyPuzzleHomeScreenViewModel {
     ) {
         challengeCards = carouselOffsets.map { offset in
             let puzzle = puzzleForOffset(offset, preferredGridSize: preferredGridSize)
+            let words = puzzle.words.map(\.text)
             let progress = progressForOffset(
                 offset,
                 puzzle: puzzle,
                 preferredGridSize: preferredGridSize
             )
+            let isMissed = offset < todayOffset && !isCompleted(
+                offset: offset,
+                progress: progress,
+                words: words
+            )
+            let isLocked = isFutureLocked(offset: offset) || isMissed
             return DailyPuzzleChallengeCardState(
                 offset: offset,
                 date: puzzleDate(for: offset),
                 puzzleNumber: puzzle.number,
                 grid: puzzle.grid.letters,
-                words: puzzle.words.map(\.text),
+                words: words,
                 progress: progress,
-                isLocked: isLocked(offset: offset),
+                isLocked: isLocked,
+                isMissed: isMissed,
                 hoursUntilAvailable: hoursUntilAvailable(for: offset, now: now)
             )
         }

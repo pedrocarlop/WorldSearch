@@ -30,8 +30,8 @@ public enum TypographyTokens {
     }
 
     // MARK: - Semantic styles
-    public static let displayTitle = serif(38, relativeTo: .largeTitle).weight(.bold)
-    public static let challengeCardDate = serif(42, relativeTo: .largeTitle).weight(.bold)
+    public static let displayTitle = serif(32, relativeTo: .largeTitle).weight(.bold)
+    public static let challengeCardDate = serif(56, relativeTo: .largeTitle).weight(.bold)
     public static let screenTitle = serif(30, relativeTo: .title2).weight(.semibold)
     public static let sectionTitle = serif(24, relativeTo: .title3).weight(.semibold)
     public static let body = Font.system(.body, design: .default)

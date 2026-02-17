@@ -48,6 +48,7 @@ public struct DailyPuzzleChallengeCardView: View {
     public let foundWords: Set<String>
     public let solvedPositions: Set<GridPosition>
     public let isLocked: Bool
+    public let isMissed: Bool
     public let hoursUntilAvailable: Int?
     public let isLaunching: Bool
     public let isFocused: Bool
@@ -61,6 +62,7 @@ public struct DailyPuzzleChallengeCardView: View {
         foundWords: Set<String>,
         solvedPositions: Set<GridPosition>,
         isLocked: Bool,
+        isMissed: Bool,
         hoursUntilAvailable: Int?,
         isLaunching: Bool,
         isFocused: Bool = false,
@@ -73,6 +75,7 @@ public struct DailyPuzzleChallengeCardView: View {
         self.foundWords = foundWords
         self.solvedPositions = solvedPositions
         self.isLocked = isLocked
+        self.isMissed = isMissed
         self.hoursUntilAvailable = hoursUntilAvailable
         self.isLaunching = isLaunching
         self.isFocused = isFocused
@@ -109,6 +112,9 @@ public struct DailyPuzzleChallengeCardView: View {
     }
 
     private var statusLabel: String {
+        if isMissed {
+            return DailyPuzzleStrings.notCompleted
+        }
         if isLocked {
             return lockMessage
         }
@@ -197,7 +203,9 @@ public struct DailyPuzzleChallengeCardView: View {
 
     @ViewBuilder
     private var statusBadge: some View {
-        if isLocked {
+        if isMissed {
+            missedStatusBadge
+        } else if isLocked {
             DSStatusBadge(kind: .locked, size: badgeSize)
         } else if isCompleted {
             DSStatusBadge(kind: .completed, size: badgeSize)
@@ -224,6 +232,24 @@ public struct DailyPuzzleChallengeCardView: View {
 
     private var playButtonWidth: CGFloat {
         120
+    }
+
+    private var missedStatusBadge: some View {
+        Text(DailyPuzzleStrings.notCompleted)
+            .font(TypographyTokens.caption.weight(.semibold))
+            .foregroundStyle(ColorTokens.textPrimary)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .padding(.horizontal, SpacingTokens.sm)
+            .padding(.vertical, SpacingTokens.xxs)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(ColorTokens.surfacePrimary.opacity(0.84))
+            )
+            .overlay(
+                Capsule(style: .continuous)
+                    .dsInnerStroke(ColorTokens.borderDefault, lineWidth: 1)
+            )
     }
 
     private var challengeProgressBar: some View {
@@ -449,6 +475,7 @@ private struct DailyPuzzleChallengeCardGridPreview: View {
                 foundWords: ["ARBOL"],
                 solvedPositions: [],
                 isLocked: false,
+                isMissed: false,
                 hoursUntilAvailable: nil,
                 isLaunching: false
             ) {}
@@ -462,6 +489,7 @@ private struct DailyPuzzleChallengeCardGridPreview: View {
                 foundWords: [],
                 solvedPositions: [],
                 isLocked: true,
+                isMissed: false,
                 hoursUntilAvailable: 5,
                 isLaunching: false
             ) {}

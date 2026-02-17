@@ -37,6 +37,7 @@ final class DailyPuzzleHomeScreenViewModelTests: XCTestCase {
             viewModel.challengeCards.map(\.offset),
             [today - 2, today - 1, today, today + 1, today + 2]
         )
+        XCTAssertEqual(viewModel.dayCarouselOffsets, Array(0...(today + 1)))
     }
 
     func testSelectingAdjacentDayKeepsCurrentWindowToAvoidSwipeJumps() {
@@ -84,6 +85,56 @@ final class DailyPuzzleHomeScreenViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.handleChallengeCardTap(offset: lockedOffset), .unlocked)
         XCTAssertFalse(viewModel.isLocked(offset: lockedOffset))
         XCTAssertEqual(viewModel.handleChallengeCardTap(offset: lockedOffset), .openGame)
+    }
+
+    func testPastIncompleteChallengeLocksAsMissedWhenDayChanges() throws {
+        let (core, now) = makeCore(daysSinceInstall: 5)
+        let viewModel = DailyPuzzleHomeScreenViewModel(
+            core: core,
+            preferredGridSize: 7,
+            now: now
+        )
+        let missedOffset = viewModel.todayOffset - 1
+
+        XCTAssertTrue(viewModel.isLocked(offset: missedOffset))
+        let card = try XCTUnwrap(viewModel.challengeCards.first { $0.offset == missedOffset })
+        XCTAssertTrue(card.isLocked)
+        XCTAssertTrue(card.isMissed)
+    }
+
+    func testPastMissedChallengeCannotBeUnlockedWithEasterEggTaps() {
+        let (core, now) = makeCore(daysSinceInstall: 5)
+        let viewModel = DailyPuzzleHomeScreenViewModel(
+            core: core,
+            preferredGridSize: 7,
+            now: now
+        )
+        let missedOffset = viewModel.todayOffset - 1
+
+        for _ in 0..<12 {
+            XCTAssertEqual(viewModel.handleChallengeCardTap(offset: missedOffset), .noAction)
+        }
+
+        XCTAssertTrue(viewModel.isLocked(offset: missedOffset))
+    }
+
+    func testPastCompletedChallengeRemainsCompletedAfterRotation() throws {
+        let (core, now) = makeCore(daysSinceInstall: 5)
+        let todayOffset = core.dayOffset(from: core.installationDate(), to: now).offset
+        let completedOffset = todayOffset - 1
+        core.markCompletedDayUseCase.execute(dayKey: DayKey(offset: completedOffset))
+
+        let viewModel = DailyPuzzleHomeScreenViewModel(
+            core: core,
+            preferredGridSize: 7,
+            now: now
+        )
+
+        XCTAssertFalse(viewModel.isLocked(offset: completedOffset))
+        XCTAssertEqual(viewModel.progressFraction(for: completedOffset, preferredGridSize: 7), 1, accuracy: 0.0001)
+
+        let card = try XCTUnwrap(viewModel.challengeCards.first { $0.offset == completedOffset })
+        XCTAssertFalse(card.isMissed)
     }
 
     func testInitialProgressRecordForTodayUsesSharedStateProgress() {

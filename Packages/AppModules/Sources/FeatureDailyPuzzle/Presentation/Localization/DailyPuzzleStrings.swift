@@ -25,6 +25,10 @@ public enum DailyPuzzleStrings {
         localized("daily.completed", default: "Completado")
     }
 
+    public static var notCompleted: String {
+        localized("daily.not_completed", default: "No completado")
+    }
+
     public static var completionCelebrationTitle: String {
         localized("daily.completion.title", default: "Reto completado")
     }
