@@ -2,7 +2,7 @@
 
 > Retos diarios de sopa de letras para iPhone y widget de pantalla de inicio, construido con SwiftUI y una arquitectura limpia modular.
 
-**Leer en otros idiomas:** [English](README.md) | [Français](README.fr.md) | [Português](README.pt.md)
+**Leer en otros idiomas:** [English](README.md)
 
 ## Resumen para lanzamiento en App Store
 WorldCrush es un juego de sopa de letras para iOS centrado en un reto diario con acceso rapido desde un widget.
@@ -15,7 +15,7 @@ Este repositorio incluye la app de produccion, la extension de widget, los modul
 - Modos de pista: mostrar la palabra objetivo o su definicion.
 - Soporte de widget en pantalla de inicio para jugar en un toque.
 - Opciones de apariencia y feedback (tema, intensidad de celebracion, haptics, sonido).
-- Idiomas de la app: ingles, espanol, frances y portugues.
+- Idiomas de la app: ingles y espanol.
 
 ## Resumen tecnico
 - Target de app: `WorldCrush`

@@ -400,10 +400,6 @@ public enum PuzzleFactory {
         switch AppLanguage.resolved(from: resolvedLocale) {
         case .spanish:
             return spanishThemes[index]
-        case .french:
-            return frenchThemes[index]
-        case .portuguese:
-            return portugueseThemes[index]
         case .english:
             return englishThemes[index]
         }

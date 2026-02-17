@@ -224,8 +224,6 @@ public enum WordHintMode: String, CaseIterable, Codable, Sendable {
 public enum AppLanguage: String, CaseIterable, Codable, Sendable {
     case english = "en"
     case spanish = "es"
-    case french = "fr"
-    case portuguese = "pt"
 
     public var localeIdentifier: String {
         rawValue
@@ -258,12 +256,6 @@ public enum AppLanguage: String, CaseIterable, Codable, Sendable {
         let normalized = identifier.lowercased()
         if normalized.hasPrefix("es") {
             return .spanish
-        }
-        if normalized.hasPrefix("fr") {
-            return .french
-        }
-        if normalized.hasPrefix("pt") {
-            return .portuguese
         }
         if normalized.hasPrefix("en") {
             return .english

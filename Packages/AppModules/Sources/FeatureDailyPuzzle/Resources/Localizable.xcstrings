@@ -15,18 +15,6 @@
             "state": "translated",
             "value": "Cerrar"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fermer"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fechar"
-          }
         }
       }
     },
@@ -43,18 +31,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reiniciar reto"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reinitialiser defi"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reiniciar desafio"
           }
         }
       }
@@ -73,18 +49,6 @@
             "state": "translated",
             "value": "Jugar"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jouer"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jogar"
-          }
         }
       }
     },
@@ -101,18 +65,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rotar tablero"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pivoter la grille"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rodar tabuleiro"
           }
         }
       }
@@ -131,18 +83,6 @@
             "state": "translated",
             "value": "Rota la sopa de letras noventa grados en sentido antihorario."
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fait pivoter la grille de quatre-vingt-dix degres vers la gauche."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Roda a sopa de letras noventa graus no sentido anti-horario."
-          }
         }
       }
     },
@@ -159,18 +99,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reto %d, %@"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Defi %d, %@"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Desafio %d, %@"
           }
         }
       }
@@ -189,18 +117,6 @@
             "state": "translated",
             "value": "Disponible en %dh"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Disponible dans %dh"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Disponivel em %dh"
-          }
         }
       }
     },
@@ -217,18 +133,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Disponible pronto"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Disponible bientot"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Disponivel em breve"
           }
         }
       }
@@ -247,18 +151,6 @@
             "state": "translated",
             "value": "%d de %d completadas"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%d sur %d termines"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%d de %d concluidos"
-          }
         }
       }
     },
@@ -276,18 +168,6 @@
             "state": "translated",
             "value": "Completado"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Termine"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Concluido"
-          }
         }
       }
     },
@@ -301,18 +181,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continuar"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Continuer"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Continuar"
@@ -334,18 +202,6 @@
             "state": "translated",
             "value": "Completado"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Termine"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Concluido"
-          }
         }
       }
     },
@@ -362,18 +218,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Completado. %@"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Termine. %@"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Concluido. %@"
           }
         }
       }
@@ -392,18 +236,6 @@
             "state": "translated",
             "value": "Encontraste todas las palabras de hoy. Gran jugada."
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vous avez trouve tous les mots du jour. Super partie."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Voce encontrou todas as palavras de hoje. Excelente rodada."
-          }
         }
       }
     },
@@ -421,18 +253,6 @@
             "state": "translated",
             "value": "Reto completado"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Defi termine"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Desafio concluido"
-          }
         }
       }
     },
@@ -446,18 +266,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%dh"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%dh"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "%dh"
@@ -479,18 +287,6 @@
             "state": "translated",
             "value": "Cancelar"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Annuler"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cancelar"
-          }
         }
       }
     },
@@ -504,18 +300,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reiniciar"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reinitialiser"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Reiniciar"
@@ -537,18 +321,6 @@
             "state": "translated",
             "value": "Se borrará el progreso de este día."
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La progression de ce jour sera supprimee."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "O progresso deste dia sera apagado."
-          }
         }
       }
     },
@@ -566,18 +338,6 @@
             "state": "translated",
             "value": "Reiniciar reto"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reinitialiser defi"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Reiniciar desafio"
-          }
         }
       }
     },
@@ -594,18 +354,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Racha %d"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Serie %d"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sequencia %d"
           }
         }
       }

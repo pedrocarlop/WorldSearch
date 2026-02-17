@@ -15,18 +15,6 @@
             "state": "translated",
             "value": "Cancelar"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Annuler"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cancelar"
-          }
         }
       }
     },
@@ -40,18 +28,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Guardar"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Enregistrer"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Guardar"
@@ -73,18 +49,6 @@
             "state": "translated",
             "value": "Oscuro"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sombre"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Escuro"
-          }
         }
       }
     },
@@ -98,18 +62,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Claro"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Clair"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Claro"
@@ -131,18 +83,6 @@
             "state": "translated",
             "value": "Sistema"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Systeme"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sistema"
-          }
         }
       }
     },
@@ -156,18 +96,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alta"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Haute"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Alta"
@@ -189,18 +117,6 @@
             "state": "translated",
             "value": "Baja"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Faible"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Baixa"
-          }
         }
       }
     },
@@ -214,18 +130,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Media"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Moyenne"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Media"
@@ -247,18 +151,6 @@
             "state": "translated",
             "value": "Haptics"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Haptique"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hapticos"
-          }
         }
       }
     },
@@ -275,18 +167,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Intensidad"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Intensite"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Intensidade"
           }
         }
       }
@@ -305,18 +185,6 @@
             "state": "translated",
             "value": "Si Reduce Motion está activo, se desactivan las partículas."
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Si Reduce Motion est active, les particules sont desactivees."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Se Reduzir Movimento estiver ativo, as particulas sao desativadas."
-          }
         }
       }
     },
@@ -333,18 +201,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sonido"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Son"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Som"
           }
         }
       }
@@ -363,18 +219,6 @@
             "state": "translated",
             "value": "Animaciones de celebración"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Animations de celebration"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Animacoes de comemoracao"
-          }
         }
       }
     },
@@ -391,18 +235,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "A mayor tamaño, más dificultad. En el widget las letras y el área táctil se reducen para que entre la cuadrícula."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Les grilles plus grandes sont plus difficiles. Dans le widget, les lettres et les zones tactiles sont reduites pour que la grille tienne."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grades maiores sao mais dificeis. No widget, as letras e as areas de toque sao reduzidas para caber o tabuleiro."
           }
         }
       }
@@ -421,18 +253,6 @@
             "state": "translated",
             "value": "El nuevo tamaño solo se aplica a retos futuros. Los retos ya creados mantienen su tamaño para no perder progreso."
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La nouvelle taille ne sapplique quaux prochains defis. Les defis deja crees gardent leur taille pour ne pas perdre la progression."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "O novo tamanho so se aplica a desafios futuros. Os desafios ja criados mantem o tamanho para nao perder progresso."
-          }
         }
       }
     },
@@ -449,18 +269,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tamaño de sopa: %1$dx%1$d"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Taille de grille: %1$dx%1$d"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tamanho da grelha: %1$dx%1$d"
           }
         }
       }
@@ -479,18 +287,6 @@
             "state": "translated",
             "value": "En definición, verás la descripción sin mostrar la palabra."
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "En mode definition, vous verrez la description sans afficher le mot."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No modo definicao, voce vera a descricao sem mostrar a palavra."
-          }
         }
       }
     },
@@ -504,18 +300,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modo"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mode"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Modo"
@@ -537,18 +321,6 @@
             "state": "translated",
             "value": "Usamos la misma configuración de idiomas que tu teléfono móvil. Puedes cambiarla directamente desde la sección de ajustes de tu dispositivo."
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nous utilisons les memes reglages de langue que votre telephone. Vous pouvez les modifier directement dans les reglages de votre appareil."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Usamos a mesma configuracao de idioma do seu telefone. Pode altera-la diretamente nos ajustes do seu dispositivo."
-          }
         }
       }
     },
@@ -565,18 +337,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ir a ajustes"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvrir Reglages"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abrir Ajustes"
           }
         }
       }
@@ -595,18 +355,6 @@
             "state": "translated",
             "value": "Idioma del dispositivo"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Langue de l'appareil"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Idioma do dispositivo"
-          }
         }
       }
     },
@@ -623,76 +371,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inglés"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anglais"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ingles"
-          }
-        }
-      }
-    },
-    "settings.language.french": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "French"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Francés"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Francais"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Frances"
-          }
-        }
-      }
-    },
-    "settings.language.portuguese": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Portuguese"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Portugués"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Portugais"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Portugues"
           }
         }
       }
@@ -711,18 +389,6 @@
             "state": "translated",
             "value": "Español"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Espagnol"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Espanhol"
-          }
         }
       }
     },
@@ -736,18 +402,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Idioma"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Langue"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Idioma"
@@ -769,18 +423,6 @@
             "state": "translated",
             "value": "Por defecto se renueva a las 09:00."
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Par defaut, se renouvelle a 09:00."
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Por padrao, renova as 09:00."
-          }
         }
       }
     },
@@ -797,18 +439,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nueva sopa del día"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nouveau puzzle quotidien"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nova sopa diaria"
           }
         }
       }
@@ -827,18 +457,6 @@
             "state": "translated",
             "value": "Apariencia"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apparence"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aparencia"
-          }
         }
       }
     },
@@ -855,18 +473,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Celebraciones"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Celebrations"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Comemoracoes"
           }
         }
       }
@@ -885,18 +491,6 @@
             "state": "translated",
             "value": "Dificultad"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Difficulte"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dificuldade"
-          }
         }
       }
     },
@@ -914,18 +508,6 @@
             "state": "translated",
             "value": "Pistas"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Indices"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dicas"
-          }
         }
       }
     },
@@ -939,18 +521,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Idioma"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Langue"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Idioma"
@@ -972,18 +542,6 @@
             "state": "translated",
             "value": "Horario"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Horaire"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Horario"
-          }
         }
       }
     },
@@ -997,18 +555,6 @@
           }
         },
         "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tema"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Theme"
-          }
-        },
-        "pt": {
           "stringUnit": {
             "state": "translated",
             "value": "Tema"
@@ -1030,18 +576,6 @@
             "state": "translated",
             "value": "Ajustes"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parametres"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Definicoes"
-          }
         }
       }
     },
@@ -1059,18 +593,6 @@
             "state": "translated",
             "value": "Definición"
           }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Definition"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Definicao"
-          }
         }
       }
     },
@@ -1087,18 +609,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Palabra"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mot"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Palavra"
           }
         }
       }

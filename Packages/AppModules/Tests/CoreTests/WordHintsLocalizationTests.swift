@@ -68,45 +68,39 @@ final class WordHintsLocalizationTests: XCTestCase {
         }
     }
 
-    func testPuzzleWordsLocalizeToFrenchAndKeepCanonicalMapping() {
-        let spanishPuzzle = PuzzleFactory.puzzle(
-            for: DayKey(offset: 0),
-            gridSize: 9,
-            locale: Locale(identifier: "es")
-        )
+    func testPuzzleWordsForFrenchLocaleFallBackToEnglish() {
         let frenchPuzzle = PuzzleFactory.puzzle(
             for: DayKey(offset: 0),
             gridSize: 9,
             locale: Locale(identifier: "fr")
         )
-
-        let spanishWords = spanishPuzzle.words.map(\.text)
-        let frenchWords = frenchPuzzle.words.map(\.text)
-        let canonicalFrenchWords = frenchWords.compactMap(PuzzleFactory.canonicalWord(for:))
-
-        XCTAssertEqual(frenchWords.count, spanishWords.count)
-        XCTAssertEqual(Set(canonicalFrenchWords), Set(spanishWords))
-        XCTAssertNotEqual(Set(frenchWords), Set(spanishWords))
-    }
-
-    func testPuzzleWordsLocalizeToPortugueseAndKeepCanonicalMapping() {
-        let spanishPuzzle = PuzzleFactory.puzzle(
+        let englishPuzzle = PuzzleFactory.puzzle(
             for: DayKey(offset: 0),
             gridSize: 9,
-            locale: Locale(identifier: "es")
+            locale: Locale(identifier: "en")
         )
+
+        XCTAssertEqual(
+            frenchPuzzle.words.map(\.text),
+            englishPuzzle.words.map(\.text)
+        )
+    }
+
+    func testPuzzleWordsForPortugueseLocaleFallBackToEnglish() {
         let portuguesePuzzle = PuzzleFactory.puzzle(
             for: DayKey(offset: 0),
             gridSize: 9,
             locale: Locale(identifier: "pt")
         )
+        let englishPuzzle = PuzzleFactory.puzzle(
+            for: DayKey(offset: 0),
+            gridSize: 9,
+            locale: Locale(identifier: "en")
+        )
 
-        let spanishWords = spanishPuzzle.words.map(\.text)
-        let portugueseWords = portuguesePuzzle.words.map(\.text)
-        let canonicalPortugueseWords = portugueseWords.compactMap(PuzzleFactory.canonicalWord(for:))
-
-        XCTAssertEqual(portugueseWords.count, spanishWords.count)
-        XCTAssertEqual(Set(canonicalPortugueseWords), Set(spanishWords))
-        XCTAssertNotEqual(Set(portugueseWords), Set(spanishWords))
+        XCTAssertEqual(
+            portuguesePuzzle.words.map(\.text),
+            englishPuzzle.words.map(\.text)
+        )
     }
 }

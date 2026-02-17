@@ -37,8 +37,6 @@ final class SettingsStringsTests: XCTestCase {
     func testLanguageTitlesAreNotEmpty() {
         XCTAssertFalse(SettingsStrings.languageTitle(for: .english).isEmpty)
         XCTAssertFalse(SettingsStrings.languageTitle(for: .spanish).isEmpty)
-        XCTAssertFalse(SettingsStrings.languageTitle(for: .french).isEmpty)
-        XCTAssertFalse(SettingsStrings.languageTitle(for: .portuguese).isEmpty)
     }
 
     func testLanguageManagedInfoStringsAreNotEmpty() {

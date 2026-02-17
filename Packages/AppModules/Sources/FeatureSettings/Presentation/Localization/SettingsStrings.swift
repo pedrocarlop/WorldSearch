@@ -113,10 +113,6 @@ public enum SettingsStrings {
             return localized("settings.language.english", default: "English")
         case .spanish:
             return localized("settings.language.spanish", default: "Español")
-        case .french:
-            return localized("settings.language.french", default: "Français")
-        case .portuguese:
-            return localized("settings.language.portuguese", default: "Português")
         }
     }
 
