@@ -2,72 +2,55 @@
 
 **A calm daily word search. One puzzle per day.**
 
-WorldCrush is a focused word search experience designed around intention, not addiction.  
+WorldCrush is a focused iOS word-search experience designed around intention, not addiction.
 You get one puzzle each day. Complete it, build your streak, and come back tomorrow.
 
----
+**Read in other languages:** [Espanol](README.es.md) | [Francais](README.fr.md) | [Portugues](README.pt.md)
 
-## ✨ Core Principles
+## App Store Release Summary
+This repository contains the production app, widget extension, shared modules, and CI setup used for App Store release workflows.
 
-- 🧩 **One Puzzle Per Day**  
-  No endless levels. Just one carefully generated daily challenge.
+## Core Player Features
+- One daily puzzle challenge with completion tracking.
+- Progress stats including completed challenges and streaks.
+- Hint modes: show the target word or its definition.
+- Home Screen widget support for one-tap launch.
+- Appearance and feedback options (theme, celebration intensity, haptics, sound).
+- App language support: English, Spanish, French, and Portuguese.
+- No login required.
 
-- 📅 **Daily Streaks**  
-  Complete your puzzle every day to grow your streak.
-
-- 📊 **Track Your Progress**  
-  See how many total puzzles you’ve completed over time.
-
-- 🏠 **Home Screen Widget**  
-  Add the WorldCrush widget and jump directly into today’s puzzle without opening the app.
-
-- 🔒 **No Login Required**  
-  No accounts. No sign-ups. No friction.
-
----
-
-## 🎯 Designed for Intentional Play
-
+## Designed for Intentional Play
 WorldCrush is built around restraint:
+- No endless gameplay loops.
+- No artificial pressure.
+- No manipulative reward systems.
 
-- No endless gameplay loops  
-- No artificial pressure  
-- No manipulative reward systems  
+## Technical Overview
+- Built with Swift and SwiftUI.
+- App target: `WorldCrush`
+- Widget target: `WordSearchWidgetExtension`
+- Shared package modules: `Packages/AppModules` (`Core`, `DesignSystem`, `FeatureDailyPuzzle`, `FeatureHistory`, `FeatureSettings`)
+- Xcode Cloud scripts: `ci_scripts/`
 
-You complete today’s puzzle and you’re done.
+## Run Locally
+1. Open `WorldCrush.xcodeproj` in Xcode.
+2. Select the `WorldCrush` scheme.
+3. Build and run on an iPhone simulator or device.
 
-Come back tomorrow.
+## Documentation
+- [Architecture](Docs/Architecture.md)
+- [Architecture Map](Docs/ArchitectureMap.md)
+- [Xcode Cloud Setup](Docs/XcodeCloud.md)
+- [Optimization Audit](Docs/OptimizationAudit.md)
 
----
+## Support
+For questions, feedback, or support: `pedro.design.engineer@gmail.com`
 
-## 🛠 Technical Overview
-
-- Built with Swift & SwiftUI  
-- iOS native widget support  
-- No external accounts required  
-
----
-
-## 📧 Support
-
-For questions, feedback, or support:
-
-**pedro.design.engineer@gmail.com**
-
-I aim to respond within 48 hours.
-
----
-
-## 🔐 Privacy
-
+## Privacy
 WorldCrush:
+- Does not require account creation.
+- Does not collect personal data for sale.
+- Stores gameplay progress locally on your device.
 
-- Does not require account creation  
-- Does not collect personal data for sale  
-- Stores gameplay progress locally on your device  
-
----
-
-## 📄 License
-
-All rights reserved © 2026 Pedro Carrasco
+## License
+All rights reserved (c) 2026 Pedro Carrasco

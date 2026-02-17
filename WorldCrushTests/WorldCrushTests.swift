@@ -93,4 +93,40 @@ final class WorldCrushTests: XCTestCase {
         XCTAssertLessThan(updated.x, 180 + config.offset.width)
         XCTAssertLessThan(updated.y, 180 + config.offset.height)
     }
+
+    func testWidgetOnboardingBannerShowsOnFirstOpen() {
+        let defaults = makeTestDefaults()
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+
+        XCTAssertTrue(WidgetOnboardingBannerState.shouldShow(defaults: defaults, now: now))
+        XCTAssertEqual(defaults.object(forKey: WidgetOnboardingBannerState.firstOpenDateKey) as? Date, now)
+    }
+
+    func testWidgetOnboardingBannerDismissHidesPermanently() {
+        let defaults = makeTestDefaults()
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+
+        XCTAssertTrue(WidgetOnboardingBannerState.shouldShow(defaults: defaults, now: now))
+        WidgetOnboardingBannerState.dismiss(defaults: defaults)
+
+        let afterDismiss = now.addingTimeInterval(60)
+        XCTAssertFalse(WidgetOnboardingBannerState.shouldShow(defaults: defaults, now: afterDismiss))
+    }
+
+    func testWidgetOnboardingBannerAutoHidesAfterSevenDays() {
+        let defaults = makeTestDefaults()
+        let now = Date(timeIntervalSince1970: 1_700_000_000)
+        let hideDate = Calendar.current.date(byAdding: .day, value: WidgetOnboardingBannerState.autoHideDays, to: now)!
+
+        XCTAssertTrue(WidgetOnboardingBannerState.shouldShow(defaults: defaults, now: now))
+        XCTAssertTrue(WidgetOnboardingBannerState.shouldShow(defaults: defaults, now: hideDate.addingTimeInterval(-1)))
+        XCTAssertFalse(WidgetOnboardingBannerState.shouldShow(defaults: defaults, now: hideDate))
+    }
+
+    private func makeTestDefaults() -> UserDefaults {
+        let suiteName = "WorldCrushTests.WidgetOnboarding.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        return defaults
+    }
 }

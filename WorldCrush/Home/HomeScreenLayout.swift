@@ -23,13 +23,22 @@ import FeatureDailyPuzzle
 import FeatureHistory
 
 struct HomeScreenLayout: View {
+    private enum LayoutConstants {
+        static let dayCarouselHeight: CGFloat = 106
+        static let minimumCardHeight: CGFloat = 260
+        static let maximumCardHeight: CGFloat = 620
+    }
+
     let challengeCards: [DailyPuzzleChallengeCardState]
     let dayCarouselOffsets: [Int]
     @Binding var selectedOffset: Int?
     let todayOffset: Int
     let unlockedOffsets: Set<Int>
     let launchingCardOffset: Int?
+    let showsWidgetOnboardingBanner: Bool
     let onCardTap: (Int) -> Void
+    let onWidgetOnboardingTap: () -> Void
+    let onWidgetOnboardingDismiss: () -> Void
     let dateForOffset: (Int) -> Date
     let progressForOffset: (Int) -> Double
     let hoursUntilAvailable: (Int) -> Int?
@@ -38,10 +47,25 @@ struct HomeScreenLayout: View {
         GeometryReader { geometry in
             let verticalInset = SpacingTokens.xxxl
             let interSectionSpacing = SpacingTokens.xxxl
-            let dayCarouselHeight: CGFloat = 106
+            let dayCarouselHeight = LayoutConstants.dayCarouselHeight
+            let bannerHeight = showsWidgetOnboardingBanner ? WidgetOnboardingBannerView.preferredHeight : .zero
             let cardWidth = min(geometry.size.width * 0.80, 450)
-            let availableCardHeight = geometry.size.height - dayCarouselHeight - interSectionSpacing - (verticalInset * 2)
-            let cardHeight = min(max(availableCardHeight, 260), 620)
+            let availableCardHeightWithBannerAndDayCarousel = geometry.size.height
+                - (verticalInset * 2)
+                - bannerHeight
+                - dayCarouselHeight
+                - CGFloat(showsWidgetOnboardingBanner ? 2 : 1) * interSectionSpacing
+            let hidesDayCarouselForBanner = showsWidgetOnboardingBanner
+                && availableCardHeightWithBannerAndDayCarousel < LayoutConstants.minimumCardHeight
+            let showsDayCarousel = !hidesDayCarouselForBanner
+            let sectionCount = 1 + (showsWidgetOnboardingBanner ? 1 : 0) + (showsDayCarousel ? 1 : 0)
+            let spacingCount = max(sectionCount - 1, 0)
+            let occupiedHeight = (verticalInset * 2)
+                + bannerHeight
+                + (showsDayCarousel ? dayCarouselHeight : .zero)
+                + CGFloat(spacingCount) * interSectionSpacing
+            let availableCardHeight = geometry.size.height - occupiedHeight
+            let cardHeight = min(max(availableCardHeight, LayoutConstants.minimumCardHeight), LayoutConstants.maximumCardHeight)
             let focusedOffset = selectedOffset ?? todayOffset
             let carouselIndex = Binding<Int?>(
                 get: {
@@ -69,6 +93,15 @@ struct HomeScreenLayout: View {
             )
 
             VStack(spacing: interSectionSpacing) {
+                if showsWidgetOnboardingBanner {
+                    WidgetOnboardingBannerView(
+                        onTap: onWidgetOnboardingTap,
+                        onDismiss: onWidgetOnboardingDismiss
+                    )
+                    .frame(height: bannerHeight)
+                    .padding(.horizontal, SpacingTokens.sm)
+                }
+
                 CarouselView(
                     items: challengeCards,
                     currentIndex: carouselIndex,
@@ -97,22 +130,88 @@ struct HomeScreenLayout: View {
                 }
                 .frame(height: cardHeight)
 
-                DailyPuzzleDayCarouselView(
-                    offsets: dayCarouselOffsets,
-                    selectedOffset: $selectedOffset,
-                    todayOffset: todayOffset,
-                    unlockedOffsets: unlockedOffsets,
-                    dateForOffset: dateForOffset,
-                    progressForOffset: progressForOffset,
-                    hoursUntilAvailable: hoursUntilAvailable,
-                    onDayTap: { _ in }
-                )
-                .frame(height: dayCarouselHeight)
-                .padding(.horizontal, SpacingTokens.sm)
+                if showsDayCarousel {
+                    DailyPuzzleDayCarouselView(
+                        offsets: dayCarouselOffsets,
+                        selectedOffset: $selectedOffset,
+                        todayOffset: todayOffset,
+                        unlockedOffsets: unlockedOffsets,
+                        dateForOffset: dateForOffset,
+                        progressForOffset: progressForOffset,
+                        hoursUntilAvailable: hoursUntilAvailable,
+                        onDayTap: { _ in }
+                    )
+                    .frame(height: dayCarouselHeight)
+                    .padding(.horizontal, SpacingTokens.sm)
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .padding(.vertical, verticalInset)
         }
+    }
+}
+
+private struct WidgetOnboardingBannerView: View {
+    static let preferredHeight: CGFloat = 112
+
+    let onTap: () -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: SpacingTokens.sm) {
+            Button(action: onTap) {
+                HStack(alignment: .top, spacing: SpacingTokens.sm) {
+                    Image(systemName: "widget.small")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(ColorTokens.accentCoralStrong)
+                        .padding(.top, SpacingTokens.xxs)
+
+                    VStack(alignment: .leading, spacing: SpacingTokens.xxs) {
+                        Text(AppStrings.widgetOnboardingBannerTitle)
+                            .font(TypographyTokens.bodyStrong)
+                            .foregroundStyle(ColorTokens.textPrimary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+
+                        Text(AppStrings.widgetOnboardingBannerDescription)
+                            .font(TypographyTokens.footnote)
+                            .foregroundStyle(ColorTokens.textSecondary)
+                            .lineLimit(2)
+                            .truncationMode(.tail)
+                    }
+
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(AppStrings.widgetOnboardingBannerAccessibilityLabel)
+            .accessibilityHint(AppStrings.widgetOnboardingBannerAccessibilityHint)
+
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(ColorTokens.textSecondary)
+                    .frame(width: 28, height: 28)
+                    .background(
+                        ColorTokens.surfacePrimary.opacity(0.72),
+                        in: Circle()
+                    )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(AppStrings.widgetOnboardingBannerCloseAccessibility)
+        }
+        .padding(.vertical, SpacingTokens.sm)
+        .padding(.leading, SpacingTokens.md)
+        .padding(.trailing, SpacingTokens.sm)
+        .background(
+            ColorTokens.surfaceSecondary,
+            in: RoundedRectangle(cornerRadius: RadiusTokens.buttonRadius, style: .continuous)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: RadiusTokens.buttonRadius, style: .continuous)
+                .dsInnerStroke(ColorTokens.borderDefault.opacity(0.55), lineWidth: 1)
+        )
     }
 }
 
@@ -127,7 +226,7 @@ struct HomeToolbarContent: ToolbarContent {
     private var styledHomeTitle: Text {
         Text(verbatim: "World")
             .font(TypographyTokens.screenTitle.weight(.regular))
-            .foregroundColor(ColorTokens.textSecondary)
+            .foregroundColor(ColorTokens.textTertiary)
         + Text(verbatim: "Crush")
             .font(TypographyTokens.screenTitle.weight(.semibold))
             .foregroundColor(ColorTokens.textPrimary)
@@ -170,7 +269,7 @@ struct HomeToolbarContent: ToolbarContent {
         HistoryNavCounterView(
             value: streakCount,
             systemImage: "flame.fill",
-            iconGradient: ThemeGradients.brushWarmStrong,
+            iconGradient: ThemeGradients.brushWarm,
             accessibilityLabel: AppStrings.streakCounterAccessibility(streakCount),
             accessibilityHint: AppStrings.streakCounterHint
         ) {

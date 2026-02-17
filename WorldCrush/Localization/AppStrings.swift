@@ -51,6 +51,95 @@ enum AppStrings {
         localized("app.settings.open_accessibility", default: "Abrir ajustes")
     }
 
+    static var widgetOnboardingBannerTitle: String {
+        localized("app.widget.banner.title", default: "Add the WorldCrush widget")
+    }
+
+    static var widgetOnboardingBannerDescription: String {
+        localized(
+            "app.widget.banner.description",
+            default: "Play today in one tap from your iPhone Home Screen."
+        )
+    }
+
+    static var widgetOnboardingBannerAccessibilityLabel: String {
+        localized(
+            "app.widget.banner.accessibility_label",
+            default: "Open widget setup guide"
+        )
+    }
+
+    static var widgetOnboardingBannerAccessibilityHint: String {
+        localized(
+            "app.widget.banner.accessibility_hint",
+            default: "Opens the steps to add the WorldCrush Home Screen widget"
+        )
+    }
+
+    static var widgetOnboardingBannerCloseAccessibility: String {
+        localized(
+            "app.widget.banner.close_accessibility",
+            default: "Dismiss widget setup banner"
+        )
+    }
+
+    static var widgetOnboardingGuideTitle: String {
+        localized("app.widget.guide.title", default: "Add Home Screen widget")
+    }
+
+    static var widgetOnboardingGuideDescription: String {
+        localized(
+            "app.widget.guide.description",
+            default: "Follow these steps to add the WorldCrush widget on your iPhone."
+        )
+    }
+
+    static var widgetOnboardingGuideStep1: String {
+        localized(
+            "app.widget.guide.step_1",
+            default: "Touch and hold an empty area on your Home Screen until apps start to jiggle."
+        )
+    }
+
+    static var widgetOnboardingGuideStep2: String {
+        localized(
+            "app.widget.guide.step_2",
+            default: "Tap Edit in the top-left corner, then tap Add Widget."
+        )
+    }
+
+    static var widgetOnboardingGuideStep3: String {
+        localized(
+            "app.widget.guide.step_3",
+            default: "Search for WorldCrush and select the widget."
+        )
+    }
+
+    static var widgetOnboardingGuideStep4: String {
+        localized(
+            "app.widget.guide.step_4",
+            default: "Choose your preferred widget size and tap Add Widget."
+        )
+    }
+
+    static var widgetOnboardingGuideStep5: String {
+        localized(
+            "app.widget.guide.step_5",
+            default: "Tap Done to finish. Open the widget anytime to play the daily puzzle."
+        )
+    }
+
+    static var widgetOnboardingGuideFooter: String {
+        localized(
+            "app.widget.guide.footer",
+            default: "Tip: Place it near your dock so it is always easy to reach."
+        )
+    }
+
+    static var widgetOnboardingGuideDone: String {
+        localized("app.widget.guide.done", default: "Done")
+    }
+
     private static func localized(_ key: String, default value: String) -> String {
         AppLocalization.localized(key, default: value, bundle: .main)
     }

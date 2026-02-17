@@ -33,6 +33,7 @@ public enum ColorTokens {
 
     public static let inkPrimary = dynamicColor(lightHex: 0x1B1B1B, darkHex: 0xF3ECE1)
     public static let inkSecondary = dynamicColor(lightHex: 0x4A4A4A, darkHex: 0xCEC2B3)
+    public static let inkTertiary = dynamicColor(lightHex: 0x5B5B5B, darkHex: 0xD8CCBD)
     public static let gridLine = dynamicColor(lightHex: 0xCFCAC1, darkHex: 0x655D53)
     public static let borderSoft = dynamicColor(lightHex: 0xE3DED5, darkHex: 0x4E463D)
 
@@ -56,6 +57,7 @@ public enum ColorTokens {
 
     public static let textPrimary = inkPrimary
     public static let textSecondary = inkSecondary
+    public static let textTertiary = inkTertiary
     public static let accentPrimary = accentCoral
     public static let borderDefault = borderSoft
 
@@ -66,7 +68,7 @@ public enum ColorTokens {
     public static let boardGridStroke = gridLine.opacity(0.45)
     public static let boardOuterStroke = borderSoft.opacity(0.95)
     public static let selectionFill = accentCoral.opacity(0.22)
-    public static let feedbackCorrect = success
+    public static let feedbackCorrect = accentPrimary
     public static let feedbackIncorrect = error
 
     public static let cardHighlightStroke = gridLine.opacity(0.22)

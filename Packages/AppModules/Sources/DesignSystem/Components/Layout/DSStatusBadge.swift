@@ -36,7 +36,7 @@ public struct DSStatusBadge: View {
     public var body: some View {
         ZStack {
             Circle()
-                .fill(ColorTokens.surfacePrimary.opacity(0.78))
+                .fill(ColorTokens.surfacePaperGrid.opacity(0.78))
                 .frame(width: size, height: size)
 
             Image(systemName: icon)

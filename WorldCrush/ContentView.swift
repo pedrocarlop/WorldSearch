@@ -39,6 +39,7 @@ private struct HostPresentedGame: Identifiable, Equatable {
 private enum HomePresentedSheet: Identifiable {
     case settings
     case counter(HistoryCounterInfoKind)
+    case widgetOnboardingGuide
 
     var id: String {
         switch self {
@@ -46,7 +47,40 @@ private enum HomePresentedSheet: Identifiable {
             return "settings"
         case .counter(let info):
             return "counter-\(info.id)"
+        case .widgetOnboardingGuide:
+            return "widget-onboarding-guide"
         }
+    }
+}
+
+enum WidgetOnboardingBannerState {
+    static let firstOpenDateKey = "app.widget_onboarding_first_open_at_v1"
+    static let dismissedKey = "app.widget_onboarding_dismissed_v1"
+    static let autoHideDays = 7
+
+    static func shouldShow(defaults: UserDefaults, now: Date = Date()) -> Bool {
+        guard !defaults.bool(forKey: dismissedKey) else { return false }
+
+        let firstOpenDate = firstSeenOpenDate(defaults: defaults, now: now)
+        guard let hideDate = Calendar.current.date(byAdding: .day, value: autoHideDays, to: firstOpenDate) else {
+            return false
+        }
+
+        return now < hideDate
+    }
+
+    static func dismiss(defaults: UserDefaults) {
+        defaults.set(true, forKey: dismissedKey)
+    }
+
+    @discardableResult
+    private static func firstSeenOpenDate(defaults: UserDefaults, now: Date) -> Date {
+        if let stored = defaults.object(forKey: firstOpenDateKey) as? Date {
+            return stored
+        }
+
+        defaults.set(now, forKey: firstOpenDateKey)
+        return now
     }
 }
 
@@ -58,6 +92,7 @@ struct ContentView: View {
         static let launchCardSettleDelayNanos: UInt64 = 110_000_000
         static let launchCardCleanupDelayNanos: UInt64 = 170_000_000
         static let minimumHomeRefreshInterval: TimeInterval = 0.75
+        static let firstLaunchSplashShownKey = "hasShownFirstLaunchSplash"
     }
 
     @Environment(\.scenePhase) private var scenePhase
@@ -73,6 +108,7 @@ struct ContentView: View {
     @State private var dailyPuzzleHomeViewModel: DailyPuzzleHomeScreenViewModel
     @State private var lastHomeRefreshAt: Date = .distantPast
     @State private var showFirstLaunchSplash: Bool
+    @State private var showsWidgetOnboardingBanner: Bool
     @Namespace private var toolbarActionTransitionNamespace
 
     @MainActor
@@ -88,7 +124,11 @@ struct ContentView: View {
                 initialGridSize: initialGridSize
             )
         )
-        _showFirstLaunchSplash = State(initialValue: !UserDefaults.standard.bool(forKey: "hasShownFirstLaunchSplash"))
+        let defaults = UserDefaults.standard
+        _showFirstLaunchSplash = State(initialValue: !defaults.bool(forKey: Constants.firstLaunchSplashShownKey))
+        _showsWidgetOnboardingBanner = State(
+            initialValue: WidgetOnboardingBannerState.shouldShow(defaults: defaults, now: Date())
+        )
     }
 
     private var todayOffset: Int {
@@ -110,7 +150,10 @@ struct ContentView: View {
                     todayOffset: todayOffset,
                     unlockedOffsets: dailyPuzzleHomeViewModel.easterUnlockedOffsets,
                     launchingCardOffset: launchingCardOffset,
+                    showsWidgetOnboardingBanner: showsWidgetOnboardingBanner,
                     onCardTap: handleChallengeCardTap(offset:),
+                    onWidgetOnboardingTap: { presentedSheet = .widgetOnboardingGuide },
+                    onWidgetOnboardingDismiss: dismissWidgetOnboardingBanner,
                     dateForOffset: { dailyPuzzleHomeViewModel.puzzleDate(for: $0) },
                     progressForOffset: {
                         dailyPuzzleHomeViewModel.progressFraction(
@@ -154,7 +197,7 @@ struct ContentView: View {
                         withAnimation(.easeInOut(duration: 0.35)) {
                             showFirstLaunchSplash = false
                         }
-                        UserDefaults.standard.set(true, forKey: "hasShownFirstLaunchSplash")
+                        UserDefaults.standard.set(true, forKey: Constants.firstLaunchSplashShownKey)
                     }
                 }
             }
@@ -181,6 +224,8 @@ struct ContentView: View {
                         core: core,
                         info: info
                     )
+                case .widgetOnboardingGuide:
+                    WidgetOnboardingGuideSheetView()
                 }
             }
         }
@@ -196,6 +241,7 @@ struct ContentView: View {
 
     private func refreshHomeData(force: Bool) {
         let now = Date()
+        refreshWidgetOnboardingBannerVisibility(now: now)
         if !force,
            now.timeIntervalSince(lastHomeRefreshAt) < Constants.minimumHomeRefreshInterval {
             return
@@ -218,6 +264,17 @@ struct ContentView: View {
             for: launchOffset,
             preferredGridSize: preferredGridSize
         )
+    }
+
+    private func refreshWidgetOnboardingBannerVisibility(now: Date = Date()) {
+        showsWidgetOnboardingBanner = WidgetOnboardingBannerState.shouldShow(defaults: .standard, now: now)
+    }
+
+    private func dismissWidgetOnboardingBanner() {
+        WidgetOnboardingBannerState.dismiss(defaults: .standard)
+        withAnimation(.easeInOut(duration: 0.2)) {
+            showsWidgetOnboardingBanner = false
+        }
     }
 
     @ViewBuilder
@@ -350,6 +407,81 @@ struct ContentView: View {
         }
     }
 
+}
+
+private struct WidgetOnboardingGuideSheetView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                ColorTokens.backgroundPrimary
+                    .ignoresSafeArea()
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: SpacingTokens.lg) {
+                        Text(AppStrings.widgetOnboardingGuideDescription)
+                            .font(TypographyTokens.callout)
+                            .foregroundStyle(ColorTokens.textSecondary)
+
+                        VStack(alignment: .leading, spacing: SpacingTokens.md) {
+                            WidgetOnboardingStepRow(step: 1, text: AppStrings.widgetOnboardingGuideStep1)
+                            WidgetOnboardingStepRow(step: 2, text: AppStrings.widgetOnboardingGuideStep2)
+                            WidgetOnboardingStepRow(step: 3, text: AppStrings.widgetOnboardingGuideStep3)
+                            WidgetOnboardingStepRow(step: 4, text: AppStrings.widgetOnboardingGuideStep4)
+                            WidgetOnboardingStepRow(step: 5, text: AppStrings.widgetOnboardingGuideStep5)
+                        }
+
+                        Text(AppStrings.widgetOnboardingGuideFooter)
+                            .font(TypographyTokens.footnote)
+                            .foregroundStyle(ColorTokens.textSecondary)
+                            .padding(.top, SpacingTokens.xs)
+                    }
+                    .padding(.horizontal, SpacingTokens.lg)
+                    .padding(.top, SpacingTokens.lg)
+                    .padding(.bottom, SpacingTokens.xxl)
+                }
+            }
+            .navigationTitle(AppStrings.widgetOnboardingGuideTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(AppStrings.widgetOnboardingGuideDone) {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct WidgetOnboardingStepRow: View {
+    let step: Int
+    let text: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: SpacingTokens.sm) {
+            Text("\(step)")
+                .font(TypographyTokens.caption.weight(.semibold))
+                .foregroundStyle(ColorTokens.textPrimary)
+                .frame(width: 24, height: 24)
+                .background(
+                    ColorTokens.surfaceSecondary,
+                    in: Circle()
+                )
+                .overlay(
+                    Circle()
+                        .stroke(ColorTokens.borderDefault.opacity(0.55), lineWidth: 1)
+                )
+
+            Text(text)
+                .font(TypographyTokens.body)
+                .foregroundStyle(ColorTokens.textPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 0)
+        }
+    }
 }
 
 private struct FirstLaunchSplashView: View {
