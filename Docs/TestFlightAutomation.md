@@ -6,6 +6,22 @@ This repository includes a GitHub Actions workflow that uploads a new TestFlight
 - Trigger: `push` on `main` (plus manual `workflow_dispatch`)
 - Build number: set automatically to `github.run_number` to prevent duplicate build-number upload errors.
 
+## Local post-push automation (configured in this clone)
+
+This clone is configured to upload to TestFlight automatically after each successful push to `origin/main` using local Xcode credentials:
+
+- Hook path: `.githooks/post-push`
+- Upload script: `Scripts/upload_testflight.sh`
+- Local git config: `core.hooksPath=.githooks`
+
+This path does not require GitHub secrets, but it only runs when pushes are made from this machine.
+
+To skip one upload on demand:
+
+```bash
+SKIP_TESTFLIGHT_UPLOAD=1 git push origin main
+```
+
 ## One-time GitHub setup
 
 Add these repository secrets:

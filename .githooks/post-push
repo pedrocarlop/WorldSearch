@@ -1,0 +1,31 @@
+#!/bin/bash
+set -euo pipefail
+
+REMOTE_NAME="${1:-}"
+
+if [[ "${REMOTE_NAME}" != "origin" ]]; then
+  exit 0
+fi
+
+if [[ "${SKIP_TESTFLIGHT_UPLOAD:-0}" == "1" ]]; then
+  echo "[post-push] SKIP_TESTFLIGHT_UPLOAD=1, skipping TestFlight upload."
+  exit 0
+fi
+
+trigger_upload=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [[ "${remote_ref}" == "refs/heads/main" ]] && [[ "${local_sha}" != "0000000000000000000000000000000000000000" ]]; then
+    trigger_upload=1
+  fi
+done
+
+if [[ "${trigger_upload}" -ne 1 ]]; then
+  exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+echo "[post-push] Detected push to origin/main. Starting TestFlight upload..."
+"${REPO_ROOT}/Scripts/upload_testflight.sh" || {
+  echo "[post-push] TestFlight upload failed." >&2
+  exit 1
+}

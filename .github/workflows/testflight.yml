@@ -14,7 +14,18 @@ permissions:
   contents: read
 
 jobs:
+  missing-config:
+    if: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 == '' || secrets.APPSTORE_CERTIFICATES_PASSWORD == '' || secrets.APPSTORE_API_PRIVATE_KEY == '' || vars.APPSTORE_API_KEY_ID == '' || vars.APPSTORE_ISSUER_ID == '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Missing TestFlight secrets
+        run: |
+          echo "Skipping GitHub-hosted TestFlight upload because required secrets/variables are not configured."
+          echo "Required secrets: APPSTORE_CERTIFICATES_FILE_BASE64, APPSTORE_CERTIFICATES_PASSWORD, APPSTORE_API_PRIVATE_KEY"
+          echo "Required variables: APPSTORE_API_KEY_ID, APPSTORE_ISSUER_ID"
+
   deploy-testflight:
+    if: ${{ secrets.APPSTORE_CERTIFICATES_FILE_BASE64 != '' && secrets.APPSTORE_CERTIFICATES_PASSWORD != '' && secrets.APPSTORE_API_PRIVATE_KEY != '' && vars.APPSTORE_API_KEY_ID != '' && vars.APPSTORE_ISSUER_ID != '' }}
     runs-on: macos-latest
     timeout-minutes: 90
     env:
