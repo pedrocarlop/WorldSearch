@@ -23,9 +23,9 @@ jobs:
       TEAM_ID: MM9BHDUA97
       APP_BUNDLE_ID: com.pedrocarrasco.WorldCrush
       WIDGET_BUNDLE_ID: com.pedrocarrasco.WorldCrush.wordsearchwidget
-      ARCHIVE_PATH: ${{ runner.temp }}/WorldCrush.xcarchive
-      EXPORT_PATH: ${{ runner.temp }}/WorldCrush-export
-      EXPORT_OPTIONS_PLIST: ${{ runner.temp }}/ExportOptions.plist
+      ARCHIVE_PATH: ${{ github.workspace }}/build/WorldCrush.xcarchive
+      EXPORT_PATH: ${{ github.workspace }}/build/WorldCrush-export
+      EXPORT_OPTIONS_PLIST: ${{ github.workspace }}/build/ExportOptions.plist
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,6 +61,7 @@ jobs:
 
       - name: Build export options plist
         run: |
+          mkdir -p "$(dirname "$EXPORT_OPTIONS_PLIST")"
           cat > "$EXPORT_OPTIONS_PLIST" <<EOF
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
