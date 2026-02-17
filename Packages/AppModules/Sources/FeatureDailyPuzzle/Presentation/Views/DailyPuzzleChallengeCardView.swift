@@ -34,6 +34,11 @@ public struct DailyPuzzleChallengeCardView: View {
         static let settleDuration: Double = 0.64
     }
 
+    private enum LayoutConstants {
+        static let challengeStackSpacing: CGFloat = SpacingTokens.sm + 6
+        static let maxPreviewSide: CGFloat = 240
+    }
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var playButtonSparkleProgress: CGFloat = 0
     @State private var playButtonSparkleTask: Task<Void, Never>?
@@ -127,11 +132,14 @@ public struct DailyPuzzleChallengeCardView: View {
     public var body: some View {
         ZStack {
             DSCard {
-                VStack(spacing: SpacingTokens.sm + 6) {
+                VStack(spacing: LayoutConstants.challengeStackSpacing) {
                     header
 
                     GeometryReader { geometry in
-                        let gridSide = min(geometry.size.width, geometry.size.height)
+                        let gridSide = min(
+                            min(geometry.size.width, geometry.size.height),
+                            LayoutConstants.maxPreviewSide
+                        )
 
                         DailyPuzzleChallengeCardGridPreview(
                             grid: grid,
@@ -151,11 +159,13 @@ public struct DailyPuzzleChallengeCardView: View {
                         .scaleEffect(isLaunching ? 1.08 : 1)
                         .animation(.easeInOut(duration: MotionTokens.normalDuration), value: isLaunching)
                     }
-                    .frame(height: 240)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                     challengeProgressBar
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(
                 RoundedRectangle(cornerRadius: RadiusTokens.cardRadius, style: .continuous)
                     .dsInnerStroke(ColorTokens.cardHighlightStroke, lineWidth: 1.4)
@@ -165,6 +175,7 @@ public struct DailyPuzzleChallengeCardView: View {
                     .dsInnerStroke(ColorTokens.borderDefault, lineWidth: 1)
             )
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .contentShape(RoundedRectangle(cornerRadius: RadiusTokens.cardRadius, style: .continuous))
         .onTapGesture {
             guard !isCompleted else { return }

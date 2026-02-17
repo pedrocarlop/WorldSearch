@@ -29,10 +29,10 @@ struct HomeScreenLayout: View {
 
         static let dayCarouselHeight: CGFloat = 106
         static let compactDayCarouselHeight: CGFloat = 92
-        static let minimumCardHeight: CGFloat = 260
-        static let compactMinimumCardHeight: CGFloat = 220
-        static let veryCompactMinimumCardHeight: CGFloat = 190
-        static let maximumCardHeight: CGFloat = 620
+        static let minimumCarouselHeight: CGFloat = 260
+        static let compactMinimumCarouselHeight: CGFloat = 220
+        static let veryCompactMinimumCarouselHeight: CGFloat = 190
+        static let maximumCarouselHeight: CGFloat = 480
     }
 
     let challengeCards: [DailyPuzzleChallengeCardState]
@@ -68,33 +68,34 @@ struct HomeScreenLayout: View {
                     geometry.size.height * (isVeryCompactHeight ? 0.03 : 0.045)
                 )
             )
+            let bannerToCardSpacing = interSectionSpacing
+            let cardToCalendarSpacing = SpacingTokens.xxl
             let dayCarouselHeight = isCompactHeight
                 ? LayoutConstants.compactDayCarouselHeight
                 : LayoutConstants.dayCarouselHeight
-            let minimumCardHeight = isVeryCompactHeight
-                ? LayoutConstants.veryCompactMinimumCardHeight
-                : (isCompactHeight ? LayoutConstants.compactMinimumCardHeight : LayoutConstants.minimumCardHeight)
+            let minimumCarouselHeight = isVeryCompactHeight
+                ? LayoutConstants.veryCompactMinimumCarouselHeight
+                : (isCompactHeight ? LayoutConstants.compactMinimumCarouselHeight : LayoutConstants.minimumCarouselHeight)
             let bannerHeight = showsWidgetOnboardingBanner ? WidgetOnboardingBannerView.preferredHeight : .zero
             let cardWidth = min(geometry.size.width * 0.80, 450)
-            let availableCardHeightWithDayCarousel = geometry.size.height
+            let availableCarouselHeightWithDayCarousel = geometry.size.height
                 - (verticalInset * 2)
                 - bannerHeight
                 - dayCarouselHeight
-                - CGFloat(showsWidgetOnboardingBanner ? 2 : 1) * interSectionSpacing
-            let showsDayCarousel = availableCardHeightWithDayCarousel >= minimumCardHeight
-            let sectionCount = 1 + (showsWidgetOnboardingBanner ? 1 : 0) + (showsDayCarousel ? 1 : 0)
-            let spacingCount = max(sectionCount - 1, 0)
+                - (showsWidgetOnboardingBanner ? bannerToCardSpacing : .zero)
+                - cardToCalendarSpacing
+            let showsDayCarousel = availableCarouselHeightWithDayCarousel >= minimumCarouselHeight
             let occupiedHeight = (verticalInset * 2)
                 + bannerHeight
-                + (showsDayCarousel ? dayCarouselHeight : .zero)
-                + CGFloat(spacingCount) * interSectionSpacing
-            let availableCardHeight = max(geometry.size.height - occupiedHeight, 0)
-            let preferredCardHeight = min(
-                max(availableCardHeight, minimumCardHeight),
-                LayoutConstants.maximumCardHeight
+                + (showsWidgetOnboardingBanner ? bannerToCardSpacing : .zero)
+                + (showsDayCarousel ? (dayCarouselHeight + cardToCalendarSpacing) : .zero)
+            let availableCarouselHeight = max(geometry.size.height - occupiedHeight, 0)
+            let preferredCarouselHeight = min(
+                max(availableCarouselHeight, minimumCarouselHeight),
+                LayoutConstants.maximumCarouselHeight
             )
             // Never request more height than what is really available to avoid clipping on compact screens.
-            let cardHeight = min(preferredCardHeight, availableCardHeight)
+            let carouselHeight = min(preferredCarouselHeight, availableCarouselHeight)
             let focusedOffset = selectedOffset ?? todayOffset
             let carouselIndex = Binding<Int?>(
                 get: {
@@ -121,7 +122,7 @@ struct HomeScreenLayout: View {
                 }
             )
 
-            VStack(spacing: interSectionSpacing) {
+            VStack(spacing: .zero) {
                 if showsWidgetOnboardingBanner {
                     WidgetOnboardingBannerView(
                         onTap: onWidgetOnboardingTap,
@@ -129,6 +130,7 @@ struct HomeScreenLayout: View {
                     )
                     .frame(height: bannerHeight)
                     .padding(.horizontal, SpacingTokens.sm)
+                    .padding(.bottom, bannerToCardSpacing)
                 }
 
                 CarouselView(
@@ -152,12 +154,12 @@ struct HomeScreenLayout: View {
                     ) {
                         onCardTap(card.offset)
                     }
-                    .frame(height: cardHeight)
+                    .frame(height: carouselHeight)
                     .scaleEffect(launchingCardOffset == card.offset ? 1.10 : 1)
                     .opacity(launchingCardOffset == nil || launchingCardOffset == card.offset ? 1 : 0.45)
                     .zIndex(launchingCardOffset == card.offset ? 5 : 0)
                 }
-                .frame(height: cardHeight)
+                .frame(height: carouselHeight)
 
                 if showsDayCarousel {
                     DailyPuzzleDayCarouselView(
@@ -172,6 +174,7 @@ struct HomeScreenLayout: View {
                     )
                     .frame(height: dayCarouselHeight)
                     .padding(.horizontal, SpacingTokens.sm)
+                    .padding(.top, cardToCalendarSpacing)
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -262,13 +265,24 @@ struct HomeToolbarContent: ToolbarContent {
     }
 
     var body: some ToolbarContent {
-        ToolbarItem(placement: .principal) {
-            styledHomeTitle
-                .lineLimit(1)
-                .minimumScaleFactor(0.45)
-                .allowsTightening(true)
-                .truncationMode(.tail)
+        if #available(iOS 26.0, *) {
+            ToolbarItem(placement: .principal) {
+                HStack(spacing: 0) {
+                    styledHomeTitle
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityLabel(AppStrings.homeTitle)
+            }
+        } else {
+            ToolbarItem(placement: .topBarLeading) {
+                styledHomeTitle
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.45)
+                    .allowsTightening(true)
+                    .truncationMode(.tail)
+                    .accessibilityLabel(AppStrings.homeTitle)
+            }
         }
 
         if #available(iOS 26.0, *), let toolbarActionTransitionNamespace {
