@@ -25,10 +25,18 @@
 //
 
 import SwiftUI
+import UIKit
 import DesignSystem
+
+private final class OrientationLockAppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        .portrait
+    }
+}
 
 @main
 struct WorldCrushApp: App {
+    @UIApplicationDelegateAdaptor(OrientationLockAppDelegate.self) private var appDelegate
     @StateObject private var container = AppContainer.live
 
     var body: some Scene {
