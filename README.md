@@ -1,31 +1,85 @@
-WorldCrush – Daily Word Search
+# WorldCrush
 
-WorldCrush is a daily word search game designed for calm, intentional play.
-One puzzle per day. No pressure. No endless scrolling.
+**A calm daily word search. One puzzle per day.**
 
-How It Works
-	•	A new word search puzzle is available every day
-	•	Complete the daily puzzle to build your streak
-	•	Track your total completed puzzles
-	•	Add the WorldCrush widget to your iPhone home screen and play directly without opening the app
+WorldCrush is a focused word search experience designed around intention, not addiction.  
+You get one puzzle each day. Complete it, build your streak, and come back tomorrow.
 
-Widget Setup
-	1.	Long press your home screen
-	2.	Tap the + button
-	3.	Search for “WorldCrush”
-	4.	Add the widget
-	5.	Tap the widget to jump straight into today’s puzzle
+---
 
-Support
+## ✨ Core Principles
 
-For help, questions, or feedback:
+- 🧩 **One Puzzle Per Day**  
+  No endless levels. No infinite scrolling. Just one carefully generated daily challenge.
 
-pedro.design.engineer@gmail.com
+- 📅 **Daily Streaks**  
+  Complete your puzzle every day to grow your streak.
+
+- 📊 **Track Your Progress**  
+  See how many total puzzles you’ve completed over time.
+
+- 🏠 **Home Screen Widget**  
+  Add the WorldCrush widget and jump directly into today’s puzzle without opening the app.
+
+- 🔒 **No Login Required**  
+  No accounts. No sign-ups. No friction.
+
+---
+
+## 📲 Add the Widget
+
+1. Long press your iPhone Home Screen  
+2. Tap the **+** button (top right)  
+3. Search for **WorldCrush**  
+4. Select a widget size  
+5. Tap **Add Widget**  
+6. Tap the widget anytime to open today’s puzzle instantly  
+
+---
+
+## 🎯 Designed for Intentional Play
+
+WorldCrush is built around restraint:
+
+- No endless gameplay loops  
+- No artificial pressure  
+- No manipulative reward systems  
+
+You complete today’s puzzle and you’re done.
+
+Come back tomorrow.
+
+---
+
+## 🛠 Technical Overview
+
+- Built with Swift & SwiftUI  
+- iOS native widget support  
+- Local progress tracking  
+- No external accounts required  
+
+---
+
+## 📧 Support
+
+For questions, feedback, or support:
+
+**pedro.design.engineer@gmail.com**
 
 We aim to respond within 48 hours.
 
-Privacy
+---
 
-WorldCrush does not require account creation.
-No login is required.
-No personal data is sold.
+## 🔐 Privacy
+
+WorldCrush:
+
+- Does not require account creation  
+- Does not collect personal data for sale  
+- Stores gameplay progress locally on your device  
+
+---
+
+## 📄 License
+
+All rights reserved © 2026 Pedro Carrasco
