@@ -709,7 +709,9 @@ private extension DailyPuzzleGameScreenView {
                 puzzleIndex: sharedSync.puzzleIndex,
                 gridSize: gridSize,
                 foundWords: gameSession.foundWords,
-                solvedPositions: gameSession.solvedPositions
+                solvedPositions: gameSession.solvedPositions,
+                startedAt: gameSession.startedAt,
+                endedAt: gameSession.endedAt
             )
             onSharedStateMutation()
         } else {

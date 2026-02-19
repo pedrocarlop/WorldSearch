@@ -310,13 +310,17 @@ public struct UpdateSharedProgressUseCase {
         puzzleIndex: Int,
         gridSize: Int,
         foundWords: Set<String>,
-        solvedPositions: Set<GridPosition>
+        solvedPositions: Set<GridPosition>,
+        startedAt: Date? = nil,
+        endedAt: Date? = nil
     ) {
         sharedRepository.updateProgress(
             puzzleIndex: puzzleIndex,
             gridSize: gridSize,
             foundWords: foundWords,
-            solvedPositions: solvedPositions
+            solvedPositions: solvedPositions,
+            startedAt: startedAt,
+            endedAt: endedAt
         )
     }
 }

@@ -83,7 +83,9 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
         puzzleIndex: Int,
         gridSize: Int,
         foundWords: Set<String>,
-        solvedPositions: Set<GridPosition>
+        solvedPositions: Set<GridPosition>,
+        startedAt: Date?,
+        endedAt: Date?
     ) {
         let now = Date()
         var state = loadState(now: now, preferredGridSize: gridSize)
@@ -100,6 +102,19 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
 
         state.foundWords = normalizedFound
         state.solvedPositions = normalizedPositions
+        state.startedAt = resolvedStartedAt(
+            provided: startedAt,
+            existing: state.startedAt,
+            foundWords: normalizedFound,
+            solvedPositions: normalizedPositions,
+            now: now
+        )
+        state.endedAt = resolvedEndedAt(
+            provided: endedAt,
+            existing: state.endedAt,
+            isCompleted: state.isCompleted,
+            now: now
+        )
         saveState(state)
     }
 
@@ -140,6 +155,8 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
             anchor: nil,
             foundWords: [],
             solvedPositions: [],
+            startedAt: nil,
+            endedAt: nil,
             puzzleIndex: normalized,
             isHelpVisible: false,
             feedback: nil,
@@ -196,6 +213,8 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
             anchor: nil,
             foundWords: [],
             solvedPositions: [],
+            startedAt: nil,
+            endedAt: nil,
             puzzleIndex: state.puzzleIndex,
             isHelpVisible: false,
             feedback: nil,
@@ -260,6 +279,8 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
                     anchor: nil,
                     foundWords: Set(legacy.foundWords.map(WordSearchNormalization.normalizedWord)),
                     solvedPositions: Set(legacy.solvedPositions.map { GridPosition(row: $0.r, col: $0.c) }),
+                    startedAt: nil,
+                    endedAt: nil,
                     puzzleIndex: PuzzleFactory.normalizedPuzzleIndex(legacy.puzzleIndex),
                     isHelpVisible: false,
                     feedback: nil,
@@ -298,6 +319,8 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
                     anchor: nil,
                     foundWords: Set(legacy.foundWords.map(WordSearchNormalization.normalizedWord)),
                     solvedPositions: [],
+                    startedAt: nil,
+                    endedAt: nil,
                     puzzleIndex: 0,
                     isHelpVisible: false,
                     feedback: nil,
@@ -347,5 +370,37 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
             grid: PuzzleGrid(letters: grid),
             words: safeWords.map(Word.init(text:))
         )
+    }
+
+    private func resolvedStartedAt(
+        provided: Date?,
+        existing: Date?,
+        foundWords: Set<String>,
+        solvedPositions: Set<GridPosition>,
+        now: Date
+    ) -> Date? {
+        if let provided {
+            return provided
+        }
+        if let existing {
+            return existing
+        }
+        if foundWords.isEmpty, solvedPositions.isEmpty {
+            return nil
+        }
+        return now
+    }
+
+    private func resolvedEndedAt(
+        provided: Date?,
+        existing: Date?,
+        isCompleted: Bool,
+        now: Date
+    ) -> Date? {
+        if let provided {
+            return provided
+        }
+        guard isCompleted else { return nil }
+        return existing ?? now
     }
 }

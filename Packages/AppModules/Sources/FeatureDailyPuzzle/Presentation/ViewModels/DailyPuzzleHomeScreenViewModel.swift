@@ -49,6 +49,7 @@ public struct DailyPuzzleChallengeCardState: Identifiable, Equatable, Sendable {
     public let grid: [[String]]
     public let words: [String]
     public let progress: DailyPuzzleProgressSnapshot
+    public let completionSeconds: Int?
     public let isLocked: Bool
     public let isMissed: Bool
     public let hoursUntilAvailable: Int?
@@ -60,6 +61,7 @@ public struct DailyPuzzleChallengeCardState: Identifiable, Equatable, Sendable {
         grid: [[String]],
         words: [String],
         progress: DailyPuzzleProgressSnapshot,
+        completionSeconds: Int?,
         isLocked: Bool,
         isMissed: Bool,
         hoursUntilAvailable: Int?
@@ -70,6 +72,7 @@ public struct DailyPuzzleChallengeCardState: Identifiable, Equatable, Sendable {
         self.grid = grid
         self.words = words
         self.progress = progress
+        self.completionSeconds = completionSeconds
         self.isLocked = isLocked
         self.isMissed = isMissed
         self.hoursUntilAvailable = hoursUntilAvailable
@@ -395,8 +398,8 @@ public final class DailyPuzzleHomeScreenViewModel {
             gridSize: gridSize,
             foundWords: Array(sharedState.foundWords),
             solvedPositions: Array(sharedState.solvedPositions),
-            startedAt: nil,
-            endedAt: nil
+            startedAt: sharedState.startedAt?.timeIntervalSince1970,
+            endedAt: sharedState.endedAt?.timeIntervalSince1970
         )
     }
 
@@ -466,6 +469,11 @@ public final class DailyPuzzleHomeScreenViewModel {
                 words: words
             )
             let isLocked = isFutureLocked(offset: offset) || isMissed
+            let isCompleted = isCompleted(
+                offset: offset,
+                progress: progress,
+                words: words
+            )
             return DailyPuzzleChallengeCardState(
                 offset: offset,
                 date: puzzleDate(for: offset),
@@ -473,6 +481,7 @@ public final class DailyPuzzleHomeScreenViewModel {
                 grid: puzzle.grid.letters,
                 words: words,
                 progress: progress,
+                completionSeconds: completionDurationSeconds(for: offset, isCompleted: isCompleted),
                 isLocked: isLocked,
                 isMissed: isMissed,
                 hoursUntilAvailable: hoursUntilAvailable(for: offset, now: now)
@@ -542,5 +551,29 @@ public final class DailyPuzzleHomeScreenViewModel {
         let nextLower = max(lower - 1, minOffset)
         let nextUpper = min(maxOffset, nextLower + (count - 1))
         return Array(nextLower...nextUpper)
+    }
+
+    private func completionDurationSeconds(for offset: Int, isCompleted: Bool) -> Int? {
+        guard isCompleted else { return nil }
+
+        let record: AppProgressRecord?
+        if offset == todayOffset {
+            record = appProgressRecord(
+                from: sharedState,
+                dayOffset: offset,
+                gridSize: currentPreferredGridSize
+            )
+        } else {
+            record = appProgressRecord(
+                for: offset,
+                preferredGridSize: currentPreferredGridSize
+            )
+        }
+
+        guard let started = record?.startedDate, let ended = record?.endedDate else {
+            return nil
+        }
+        guard ended >= started else { return nil }
+        return Int((ended.timeIntervalSince(started)).rounded())
     }
 }

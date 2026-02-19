@@ -52,6 +52,7 @@ public struct DailyPuzzleChallengeCardView: View {
     public let words: [String]
     public let foundWords: Set<String>
     public let solvedPositions: Set<GridPosition>
+    public let completionSeconds: Int?
     public let isLocked: Bool
     public let isMissed: Bool
     public let hoursUntilAvailable: Int?
@@ -66,6 +67,7 @@ public struct DailyPuzzleChallengeCardView: View {
         words: [String],
         foundWords: Set<String>,
         solvedPositions: Set<GridPosition>,
+        completionSeconds: Int?,
         isLocked: Bool,
         isMissed: Bool,
         hoursUntilAvailable: Int?,
@@ -79,6 +81,7 @@ public struct DailyPuzzleChallengeCardView: View {
         self.words = words
         self.foundWords = foundWords
         self.solvedPositions = solvedPositions
+        self.completionSeconds = completionSeconds
         self.isLocked = isLocked
         self.isMissed = isMissed
         self.hoursUntilAvailable = hoursUntilAvailable
@@ -124,7 +127,7 @@ public struct DailyPuzzleChallengeCardView: View {
             return lockMessage
         }
         if isCompleted {
-            return DailyPuzzleStrings.completed
+            return completionStatusText
         }
         return DailyPuzzleStrings.challengeProgress(found: completedWordsCount, total: totalWords)
     }
@@ -162,6 +165,7 @@ public struct DailyPuzzleChallengeCardView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                     challengeProgressBar
+                    challengeStatusText
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
@@ -281,6 +285,22 @@ public struct DailyPuzzleChallengeCardView: View {
         .frame(width: 72, height: 6)
         .opacity(isLocked ? 0.45 : 1)
         .accessibilityHidden(true)
+    }
+
+    private var completionStatusText: String {
+        guard let completionSeconds else {
+            return DailyPuzzleStrings.completed
+        }
+        return DailyPuzzleStrings.challengeCompletedIn(seconds: completionSeconds)
+    }
+
+    private var challengeStatusText: some View {
+        Text(statusLabel)
+            .font(TypographyTokens.caption)
+            .foregroundStyle(isCompleted ? ColorTokens.textPrimary : ColorTokens.textSecondary)
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+            .frame(maxWidth: .infinity, alignment: .center)
     }
 
     private var playButtonSparkleOverlay: some View {
@@ -485,6 +505,7 @@ private struct DailyPuzzleChallengeCardGridPreview: View {
                 words: ["ARBOL", "RIO", "LUNA", "NUBE"],
                 foundWords: ["ARBOL"],
                 solvedPositions: [],
+                completionSeconds: nil,
                 isLocked: false,
                 isMissed: false,
                 hoursUntilAvailable: nil,
@@ -499,6 +520,7 @@ private struct DailyPuzzleChallengeCardGridPreview: View {
                 words: ["ARBOL", "RIO", "LUNA", "NUBE"],
                 foundWords: [],
                 solvedPositions: [],
+                completionSeconds: nil,
                 isLocked: true,
                 isMissed: false,
                 hoursUntilAvailable: 5,

@@ -53,6 +53,8 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
     public var anchor: SharedPositionDTO?
     public var foundWords: Set<String>
     public var solvedPositions: Set<SharedPositionDTO>
+    public var startedAt: Date?
+    public var endedAt: Date?
     public var puzzleIndex: Int
     public var isHelpVisible: Bool
     public var feedback: SharedFeedbackDTO?
@@ -68,6 +70,8 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         anchor: SharedPositionDTO?,
         foundWords: Set<String>,
         solvedPositions: Set<SharedPositionDTO>,
+        startedAt: Date?,
+        endedAt: Date?,
         puzzleIndex: Int,
         isHelpVisible: Bool,
         feedback: SharedFeedbackDTO?,
@@ -82,6 +86,8 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         self.anchor = anchor
         self.foundWords = foundWords
         self.solvedPositions = solvedPositions
+        self.startedAt = startedAt
+        self.endedAt = endedAt
         self.puzzleIndex = puzzleIndex
         self.isHelpVisible = isHelpVisible
         self.feedback = feedback
@@ -98,6 +104,8 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         case anchor
         case foundWords
         case solvedPositions
+        case startedAt
+        case endedAt
         case puzzleIndex
         case isHelpVisible
         case feedback
@@ -116,6 +124,8 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         anchor = try container.decodeIfPresent(SharedPositionDTO.self, forKey: .anchor)
         foundWords = try container.decodeIfPresent(Set<String>.self, forKey: .foundWords) ?? []
         solvedPositions = try container.decodeIfPresent(Set<SharedPositionDTO>.self, forKey: .solvedPositions) ?? []
+        startedAt = try container.decodeIfPresent(Date.self, forKey: .startedAt)
+        endedAt = try container.decodeIfPresent(Date.self, forKey: .endedAt)
         puzzleIndex = try container.decodeIfPresent(Int.self, forKey: .puzzleIndex) ?? 0
         isHelpVisible = try container.decodeIfPresent(Bool.self, forKey: .isHelpVisible) ?? false
         feedback = try container.decodeIfPresent(SharedFeedbackDTO.self, forKey: .feedback)
@@ -133,6 +143,8 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         try container.encodeIfPresent(anchor, forKey: .anchor)
         try container.encode(foundWords, forKey: .foundWords)
         try container.encode(solvedPositions, forKey: .solvedPositions)
+        try container.encodeIfPresent(startedAt, forKey: .startedAt)
+        try container.encodeIfPresent(endedAt, forKey: .endedAt)
         try container.encode(puzzleIndex, forKey: .puzzleIndex)
         try container.encode(isHelpVisible, forKey: .isHelpVisible)
         try container.encodeIfPresent(feedback, forKey: .feedback)

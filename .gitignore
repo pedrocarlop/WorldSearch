@@ -20,3 +20,6 @@ build/
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/
+
+# Codex local config
+.codex/

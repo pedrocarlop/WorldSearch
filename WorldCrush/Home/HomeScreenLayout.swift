@@ -146,6 +146,7 @@ struct HomeScreenLayout: View {
                         words: card.words,
                         foundWords: card.progress.foundWords,
                         solvedPositions: card.progress.solvedPositions,
+                        completionSeconds: card.completionSeconds,
                         isLocked: card.isLocked,
                         isMissed: card.isMissed,
                         hoursUntilAvailable: card.hoursUntilAvailable,
@@ -256,7 +257,7 @@ struct HomeToolbarContent: ToolbarContent {
     let toolbarActionTransitionNamespace: Namespace.ID?
 
     private var styledHomeTitle: Text {
-        Text(verbatim: "World")
+        Text(verbatim: "Word")
             .font(TypographyTokens.screenTitle.weight(.regular))
             .foregroundColor(ColorTokens.textTertiary)
         + Text(verbatim: "Crush")

@@ -1,8 +1,8 @@
-# WorldCrush
+# WordCrush
 
 **A calm daily word search. One puzzle per day.**
 
-WorldCrush is a focused iOS word-search experience designed around intention, not addiction.
+WordCrush is a focused iOS word-search experience designed around intention, not addiction.
 You get one puzzle each day. Complete it, build your streak, and come back tomorrow.
 
 **Read in other languages:** [Espanol](README.es.md)
@@ -20,7 +20,7 @@ This repository contains the production app, widget extension, shared modules, a
 - No login required.
 
 ## Designed for Intentional Play
-WorldCrush is built around restraint:
+WordCrush is built around restraint:
 - No endless gameplay loops.
 - No artificial pressure.
 - No manipulative reward systems.
@@ -49,7 +49,7 @@ WorldCrush is built around restraint:
 For questions, feedback, or support: `pedro.design.engineer@gmail.com`
 
 ## Privacy
-WorldCrush:
+WordCrush:
 - Does not require account creation.
 - Does not collect personal data for sale.
 - Stores gameplay progress locally on your device.

@@ -21,7 +21,7 @@ import Foundation
 import Core
 
 enum AppStrings {
-    static let homeTitle = "WorldCrush"
+    static let homeTitle = "WordCrush"
 
     static func completedCounterAccessibility(_ value: Int) -> String {
         String(
@@ -52,7 +52,7 @@ enum AppStrings {
     }
 
     static var widgetOnboardingBannerTitle: String {
-        localized("app.widget.banner.title", default: "Add the WorldCrush widget")
+        localized("app.widget.banner.title", default: "Add the WordCrush widget")
     }
 
     static var widgetOnboardingBannerDescription: String {
@@ -72,7 +72,7 @@ enum AppStrings {
     static var widgetOnboardingBannerAccessibilityHint: String {
         localized(
             "app.widget.banner.accessibility_hint",
-            default: "Opens the steps to add the WorldCrush Home Screen widget"
+            default: "Opens the steps to add the WordCrush Home Screen widget"
         )
     }
 
@@ -90,7 +90,7 @@ enum AppStrings {
     static var widgetOnboardingGuideDescription: String {
         localized(
             "app.widget.guide.description",
-            default: "Follow these steps to add the WorldCrush widget on your iPhone."
+            default: "Follow these steps to add the WordCrush widget on your iPhone."
         )
     }
 
@@ -111,7 +111,7 @@ enum AppStrings {
     static var widgetOnboardingGuideStep3: String {
         localized(
             "app.widget.guide.step_3",
-            default: "Search for WorldCrush and select the widget."
+            default: "Search for WordCrush and select the widget."
         )
     }
 

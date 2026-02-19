@@ -349,6 +349,8 @@ public struct SharedPuzzleState: Hashable, Codable, Sendable {
     public var anchor: GridPosition?
     public var foundWords: Set<String>
     public var solvedPositions: Set<GridPosition>
+    public var startedAt: Date?
+    public var endedAt: Date?
     public var puzzleIndex: Int
     public var isHelpVisible: Bool
     public var feedback: SelectionFeedback?
@@ -364,6 +366,8 @@ public struct SharedPuzzleState: Hashable, Codable, Sendable {
         anchor: GridPosition?,
         foundWords: Set<String>,
         solvedPositions: Set<GridPosition>,
+        startedAt: Date? = nil,
+        endedAt: Date? = nil,
         puzzleIndex: Int,
         isHelpVisible: Bool,
         feedback: SelectionFeedback?,
@@ -378,6 +382,8 @@ public struct SharedPuzzleState: Hashable, Codable, Sendable {
         self.anchor = anchor
         self.foundWords = Set(foundWords.map(WordSearchNormalization.normalizedWord))
         self.solvedPositions = solvedPositions
+        self.startedAt = startedAt
+        self.endedAt = endedAt
         self.puzzleIndex = puzzleIndex
         self.isHelpVisible = isHelpVisible
         self.feedback = feedback

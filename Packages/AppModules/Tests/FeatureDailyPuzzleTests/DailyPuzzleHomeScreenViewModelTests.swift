@@ -156,6 +156,47 @@ final class DailyPuzzleHomeScreenViewModelTests: XCTestCase {
         XCTAssertEqual(Set(record?.solvedPositions ?? []), Set(shared.solvedPositions))
     }
 
+    func testCompletedCardShowsElapsedSecondsFromProgressRecord() throws {
+        let (core, now) = makeCore(daysSinceInstall: 7)
+        let todayOffset = core.dayOffset(from: core.installationDate(), to: now).offset
+        let completedOffset = todayOffset - 1
+        let puzzle = core.puzzle(dayKey: DayKey(offset: completedOffset), gridSize: 7)
+        let startedAt = Date(timeIntervalSince1970: 2_000)
+        let endedAt = startedAt.addingTimeInterval(83)
+
+        core.saveProgressRecordUseCase.execute(
+            AppProgressRecord(
+                dayOffset: completedOffset,
+                gridSize: 7,
+                foundWords: puzzle.words.map(\.text),
+                solvedPositions: [],
+                startedAt: startedAt.timeIntervalSince1970,
+                endedAt: endedAt.timeIntervalSince1970
+            )
+        )
+
+        let viewModel = DailyPuzzleHomeScreenViewModel(core: core, preferredGridSize: 7, now: now)
+        let card = try XCTUnwrap(viewModel.challengeCards.first { $0.offset == completedOffset })
+
+        XCTAssertEqual(card.completionSeconds, 83)
+    }
+
+    func testCompletedTodayCardShowsElapsedSecondsFromSharedState() throws {
+        let (core, now) = makeCore(daysSinceInstall: 4)
+        let startedAt = Date(timeIntervalSince1970: 3_500)
+        let endedAt = startedAt.addingTimeInterval(41)
+        var shared = core.getSharedPuzzleStateUseCase.execute(now: now, preferredGridSize: 7)
+        shared.foundWords = Set(shared.words)
+        shared.startedAt = startedAt
+        shared.endedAt = endedAt
+        core.saveSharedPuzzleStateUseCase.execute(shared)
+
+        let viewModel = DailyPuzzleHomeScreenViewModel(core: core, preferredGridSize: 7, now: now)
+        let card = try XCTUnwrap(viewModel.challengeCards.first { $0.offset == viewModel.todayOffset })
+
+        XCTAssertEqual(card.completionSeconds, 41)
+    }
+
     func testChallengeCardsFollowCarouselOffsets() {
         let now = Date(timeIntervalSince1970: 30_000)
         let core = CoreContainer(store: InMemoryKeyValueStore())

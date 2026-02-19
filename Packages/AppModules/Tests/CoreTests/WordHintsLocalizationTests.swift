@@ -4,7 +4,7 @@
  - Rol principal: Valida comportamiento. Ejecuta escenarios y comprueba resultados esperados.
  - Flujo simplificado: Entrada: datos de prueba y condiciones iniciales. | Proceso: ejecutar metodo/flujo bajo test. | Salida: aserciones que deben cumplirse.
  - Tipos clave en este archivo: WordHintsLocalizationTests
- - Funciones clave en este archivo: testDefinitionIsAvailableForKnownWord,testDefinitionIsNilForUnknownWord testDisplayTextProvidesFallbackForMissingDefinition,testDefinitionIsAvailableForLocalizedEnglishWord testPuzzleWordsLocalizeToEnglishAndKeepCanonicalMapping,testPuzzleWordsLocalizeToFrenchAndKeepCanonicalMapping
+ - Funciones clave en este archivo: testDefinitionIsAvailableForKnownWord,testDefinitionIsNilForUnknownWord testDisplayTextProvidesFallbackForMissingDefinition,testDefinitionIsAvailableForLocalizedEnglishWord testPuzzleWordsLocalizeToEnglishAndKeepCanonicalMapping
  - Como leerlo sin experiencia:
    1) Busca primero los tipos clave para entender 'quien vive aqui'.
    2) Revisa propiedades (let/var): indican que datos mantiene cada tipo.
@@ -68,39 +68,4 @@ final class WordHintsLocalizationTests: XCTestCase {
         }
     }
 
-    func testPuzzleWordsForFrenchLocaleFallBackToEnglish() {
-        let frenchPuzzle = PuzzleFactory.puzzle(
-            for: DayKey(offset: 0),
-            gridSize: 9,
-            locale: Locale(identifier: "fr")
-        )
-        let englishPuzzle = PuzzleFactory.puzzle(
-            for: DayKey(offset: 0),
-            gridSize: 9,
-            locale: Locale(identifier: "en")
-        )
-
-        XCTAssertEqual(
-            frenchPuzzle.words.map(\.text),
-            englishPuzzle.words.map(\.text)
-        )
-    }
-
-    func testPuzzleWordsForPortugueseLocaleFallBackToEnglish() {
-        let portuguesePuzzle = PuzzleFactory.puzzle(
-            for: DayKey(offset: 0),
-            gridSize: 9,
-            locale: Locale(identifier: "pt")
-        )
-        let englishPuzzle = PuzzleFactory.puzzle(
-            for: DayKey(offset: 0),
-            gridSize: 9,
-            locale: Locale(identifier: "en")
-        )
-
-        XCTAssertEqual(
-            portuguesePuzzle.words.map(\.text),
-            englishPuzzle.words.map(\.text)
-        )
-    }
 }

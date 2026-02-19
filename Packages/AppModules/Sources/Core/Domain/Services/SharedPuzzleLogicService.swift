@@ -39,6 +39,9 @@ public enum SharedPuzzleLogicService {
 
         guard let anchor = next.anchor else {
             next.anchor = tapped
+            if next.startedAt == nil {
+                next.startedAt = now
+            }
             next.feedback = nil
             next.pendingWord = nil
             next.pendingSolvedPositions.removeAll()
@@ -65,6 +68,9 @@ public enum SharedPuzzleLogicService {
                 positions: linePath,
                 expiresAt: now.addingTimeInterval(feedbackDuration)
             )
+            if next.isCompleted, next.endedAt == nil {
+                next.endedAt = now
+            }
             next.pendingWord = nil
             next.pendingSolvedPositions.removeAll()
             applyNextHint(into: &next, now: now)
