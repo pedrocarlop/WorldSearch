@@ -445,6 +445,9 @@ public struct DailyPuzzleGameScreenView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(completionOverlay.isVisible ? .hidden : .visible, for: .navigationBar)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                navigationTitleContent
+            }
             if let onClose {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: onClose) {
@@ -473,9 +476,6 @@ public struct DailyPuzzleGameScreenView: View {
         .onAppear {
             let preferences = celebrationPreferencesProvider()
             fxManager.setSuccessFXEnabled(preferences.enableCelebrations)
-            if gameSession.startIfNeeded() {
-                saveProgress()
-            }
             runEntryTransition()
         }
         .onDisappear {
@@ -503,6 +503,47 @@ public struct DailyPuzzleGameScreenView: View {
 }
 
 private extension DailyPuzzleGameScreenView {
+    var navigationTitleContent: some View {
+        VStack(spacing: 1) {
+            Text(navigationTitle)
+                .font(TypographyTokens.bodyStrong)
+                .foregroundStyle(ColorTokens.textPrimary)
+                .lineLimit(1)
+
+            if isTimerRunning {
+                TimelineView(.periodic(from: .now, by: 1)) { context in
+                    navBarTimerRow(referenceDate: context.date)
+                }
+            } else {
+                navBarTimerRow(referenceDate: gameSession.endedAt ?? Date())
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    var isTimerRunning: Bool {
+        gameSession.startedAt != nil && gameSession.endedAt == nil
+    }
+
+    @ViewBuilder
+    func navBarTimerRow(referenceDate: Date) -> some View {
+        let seconds = elapsedSeconds(at: referenceDate)
+        HStack(spacing: SpacingTokens.xxs) {
+            Image(systemName: "timer")
+            Text(DailyPuzzleStrings.elapsedSecondsShort(seconds))
+                .monospacedDigit()
+        }
+        .font(TypographyTokens.caption.weight(.semibold))
+        .foregroundStyle(ColorTokens.textTertiary)
+        .lineLimit(1)
+    }
+
+    func elapsedSeconds(at referenceDate: Date) -> Int {
+        guard let startedAt = gameSession.startedAt else { return 0 }
+        let endDate = gameSession.endedAt ?? referenceDate
+        return max(Int(endDate.timeIntervalSince(startedAt)), 0)
+    }
+
     @ViewBuilder
     var resetChallengeMenuIcon: some View {
 #if canImport(UIKit)

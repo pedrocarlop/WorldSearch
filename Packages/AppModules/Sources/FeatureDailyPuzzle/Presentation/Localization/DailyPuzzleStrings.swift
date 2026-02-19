@@ -58,6 +58,14 @@ public enum DailyPuzzleStrings {
         )
     }
 
+    public static func elapsedSecondsShort(_ seconds: Int) -> String {
+        String(
+            format: localized("daily.elapsed_seconds_short", default: "%ds"),
+            locale: AppLocalization.currentLocale,
+            max(seconds, 0)
+        )
+    }
+
     public static func challengeAvailableIn(hours: Int) -> String {
         String(
             format: localized("daily.challenge.available_in_hours", default: "Disponible en %dh"),
