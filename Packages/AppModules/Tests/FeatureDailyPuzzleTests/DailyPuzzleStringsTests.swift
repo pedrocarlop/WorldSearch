@@ -27,6 +27,16 @@ final class DailyPuzzleStringsTests: XCTestCase {
         XCTAssertTrue(value.contains("5"))
     }
 
+    func testChallengeCompletedInFormatsCompactDuration() {
+        let value = DailyPuzzleStrings.challengeCompletedIn(seconds: 172_984)
+        XCTAssertTrue(value.contains("2d 0h 3m 4s"))
+    }
+
+    func testChallengeCompletedInNormalizesMinutesFromSeconds() {
+        let value = DailyPuzzleStrings.challengeCompletedIn(seconds: 125)
+        XCTAssertTrue(value.contains("2m 5s"))
+    }
+
     func testChallengeAccessibilityContainsChallengeNumber() {
         let value = DailyPuzzleStrings.challengeAccessibilityLabel(number: 7, status: "Completed")
         XCTAssertTrue(value.contains("7"))

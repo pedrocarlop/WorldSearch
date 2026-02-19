@@ -51,10 +51,11 @@ public enum DailyPuzzleStrings {
     }
 
     public static func challengeCompletedIn(seconds: Int) -> String {
-        String(
-            format: localized("daily.challenge.completed_in_seconds", default: "Completado en %ds"),
+        let duration = compactDuration(seconds: seconds)
+        return String(
+            format: localized("daily.challenge.completed_in_seconds", default: "Completado en %@"),
             locale: AppLocalization.currentLocale,
-            max(seconds, 0)
+            duration
         )
     }
 
@@ -173,6 +174,29 @@ public enum DailyPuzzleStrings {
 
         let safeIndex = ((index % messages.count) + messages.count) % messages.count
         return messages[safeIndex]
+    }
+
+    private static func compactDuration(seconds: Int) -> String {
+        let clamped = max(seconds, 0)
+        let days = clamped / 86_400
+        let hours = (clamped % 86_400) / 3_600
+        let minutes = (clamped % 3_600) / 60
+        let remainingSeconds = clamped % 60
+
+        var parts: [String] = []
+
+        if days > 0 {
+            parts.append("\(days)d")
+        }
+        if hours > 0 || !parts.isEmpty {
+            parts.append("\(hours)h")
+        }
+        if minutes > 0 || !parts.isEmpty {
+            parts.append("\(minutes)m")
+        }
+        parts.append("\(remainingSeconds)s")
+
+        return parts.joined(separator: " ")
     }
 
     private static func localized(_ key: String, default value: String) -> String {

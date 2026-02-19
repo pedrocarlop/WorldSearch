@@ -137,6 +137,23 @@
         }
       }
     },
+    "daily.challenge.completed_in_seconds": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completed in %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completado en %@"
+          }
+        }
+      }
+    },
     "daily.challenge.progress": {
       "extractionState": "manual",
       "localizations": {

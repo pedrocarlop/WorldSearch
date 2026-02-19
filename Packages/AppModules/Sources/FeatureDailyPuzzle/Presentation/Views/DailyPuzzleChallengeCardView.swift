@@ -111,8 +111,20 @@ public struct DailyPuzzleChallengeCardView: View {
         isCompleted || isLocked
     }
 
+    private var isInProgress: Bool {
+        !isMissed && !isLocked && !isCompleted
+    }
+
     private var showsPlayButton: Bool {
-        !isLocked && !isCompleted
+        isInProgress
+    }
+
+    private var showsProgressBar: Bool {
+        isInProgress
+    }
+
+    private var showsStatusText: Bool {
+        isMissed || isLocked || isCompleted
     }
 
     private var shouldAnimatePlayButtonSparkle: Bool {
@@ -164,8 +176,13 @@ public struct DailyPuzzleChallengeCardView: View {
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                    challengeProgressBar
-                    challengeStatusText
+                    if showsProgressBar {
+                        challengeProgressBar
+                    }
+
+                    if showsStatusText {
+                        challengeStatusText
+                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
@@ -219,7 +236,7 @@ public struct DailyPuzzleChallengeCardView: View {
     @ViewBuilder
     private var statusBadge: some View {
         if isMissed {
-            missedStatusBadge
+            DSStatusBadge(kind: .missed, size: badgeSize)
         } else if isLocked {
             DSStatusBadge(kind: .locked, size: badgeSize)
         } else if isCompleted {
@@ -249,24 +266,6 @@ public struct DailyPuzzleChallengeCardView: View {
         120
     }
 
-    private var missedStatusBadge: some View {
-        Text(DailyPuzzleStrings.notCompleted)
-            .font(TypographyTokens.caption.weight(.semibold))
-            .foregroundStyle(ColorTokens.textPrimary)
-            .lineLimit(1)
-            .minimumScaleFactor(0.8)
-            .padding(.horizontal, SpacingTokens.sm)
-            .padding(.vertical, SpacingTokens.xxs)
-            .background(
-                Capsule(style: .continuous)
-                    .fill(ColorTokens.surfacePrimary.opacity(0.84))
-            )
-            .overlay(
-                Capsule(style: .continuous)
-                    .dsInnerStroke(ColorTokens.borderDefault, lineWidth: 1)
-            )
-    }
-
     private var challengeProgressBar: some View {
         ZStack(alignment: .leading) {
             Capsule(style: .continuous)
@@ -283,15 +282,11 @@ public struct DailyPuzzleChallengeCardView: View {
                 .frame(width: 72 * progressFraction)
         }
         .frame(width: 72, height: 6)
-        .opacity(isLocked ? 0.45 : 1)
         .accessibilityHidden(true)
     }
 
     private var completionStatusText: String {
-        guard let completionSeconds else {
-            return DailyPuzzleStrings.completed
-        }
-        return DailyPuzzleStrings.challengeCompletedIn(seconds: completionSeconds)
+        DailyPuzzleStrings.challengeCompletedIn(seconds: completionSeconds ?? 0)
     }
 
     private var challengeStatusText: some View {

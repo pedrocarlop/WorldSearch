@@ -23,6 +23,7 @@ public struct DSStatusBadge: View {
     public enum Kind {
         case locked
         case completed
+        case missed
     }
 
     private let kind: Kind
@@ -52,15 +53,19 @@ public struct DSStatusBadge: View {
             return "lock.fill"
         case .completed:
             return "checkmark.seal.fill"
+        case .missed:
+            return "calendar.badge.xmark"
         }
     }
 
     private var iconStyle: AnyShapeStyle {
         switch kind {
         case .locked:
-            return AnyShapeStyle(ColorTokens.gridLine)
+            return AnyShapeStyle(ColorTokens.textSecondary)
         case .completed:
             return AnyShapeStyle(ThemeGradients.brushWarm)
+        case .missed:
+            return AnyShapeStyle(ColorTokens.textSecondary)
         }
     }
 }
