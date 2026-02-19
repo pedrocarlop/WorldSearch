@@ -70,6 +70,7 @@ public struct DailyPuzzleDayCarouselView: View {
                                 isSelected: offset == activeOffset,
                                 isLocked: isLocked,
                                 isCompleted: progress >= 0.999,
+                                isMissed: offset < todayOffset && progress < 0.999,
                                 progress: progress,
                                 hoursUntilAvailable: hoursUntilAvailable(offset)
                             )
@@ -111,6 +112,7 @@ private struct DailyPuzzleDayCarouselItem: View {
     let isSelected: Bool
     let isLocked: Bool
     let isCompleted: Bool
+    let isMissed: Bool
     let progress: Double
     let hoursUntilAvailable: Int?
 
@@ -176,6 +178,10 @@ private struct DailyPuzzleDayCarouselItem: View {
             Image(systemName: "checkmark.seal.fill")
                 .font(TypographyTokens.footnote)
                 .foregroundStyle(ThemeGradients.brushWarm)
+        } else if isMissed {
+            Image(systemName: "calendar.badge.clock")
+                .font(TypographyTokens.footnote)
+                .foregroundStyle(ColorTokens.gridLine)
         } else {
             DSCircularProgressRing(progress: progress)
         }

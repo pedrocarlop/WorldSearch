@@ -54,18 +54,18 @@ public struct DSStatusBadge: View {
         case .completed:
             return "checkmark.seal.fill"
         case .missed:
-            return "calendar.badge.xmark"
+            return "calendar.badge.clock"
         }
     }
 
     private var iconStyle: AnyShapeStyle {
         switch kind {
         case .locked:
-            return AnyShapeStyle(ColorTokens.textSecondary)
+            return AnyShapeStyle(ColorTokens.gridLine)
         case .completed:
             return AnyShapeStyle(ThemeGradients.brushWarm)
         case .missed:
-            return AnyShapeStyle(ColorTokens.textSecondary)
+            return AnyShapeStyle(ColorTokens.gridLine)
         }
     }
 }
