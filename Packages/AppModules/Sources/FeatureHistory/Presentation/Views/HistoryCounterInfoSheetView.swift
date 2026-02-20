@@ -41,7 +41,7 @@ public enum HistoryCounterInfoKind: String, Identifiable, Sendable {
         case .completedPuzzles:
             return ThemeGradients.brushWarm
         case .streak:
-            return ThemeGradients.brushWarmStrong
+            return ThemeGradients.brushWarm
         }
     }
 

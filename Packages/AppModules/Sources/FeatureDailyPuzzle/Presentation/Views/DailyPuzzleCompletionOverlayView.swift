@@ -21,13 +21,11 @@ import SwiftUI
 import DesignSystem
 
 struct DailyPuzzleCompletionOverlayView: View {
-    let navigationTitle: String
     let showContent: Bool
     let showConfetti: Bool
     let streakLabel: String?
     let reduceMotion: Bool
     let reduceTransparency: Bool
-    let onClose: () -> Void
     let onContinue: () -> Void
 
     private var contentTransition: AnyTransition {
@@ -51,7 +49,6 @@ struct DailyPuzzleCompletionOverlayView: View {
             }
 
             VStack(spacing: 0) {
-                topNavigation
                 Spacer(minLength: SpacingTokens.xxxl)
 
                 if showContent {
@@ -64,43 +61,9 @@ struct DailyPuzzleCompletionOverlayView: View {
             .padding(.horizontal, SpacingTokens.lg)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea()
         .safeAreaInset(edge: .bottom) {
             floatingContinueButton
         }
-    }
-
-    private var topNavigation: some View {
-        HStack {
-            Button(action: onClose) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 20, weight: .semibold, design: .rounded))
-                    .foregroundStyle(ColorTokens.textPrimary)
-                    .frame(width: 44, height: 44)
-                    .background {
-                        Circle()
-                            .fill(
-                                reduceTransparency
-                                    ? AnyShapeStyle(ColorTokens.surfaceSecondary)
-                                    : AnyShapeStyle(.regularMaterial)
-                            )
-                    }
-            }
-            .accessibilityLabel(DailyPuzzleStrings.close)
-
-            Spacer()
-
-            Text(navigationTitle)
-                .font(TypographyTokens.titleSmall.weight(.semibold))
-                .foregroundStyle(ColorTokens.textPrimary)
-
-            Spacer()
-
-            Circle()
-                .fill(.clear)
-                .frame(width: 44, height: 44)
-        }
-        .padding(.top, SpacingTokens.xs)
     }
 
     private var celebrationContent: some View {
@@ -179,8 +142,8 @@ private struct DailyPuzzleCompletionBadge: View {
                 }
                 .shadow(color: ColorTokens.accentAmberStrong.opacity(0.32), radius: 12, x: 0, y: 8)
 
-            Image(systemName: "sparkles")
-                .font(.system(size: 30, weight: .bold, design: .rounded))
+            Image(systemName: "checkmark")
+                .font(.system(size: 34, weight: .bold, design: .rounded))
                 .foregroundStyle(ColorTokens.surfacePaper)
         }
         .overlay {
@@ -281,10 +244,10 @@ private struct DailyPuzzleCompletionConfettiView: View {
         VStack {
             HStack(spacing: SpacingTokens.md) {
                 ForEach(0..<6, id: \.self) { index in
-                    Image(systemName: index.isMultiple(of: 2) ? "sparkle" : "star.fill")
+                    Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 13, weight: .semibold, design: .rounded))
                         .foregroundStyle(
-                            index.isMultiple(of: 3)
+                            index.isMultiple(of: 2)
                                 ? ColorTokens.accentCoralStrong
                                 : ColorTokens.accentAmberStrong
                         )

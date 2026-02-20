@@ -427,24 +427,6 @@ public struct DailyPuzzleGameScreenView: View {
                 .transition(.move(edge: .top).combined(with: .opacity))
                 .zIndex(2)
             }
-
-            if completionOverlay.isVisible {
-                DailyPuzzleCompletionOverlayView(
-                    navigationTitle: navigationTitle,
-                    showContent: completionOverlay.showsToast,
-                    showConfetti: completionOverlay.showsBackdrop,
-                    streakLabel: completionOverlay.streakLabel,
-                    reduceMotion: reduceMotion,
-                    reduceTransparency: reduceTransparency,
-                    onClose: {
-                        handleCompletionOverlayExit()
-                    },
-                    onContinue: {
-                        handleCompletionOverlayExit()
-                    }
-                )
-                .transition(.opacity)
-            }
         }
         .navigationTitle(navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
@@ -514,6 +496,9 @@ public struct DailyPuzzleGameScreenView: View {
         } message: {
             Text(DailyPuzzleStrings.resetAlertMessage)
         }
+        .sheet(isPresented: completionOverlayPresentedBinding) {
+            completionSheet
+        }
     }
 
 }
@@ -522,6 +507,48 @@ private extension DailyPuzzleGameScreenView {
     static func initialElapsedSeconds(from progress: AppProgressRecord?) -> Int {
         guard let elapsed = progress?.elapsedSeconds else { return 0 }
         return max(elapsed, 0)
+    }
+
+    var completionOverlayPresentedBinding: Binding<Bool> {
+        Binding(
+            get: { completionOverlay.isVisible },
+            set: { isPresented in
+                if isPresented {
+                    completionOverlay.isVisible = true
+                    return
+                }
+                completionOverlayTask?.cancel()
+                completionOverlayTask = nil
+                completionOverlay = .hidden
+            }
+        )
+    }
+
+    var completionSheet: some View {
+        NavigationStack {
+            DailyPuzzleCompletionOverlayView(
+                showContent: completionOverlay.showsToast,
+                showConfetti: completionOverlay.showsBackdrop,
+                streakLabel: completionOverlay.streakLabel,
+                reduceMotion: reduceMotion,
+                reduceTransparency: reduceTransparency,
+                onContinue: {
+                    handleCompletionOverlayExit()
+                }
+            )
+            .navigationTitle(navigationTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(DailyPuzzleStrings.close) {
+                        handleCompletionOverlayExit()
+                    }
+                }
+            }
+        }
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .interactiveDismissDisabled()
     }
 
     var navigationTitleContent: some View {
