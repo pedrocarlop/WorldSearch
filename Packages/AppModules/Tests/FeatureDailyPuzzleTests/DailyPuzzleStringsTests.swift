@@ -29,12 +29,19 @@ final class DailyPuzzleStringsTests: XCTestCase {
 
     func testChallengeCompletedInFormatsCompactDuration() {
         let value = DailyPuzzleStrings.challengeCompletedIn(seconds: 172_984)
-        XCTAssertTrue(value.contains("2d 0h 3m 4s"))
+        XCTAssertTrue(value.contains("2d 3m 4s"))
     }
 
     func testChallengeCompletedInNormalizesMinutesFromSeconds() {
         let value = DailyPuzzleStrings.challengeCompletedIn(seconds: 125)
         XCTAssertTrue(value.contains("2m 5s"))
+    }
+
+    func testElapsedDurationOmitsZeroUnits() {
+        XCTAssertEqual(DailyPuzzleStrings.elapsedDuration(seconds: 97_384), "1d 3h 3m 4s")
+        XCTAssertEqual(DailyPuzzleStrings.elapsedDuration(seconds: 184), "3m 4s")
+        XCTAssertEqual(DailyPuzzleStrings.elapsedDuration(seconds: 32), "32s")
+        XCTAssertEqual(DailyPuzzleStrings.elapsedDuration(seconds: 0), "0s")
     }
 
     func testChallengeAccessibilityContainsChallengeNumber() {

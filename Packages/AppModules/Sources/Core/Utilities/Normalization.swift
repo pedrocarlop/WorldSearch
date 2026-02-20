@@ -20,10 +20,21 @@
 import Foundation
 
 public enum WordSearchNormalization {
+    private static let enyeSentinel = "\u{E000}"
+
     public static func normalizedWord(_ text: String) -> String {
-        text
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return "" }
+
+        let protectedEnye = trimmed
+            .replacingOccurrences(of: "ñ", with: enyeSentinel)
+            .replacingOccurrences(of: "Ñ", with: enyeSentinel)
+
+        let folded = protectedEnye
             .folding(options: [.diacriticInsensitive, .widthInsensitive, .caseInsensitive], locale: .current)
+
+        return folded
+            .replacingOccurrences(of: enyeSentinel, with: "Ñ")
             .uppercased()
     }
 

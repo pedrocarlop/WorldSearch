@@ -37,7 +37,7 @@ public struct DSStatusBadge: View {
     public var body: some View {
         ZStack {
             Circle()
-                .fill(ColorTokens.surfacePaperGrid.opacity(0.78))
+                .fill(backgroundStyle)
                 .frame(width: size, height: size)
 
             Image(systemName: icon)
@@ -66,6 +66,13 @@ public struct DSStatusBadge: View {
             return AnyShapeStyle(ThemeGradients.brushWarm)
         case .missed:
             return AnyShapeStyle(ColorTokens.gridLine)
+        }
+    }
+
+    private var backgroundStyle: AnyShapeStyle {
+        switch kind {
+        case .locked, .completed, .missed:
+            return AnyShapeStyle(ColorTokens.gridLine.opacity(0.4))
         }
     }
 }

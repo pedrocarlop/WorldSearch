@@ -180,11 +180,18 @@ public enum PuzzleFactory {
     public static func puzzle(for dayKey: DayKey, gridSize: Int, locale: Locale? = nil) -> Puzzle {
         let normalizedIndex = normalizedPuzzleIndex(dayKey.offset)
         let clampedGridSize = clampGridSize(gridSize)
-        let wordsPool = themedWords(for: normalizedIndex, locale: locale)
+        let resolvedLocale = locale ?? AppLocalization.currentLocale
+        let language = AppLanguage.resolved(from: resolvedLocale)
+        let wordsPool = themedWords(for: normalizedIndex, language: language)
         let seed = stableSeed(dayOffset: dayKey.offset, gridSize: clampedGridSize)
 
         let selectedWords = selectWords(from: wordsPool, gridSize: clampedGridSize, seed: seed)
-        let generated = WordSearchGenerator.generate(gridSize: clampedGridSize, words: selectedWords, seed: seed)
+        let generated = WordSearchGenerator.generate(
+            gridSize: clampedGridSize,
+            words: selectedWords,
+            seed: seed,
+            language: language
+        )
 
         return Puzzle(
             number: normalizedIndex + 1,
@@ -209,9 +216,8 @@ public enum PuzzleFactory {
         return min(10, max(5, 5 + (size - WordSearchConfig.minGridSize)))
     }
 
-    private static func themedWords(for index: Int, locale: Locale?) -> [String] {
-        let resolvedLocale = locale ?? AppLocalization.currentLocale
-        switch AppLanguage.resolved(from: resolvedLocale) {
+    private static func themedWords(for index: Int, language: AppLanguage) -> [String] {
+        switch language {
         case .spanish:
             return spanishThemes[index]
         case .english:
@@ -246,7 +252,9 @@ public enum WordSearchGenerator {
         (0, 1), (1, 0), (1, 1), (1, -1),
         (0, -1), (-1, 0), (-1, -1), (-1, 1)
     ]
-    private static let alphabet: [String] = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ").map { String($0) }
+    private static let englishAlphabet: [String] = Array("ABCDEFGHIJKLMNOPQRSTUVWXYZ").map { String($0) }
+    private static let spanishAlphabet: [String] = Array("ABCDEFGHIJKLMNÑOPQRSTUVWXYZ").map { String($0) }
+    private static let enye = "Ñ"
 
     public struct SeededGenerator {
         private var state: UInt64
@@ -276,21 +284,32 @@ public enum WordSearchGenerator {
         }
     }
 
-    public static func generate(gridSize: Int, words: [String], seed: UInt64) -> GeneratedPuzzle {
+    public static func generate(
+        gridSize: Int,
+        words: [String],
+        seed: UInt64,
+        language: AppLanguage = .english
+    ) -> GeneratedPuzzle {
         let size = PuzzleFactory.clampGridSize(gridSize)
         let sortedWords = words
             .map(WordSearchNormalization.normalizedWord)
             .filter { !$0.isEmpty && $0.count <= size }
             .sorted { $0.count > $1.count }
 
-        var fallback = makePuzzle(size: size, words: sortedWords, seed: seed, reduction: 0)
+        var fallback = makePuzzle(size: size, words: sortedWords, seed: seed, reduction: 0, language: language)
         if fallback.words.count >= 4 {
             return fallback
         }
 
         for reduction in [2, 4, 6] {
             let reduced = Array(sortedWords.prefix(max(4, sortedWords.count - reduction)))
-            let attempt = makePuzzle(size: size, words: reduced, seed: seed, reduction: reduction)
+            let attempt = makePuzzle(
+                size: size,
+                words: reduced,
+                seed: seed,
+                reduction: reduction,
+                language: language
+            )
             if attempt.words.count > fallback.words.count {
                 fallback = attempt
             }
@@ -302,27 +321,60 @@ public enum WordSearchGenerator {
         return fallback
     }
 
-    private static func makePuzzle(size: Int, words: [String], seed: UInt64, reduction: Int) -> GeneratedPuzzle {
+    private static func makePuzzle(
+        size: Int,
+        words: [String],
+        seed: UInt64,
+        reduction: Int,
+        language: AppLanguage
+    ) -> GeneratedPuzzle {
         var rng = SeededGenerator(seed: seed ^ UInt64(reduction) ^ 0xFEEDBEEF15)
         var board = Array(repeating: Array(repeating: "", count: size), count: size)
         var placedWords: [String] = []
+        let alphabet = alphabet(for: language)
+        let reservedEnyePosition = language == .spanish
+            ? GridPosition(row: rng.int(upperBound: size), col: rng.int(upperBound: size))
+            : nil
 
         for word in words {
-            if place(word: word, on: &board, size: size, rng: &rng) {
+            if place(
+                word: word,
+                on: &board,
+                size: size,
+                reservedPosition: reservedEnyePosition,
+                rng: &rng
+            ) {
                 placedWords.append(word)
             }
         }
 
+        var fillerPositions: [GridPosition] = []
         for row in 0..<size {
             for col in 0..<size where board[row][col].isEmpty {
+                fillerPositions.append(GridPosition(row: row, col: col))
                 board[row][col] = alphabet[rng.int(upperBound: alphabet.count)]
             }
+        }
+
+        if language == .spanish {
+            injectEnyeIfMissing(
+                on: &board,
+                fillerPositions: fillerPositions,
+                reservedPosition: reservedEnyePosition,
+                rng: &rng
+            )
         }
 
         return GeneratedPuzzle(grid: board, words: placedWords)
     }
 
-    private static func place(word: String, on board: inout [[String]], size: Int, rng: inout SeededGenerator) -> Bool {
+    private static func place(
+        word: String,
+        on board: inout [[String]],
+        size: Int,
+        reservedPosition: GridPosition?,
+        rng: inout SeededGenerator
+    ) -> Bool {
         let letters = word.map { String($0) }
         let count = letters.count
         guard count > 1 else { return false }
@@ -348,6 +400,12 @@ public enum WordSearchGenerator {
             for index in 0..<count {
                 let r = startRow + index * dr
                 let c = startCol + index * dc
+                if let reservedPosition,
+                   reservedPosition.row == r,
+                   reservedPosition.col == c {
+                    canPlace = false
+                    break
+                }
                 let existing = board[r][c]
                 if !existing.isEmpty && existing != letters[index] {
                     canPlace = false
@@ -368,5 +426,33 @@ public enum WordSearchGenerator {
         }
 
         return false
+    }
+
+    private static func alphabet(for language: AppLanguage) -> [String] {
+        switch language {
+        case .spanish:
+            return spanishAlphabet
+        case .english:
+            return englishAlphabet
+        }
+    }
+
+    private static func injectEnyeIfMissing(
+        on board: inout [[String]],
+        fillerPositions: [GridPosition],
+        reservedPosition: GridPosition?,
+        rng: inout SeededGenerator
+    ) {
+        guard !board.contains(where: { $0.contains(enye) }) else { return }
+
+        if !fillerPositions.isEmpty {
+            let position = fillerPositions[rng.int(upperBound: fillerPositions.count)]
+            board[position.row][position.col] = enye
+            return
+        }
+
+        if let reservedPosition {
+            board[reservedPosition.row][reservedPosition.col] = enye
+        }
     }
 }
