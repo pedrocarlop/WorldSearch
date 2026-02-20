@@ -22,6 +22,7 @@ import SwiftUI
 public enum TypographyTokens {
     private enum FontName {
         static let instrumentSerif = "InstrumentSerif-Regular"
+        static let pangolin = "Pangolin-Regular"
     }
 
     private static func serif(_ size: CGFloat, relativeTo textStyle: Font.TextStyle) -> Font {
@@ -48,7 +49,8 @@ public enum TypographyTokens {
     public static let wordDescription = Font.system(.body, design: .default)
 
     public static func boardLetter(size: CGFloat) -> Font {
-        Font.system(size: size, weight: .semibold, design: .rounded)
+        // Keep board letters in a handwritten style without affecting words/definitions typography.
+        Font.custom(FontName.pangolin, size: size, relativeTo: .body)
     }
 
     public static let monoBody = Font.system(.body, design: .default).weight(.semibold)

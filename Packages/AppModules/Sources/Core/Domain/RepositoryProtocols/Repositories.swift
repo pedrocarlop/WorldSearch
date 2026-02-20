@@ -64,7 +64,8 @@ public protocol SharedPuzzleRepository {
         foundWords: Set<String>,
         solvedPositions: Set<GridPosition>,
         startedAt: Date?,
-        endedAt: Date?
+        endedAt: Date?,
+        elapsedSeconds: Int?
     )
     func currentRotationBoundary(for now: Date) -> Date
 }
@@ -74,7 +75,8 @@ public extension SharedPuzzleRepository {
         puzzleIndex: Int,
         gridSize: Int,
         foundWords: Set<String>,
-        solvedPositions: Set<GridPosition>
+        solvedPositions: Set<GridPosition>,
+        elapsedSeconds: Int? = nil
     ) {
         updateProgress(
             puzzleIndex: puzzleIndex,
@@ -82,7 +84,8 @@ public extension SharedPuzzleRepository {
             foundWords: foundWords,
             solvedPositions: solvedPositions,
             startedAt: nil,
-            endedAt: nil
+            endedAt: nil,
+            elapsedSeconds: elapsedSeconds
         )
     }
 }

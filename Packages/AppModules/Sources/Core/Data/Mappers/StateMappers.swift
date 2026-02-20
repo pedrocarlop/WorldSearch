@@ -30,6 +30,7 @@ public enum StateMappers {
             solvedPositions: Set(dto.solvedPositions.map(toDomain)),
             startedAt: dto.startedAt,
             endedAt: dto.endedAt,
+            elapsedSeconds: dto.elapsedSeconds,
             puzzleIndex: dto.puzzleIndex,
             isHelpVisible: dto.isHelpVisible,
             feedback: dto.feedback.map(toDomain),
@@ -50,6 +51,7 @@ public enum StateMappers {
             solvedPositions: Set(state.solvedPositions.map(toDTO)),
             startedAt: state.startedAt,
             endedAt: state.endedAt,
+            elapsedSeconds: state.elapsedSeconds,
             puzzleIndex: state.puzzleIndex,
             isHelpVisible: state.isHelpVisible,
             feedback: state.feedback.map(toDTO),
@@ -67,7 +69,8 @@ public enum StateMappers {
             foundWords: dto.foundWords,
             solvedPositions: dto.solvedPositions.map(toDomain),
             startedAt: dto.startedAt,
-            endedAt: dto.endedAt
+            endedAt: dto.endedAt,
+            elapsedSeconds: dto.elapsedSeconds
         )
     }
 
@@ -78,7 +81,8 @@ public enum StateMappers {
             foundWords: model.foundWords,
             solvedPositions: model.solvedPositions.map(toDTO),
             startedAt: model.startedAt,
-            endedAt: model.endedAt
+            endedAt: model.endedAt,
+            elapsedSeconds: model.elapsedSeconds
         )
     }
 

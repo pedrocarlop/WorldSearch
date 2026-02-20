@@ -184,17 +184,33 @@ final class DailyPuzzleHomeScreenViewModelTests: XCTestCase {
     func testCompletedTodayCardShowsElapsedSecondsFromSharedState() throws {
         let (core, now) = makeCore(daysSinceInstall: 4)
         let startedAt = Date(timeIntervalSince1970: 3_500)
-        let endedAt = startedAt.addingTimeInterval(41)
         var shared = core.getSharedPuzzleStateUseCase.execute(now: now, preferredGridSize: 7)
         shared.foundWords = Set(shared.words)
         shared.startedAt = startedAt
-        shared.endedAt = endedAt
+        shared.endedAt = startedAt.addingTimeInterval(41)
+        shared.elapsedSeconds = 41
         core.saveSharedPuzzleStateUseCase.execute(shared)
 
         let viewModel = DailyPuzzleHomeScreenViewModel(core: core, preferredGridSize: 7, now: now)
         let card = try XCTUnwrap(viewModel.challengeCards.first { $0.offset == viewModel.todayOffset })
 
         XCTAssertEqual(card.completionSeconds, 41)
+    }
+
+    func testCompletedTodayCardDoesNotFallbackToSharedTimestampsWithoutElapsedSeconds() throws {
+        let (core, now) = makeCore(daysSinceInstall: 4)
+        let startedAt = Date(timeIntervalSince1970: 3_500)
+        var shared = core.getSharedPuzzleStateUseCase.execute(now: now, preferredGridSize: 7)
+        shared.foundWords = Set(shared.words)
+        shared.startedAt = startedAt
+        shared.endedAt = startedAt.addingTimeInterval(41)
+        shared.elapsedSeconds = nil
+        core.saveSharedPuzzleStateUseCase.execute(shared)
+
+        let viewModel = DailyPuzzleHomeScreenViewModel(core: core, preferredGridSize: 7, now: now)
+        let card = try XCTUnwrap(viewModel.challengeCards.first { $0.offset == viewModel.todayOffset })
+
+        XCTAssertNil(card.completionSeconds)
     }
 
     func testChallengeCardsFollowCarouselOffsets() {

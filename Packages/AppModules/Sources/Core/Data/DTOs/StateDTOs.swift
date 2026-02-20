@@ -55,6 +55,7 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
     public var solvedPositions: Set<SharedPositionDTO>
     public var startedAt: Date?
     public var endedAt: Date?
+    public var elapsedSeconds: Int?
     public var puzzleIndex: Int
     public var isHelpVisible: Bool
     public var feedback: SharedFeedbackDTO?
@@ -72,6 +73,7 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         solvedPositions: Set<SharedPositionDTO>,
         startedAt: Date?,
         endedAt: Date?,
+        elapsedSeconds: Int? = nil,
         puzzleIndex: Int,
         isHelpVisible: Bool,
         feedback: SharedFeedbackDTO?,
@@ -88,6 +90,7 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         self.solvedPositions = solvedPositions
         self.startedAt = startedAt
         self.endedAt = endedAt
+        self.elapsedSeconds = elapsedSeconds
         self.puzzleIndex = puzzleIndex
         self.isHelpVisible = isHelpVisible
         self.feedback = feedback
@@ -106,6 +109,7 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         case solvedPositions
         case startedAt
         case endedAt
+        case elapsedSeconds
         case puzzleIndex
         case isHelpVisible
         case feedback
@@ -126,6 +130,7 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         solvedPositions = try container.decodeIfPresent(Set<SharedPositionDTO>.self, forKey: .solvedPositions) ?? []
         startedAt = try container.decodeIfPresent(Date.self, forKey: .startedAt)
         endedAt = try container.decodeIfPresent(Date.self, forKey: .endedAt)
+        elapsedSeconds = try container.decodeIfPresent(Int.self, forKey: .elapsedSeconds)
         puzzleIndex = try container.decodeIfPresent(Int.self, forKey: .puzzleIndex) ?? 0
         isHelpVisible = try container.decodeIfPresent(Bool.self, forKey: .isHelpVisible) ?? false
         feedback = try container.decodeIfPresent(SharedFeedbackDTO.self, forKey: .feedback)
@@ -145,6 +150,7 @@ public struct SharedPuzzleStateDTO: Codable, Hashable, Sendable {
         try container.encode(solvedPositions, forKey: .solvedPositions)
         try container.encodeIfPresent(startedAt, forKey: .startedAt)
         try container.encodeIfPresent(endedAt, forKey: .endedAt)
+        try container.encodeIfPresent(elapsedSeconds, forKey: .elapsedSeconds)
         try container.encode(puzzleIndex, forKey: .puzzleIndex)
         try container.encode(isHelpVisible, forKey: .isHelpVisible)
         try container.encodeIfPresent(feedback, forKey: .feedback)
@@ -172,6 +178,7 @@ public struct AppProgressRecordDTO: Codable, Hashable, Sendable {
     public let solvedPositions: [AppProgressPositionDTO]
     public let startedAt: TimeInterval?
     public let endedAt: TimeInterval?
+    public let elapsedSeconds: Int?
 
     public init(
         dayOffset: Int,
@@ -179,7 +186,8 @@ public struct AppProgressRecordDTO: Codable, Hashable, Sendable {
         foundWords: [String],
         solvedPositions: [AppProgressPositionDTO],
         startedAt: TimeInterval?,
-        endedAt: TimeInterval?
+        endedAt: TimeInterval?,
+        elapsedSeconds: Int? = nil
     ) {
         self.dayOffset = dayOffset
         self.gridSize = gridSize
@@ -187,6 +195,7 @@ public struct AppProgressRecordDTO: Codable, Hashable, Sendable {
         self.solvedPositions = solvedPositions
         self.startedAt = startedAt
         self.endedAt = endedAt
+        self.elapsedSeconds = elapsedSeconds
     }
 }
 

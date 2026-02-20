@@ -85,7 +85,8 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
         foundWords: Set<String>,
         solvedPositions: Set<GridPosition>,
         startedAt: Date?,
-        endedAt: Date?
+        endedAt: Date?,
+        elapsedSeconds: Int?
     ) {
         let now = Date()
         var state = loadState(now: now, preferredGridSize: gridSize)
@@ -114,6 +115,10 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
             existing: state.endedAt,
             isCompleted: state.isCompleted,
             now: now
+        )
+        state.elapsedSeconds = resolvedElapsedSeconds(
+            provided: elapsedSeconds,
+            existing: state.elapsedSeconds
         )
         saveState(state)
     }
@@ -157,6 +162,7 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
             solvedPositions: [],
             startedAt: nil,
             endedAt: nil,
+            elapsedSeconds: nil,
             puzzleIndex: normalized,
             isHelpVisible: false,
             feedback: nil,
@@ -215,6 +221,7 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
             solvedPositions: [],
             startedAt: nil,
             endedAt: nil,
+            elapsedSeconds: nil,
             puzzleIndex: state.puzzleIndex,
             isHelpVisible: false,
             feedback: nil,
@@ -281,6 +288,7 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
                     solvedPositions: Set(legacy.solvedPositions.map { GridPosition(row: $0.r, col: $0.c) }),
                     startedAt: nil,
                     endedAt: nil,
+                    elapsedSeconds: nil,
                     puzzleIndex: PuzzleFactory.normalizedPuzzleIndex(legacy.puzzleIndex),
                     isHelpVisible: false,
                     feedback: nil,
@@ -321,6 +329,7 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
                     solvedPositions: [],
                     startedAt: nil,
                     endedAt: nil,
+                    elapsedSeconds: nil,
                     puzzleIndex: 0,
                     isHelpVisible: false,
                     feedback: nil,
@@ -402,5 +411,18 @@ public final class LocalSharedPuzzleRepository: SharedPuzzleRepository {
         }
         guard isCompleted else { return nil }
         return existing ?? now
+    }
+
+    private func resolvedElapsedSeconds(
+        provided: Int?,
+        existing: Int?
+    ) -> Int? {
+        if let provided {
+            return max(provided, 0)
+        }
+        if let existing {
+            return max(existing, 0)
+        }
+        return nil
     }
 }

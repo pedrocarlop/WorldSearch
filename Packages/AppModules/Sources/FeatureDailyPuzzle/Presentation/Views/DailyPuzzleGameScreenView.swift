@@ -218,6 +218,7 @@ public struct DailyPuzzleGameScreenView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    @Environment(\.scenePhase) private var scenePhase
 
     public let core: CoreContainer
     public let dayOffset: Int
@@ -258,6 +259,8 @@ public struct DailyPuzzleGameScreenView: View {
     @State private var pendingBoardRotations = 0
     @State private var boardRotationTask: Task<Void, Never>?
     @State private var wordHintTapCounts: [String: Int] = [:]
+    @State private var elapsedSecondsBase: Int
+    @State private var activeTimerStartedAt: Date?
 
     public init(
         core: CoreContainer,
@@ -306,6 +309,8 @@ public struct DailyPuzzleGameScreenView: View {
                 endedAt: initialProgress?.endedDate
             )
         )
+        _elapsedSecondsBase = State(initialValue: Self.initialElapsedSeconds(from: initialProgress))
+        _activeTimerStartedAt = State(initialValue: nil)
     }
 
     private var isCompleted: Bool {
@@ -476,9 +481,20 @@ public struct DailyPuzzleGameScreenView: View {
         .onAppear {
             let preferences = celebrationPreferencesProvider()
             fxManager.setSuccessFXEnabled(preferences.enableCelebrations)
+            resumeStopwatchIfNeeded()
             runEntryTransition()
         }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                resumeStopwatchIfNeeded()
+            } else {
+                pauseStopwatchIfNeeded()
+                saveProgress()
+            }
+        }
         .onDisappear {
+            pauseStopwatchIfNeeded()
+            saveProgress()
             entryTransitionTask?.cancel()
             entryTransitionTask = nil
             feedbackDismissTask?.cancel()
@@ -503,6 +519,11 @@ public struct DailyPuzzleGameScreenView: View {
 }
 
 private extension DailyPuzzleGameScreenView {
+    static func initialElapsedSeconds(from progress: AppProgressRecord?) -> Int {
+        guard let elapsed = progress?.elapsedSeconds else { return 0 }
+        return max(elapsed, 0)
+    }
+
     var navigationTitleContent: some View {
         VStack(spacing: 1) {
             Text(navigationTitle)
@@ -522,26 +543,52 @@ private extension DailyPuzzleGameScreenView {
     }
 
     var isTimerRunning: Bool {
-        gameSession.startedAt != nil && gameSession.endedAt == nil
+        activeTimerStartedAt != nil && gameSession.endedAt == nil
     }
 
     @ViewBuilder
     func navBarTimerRow(referenceDate: Date) -> some View {
-        let seconds = elapsedSeconds(at: referenceDate)
-        HStack(spacing: SpacingTokens.xxs) {
-            Image(systemName: "timer")
-            Text(DailyPuzzleStrings.elapsedSecondsShort(seconds))
-                .monospacedDigit()
-        }
+        let seconds = liveElapsedSeconds(at: referenceDate)
+        Text(DailyPuzzleStrings.elapsedDuration(seconds: seconds))
+            .monospacedDigit()
         .font(TypographyTokens.caption.weight(.semibold))
         .foregroundStyle(ColorTokens.textTertiary)
         .lineLimit(1)
     }
 
-    func elapsedSeconds(at referenceDate: Date) -> Int {
-        guard let startedAt = gameSession.startedAt else { return 0 }
-        let endDate = gameSession.endedAt ?? referenceDate
-        return max(Int(endDate.timeIntervalSince(startedAt)), 0)
+    func liveElapsedSeconds(at referenceDate: Date) -> Int {
+        var total = max(elapsedSecondsBase, 0)
+        if let activeTimerStartedAt {
+            total += max(Int(referenceDate.timeIntervalSince(activeTimerStartedAt)), 0)
+        }
+        return total
+    }
+
+    func resumeStopwatchIfNeeded(now: Date = Date()) {
+        guard gameSession.startedAt != nil else { return }
+        guard gameSession.endedAt == nil else { return }
+        guard scenePhase == .active else { return }
+        guard activeTimerStartedAt == nil else { return }
+        activeTimerStartedAt = now
+    }
+
+    func pauseStopwatchIfNeeded(now: Date = Date()) {
+        guard let activeTimerStartedAt else { return }
+        elapsedSecondsBase += max(Int(now.timeIntervalSince(activeTimerStartedAt)), 0)
+        self.activeTimerStartedAt = nil
+    }
+
+    func persistedElapsedSeconds(referenceDate: Date = Date()) -> Int {
+        max(liveElapsedSeconds(at: referenceDate), 0)
+    }
+
+    var shouldPersistProgress: Bool {
+        gameSession.startedAt != nil
+        || gameSession.endedAt != nil
+        || !gameSession.foundWords.isEmpty
+        || !gameSession.solvedPositions.isEmpty
+        || elapsedSecondsBase > 0
+        || activeTimerStartedAt != nil
     }
 
     @ViewBuilder
@@ -661,6 +708,7 @@ private extension DailyPuzzleGameScreenView {
             dragAnchor = position
             activeSelection = [position]
             if gameSession.startIfNeeded() {
+                resumeStopwatchIfNeeded()
                 saveProgress()
             }
             return
@@ -699,7 +747,8 @@ private extension DailyPuzzleGameScreenView {
     }
 
     private func finalizeSelection(_ positions: [GridPosition]) {
-        let outcome = gameSession.finalizeSelection(positions)
+        let now = Date()
+        let outcome = gameSession.finalizeSelection(positions, now: now)
         switch outcome.kind {
         case .ignored:
             return
@@ -729,21 +778,27 @@ private extension DailyPuzzleGameScreenView {
                 )
             }
         }
-        saveProgress()
+        if completedNow {
+            pauseStopwatchIfNeeded(now: now)
+        }
+        saveProgress(referenceDate: now)
         if completedNow {
             let preferences = celebrationPreferencesProvider()
             presentCompletionOverlay(streakCount: completionStreak, preferences: preferences)
         }
     }
 
-    private func saveProgress() {
+    private func saveProgress(referenceDate: Date = Date()) {
+        guard shouldPersistProgress else { return }
+
         let record = AppProgressRecord(
             dayOffset: dayOffset,
             gridSize: gridSize,
             foundWords: Array(gameSession.foundWords),
             solvedPositions: Array(gameSession.solvedPositions),
             startedAt: gameSession.startedAt?.timeIntervalSince1970,
-            endedAt: gameSession.endedAt?.timeIntervalSince1970
+            endedAt: gameSession.endedAt?.timeIntervalSince1970,
+            elapsedSeconds: persistedElapsedSeconds(referenceDate: referenceDate)
         )
         if let sharedSync {
             core.updateSharedProgressUseCase.execute(
@@ -752,7 +807,8 @@ private extension DailyPuzzleGameScreenView {
                 foundWords: gameSession.foundWords,
                 solvedPositions: gameSession.solvedPositions,
                 startedAt: gameSession.startedAt,
-                endedAt: gameSession.endedAt
+                endedAt: gameSession.endedAt,
+                elapsedSeconds: persistedElapsedSeconds(referenceDate: referenceDate)
             )
             onSharedStateMutation()
         } else {
@@ -773,6 +829,8 @@ private extension DailyPuzzleGameScreenView {
         completionOverlayTask = nil
         completionOverlay = .hidden
         gameSession.reset()
+        elapsedSecondsBase = 0
+        activeTimerStartedAt = nil
         activeSelection = []
         dragAnchor = nil
         if let sharedSync {

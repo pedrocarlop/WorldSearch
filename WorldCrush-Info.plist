@@ -33,6 +33,7 @@
 	<array>
 		<string>GreatVibes-Regular.ttf</string>
 		<string>InstrumentSerif-Regular.ttf</string>
+		<string>Pangolin-Regular.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

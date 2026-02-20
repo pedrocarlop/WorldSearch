@@ -351,6 +351,7 @@ public struct SharedPuzzleState: Hashable, Codable, Sendable {
     public var solvedPositions: Set<GridPosition>
     public var startedAt: Date?
     public var endedAt: Date?
+    public var elapsedSeconds: Int?
     public var puzzleIndex: Int
     public var isHelpVisible: Bool
     public var feedback: SelectionFeedback?
@@ -368,6 +369,7 @@ public struct SharedPuzzleState: Hashable, Codable, Sendable {
         solvedPositions: Set<GridPosition>,
         startedAt: Date? = nil,
         endedAt: Date? = nil,
+        elapsedSeconds: Int? = nil,
         puzzleIndex: Int,
         isHelpVisible: Bool,
         feedback: SelectionFeedback?,
@@ -384,6 +386,7 @@ public struct SharedPuzzleState: Hashable, Codable, Sendable {
         self.solvedPositions = solvedPositions
         self.startedAt = startedAt
         self.endedAt = endedAt
+        self.elapsedSeconds = elapsedSeconds.map { max($0, 0) }
         self.puzzleIndex = puzzleIndex
         self.isHelpVisible = isHelpVisible
         self.feedback = feedback
@@ -398,6 +401,16 @@ public struct SharedPuzzleState: Hashable, Codable, Sendable {
         let found = Set(foundWords.map(WordSearchNormalization.normalizedWord))
         return !expected.isEmpty && expected.isSubset(of: found)
     }
+
+    public var effectiveElapsedSeconds: Int? {
+        if let elapsedSeconds {
+            return max(elapsedSeconds, 0)
+        }
+        guard let startedAt, let endedAt, endedAt >= startedAt else {
+            return nil
+        }
+        return Int(endedAt.timeIntervalSince(startedAt).rounded())
+    }
 }
 
 public struct AppProgressRecord: Hashable, Codable, Sendable {
@@ -407,6 +420,7 @@ public struct AppProgressRecord: Hashable, Codable, Sendable {
     public let solvedPositions: [GridPosition]
     public let startedAt: TimeInterval?
     public let endedAt: TimeInterval?
+    public let elapsedSeconds: Int?
 
     public init(
         dayOffset: Int,
@@ -414,7 +428,8 @@ public struct AppProgressRecord: Hashable, Codable, Sendable {
         foundWords: [String],
         solvedPositions: [GridPosition],
         startedAt: TimeInterval?,
-        endedAt: TimeInterval?
+        endedAt: TimeInterval?,
+        elapsedSeconds: Int? = nil
     ) {
         self.dayOffset = dayOffset
         self.gridSize = gridSize
@@ -422,6 +437,7 @@ public struct AppProgressRecord: Hashable, Codable, Sendable {
         self.solvedPositions = solvedPositions
         self.startedAt = startedAt
         self.endedAt = endedAt
+        self.elapsedSeconds = elapsedSeconds.map { max($0, 0) }
     }
 
     public var startedDate: Date? {
@@ -430,6 +446,16 @@ public struct AppProgressRecord: Hashable, Codable, Sendable {
 
     public var endedDate: Date? {
         endedAt.map { Date(timeIntervalSince1970: $0) }
+    }
+
+    public var effectiveElapsedSeconds: Int? {
+        if let elapsedSeconds {
+            return max(elapsedSeconds, 0)
+        }
+        guard let startedDate, let endedDate, endedDate >= startedDate else {
+            return nil
+        }
+        return Int((endedDate.timeIntervalSince(startedDate)).rounded())
     }
 
     public func asSession() -> Session {

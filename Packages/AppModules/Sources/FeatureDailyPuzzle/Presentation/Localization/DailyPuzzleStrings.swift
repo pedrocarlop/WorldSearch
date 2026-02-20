@@ -59,12 +59,8 @@ public enum DailyPuzzleStrings {
         )
     }
 
-    public static func elapsedSecondsShort(_ seconds: Int) -> String {
-        String(
-            format: localized("daily.elapsed_seconds_short", default: "%ds"),
-            locale: AppLocalization.currentLocale,
-            max(seconds, 0)
-        )
+    public static func elapsedDuration(seconds: Int) -> String {
+        fullDuration(seconds: seconds)
     }
 
     public static func challengeAvailableIn(hours: Int) -> String {
@@ -197,6 +193,15 @@ public enum DailyPuzzleStrings {
         parts.append("\(remainingSeconds)s")
 
         return parts.joined(separator: " ")
+    }
+
+    private static func fullDuration(seconds: Int) -> String {
+        let clamped = max(seconds, 0)
+        let days = clamped / 86_400
+        let hours = (clamped % 86_400) / 3_600
+        let minutes = (clamped % 3_600) / 60
+        let remainingSeconds = clamped % 60
+        return "\(days)d \(hours)h \(minutes)m \(remainingSeconds)s"
     }
 
     private static func localized(_ key: String, default value: String) -> String {

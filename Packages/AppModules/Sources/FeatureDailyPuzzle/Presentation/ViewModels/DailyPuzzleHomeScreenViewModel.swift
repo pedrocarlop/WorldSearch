@@ -399,7 +399,8 @@ public final class DailyPuzzleHomeScreenViewModel {
             foundWords: Array(sharedState.foundWords),
             solvedPositions: Array(sharedState.solvedPositions),
             startedAt: sharedState.startedAt?.timeIntervalSince1970,
-            endedAt: sharedState.endedAt?.timeIntervalSince1970
+            endedAt: sharedState.endedAt?.timeIntervalSince1970,
+            elapsedSeconds: sharedState.elapsedSeconds
         )
     }
 
@@ -556,24 +557,14 @@ public final class DailyPuzzleHomeScreenViewModel {
     private func completionDurationSeconds(for offset: Int, isCompleted: Bool) -> Int? {
         guard isCompleted else { return nil }
 
-        let record: AppProgressRecord?
         if offset == todayOffset {
-            record = appProgressRecord(
-                from: sharedState,
-                dayOffset: offset,
-                gridSize: currentPreferredGridSize
-            )
-        } else {
-            record = appProgressRecord(
-                for: offset,
-                preferredGridSize: currentPreferredGridSize
-            )
+            return sharedState.elapsedSeconds.map { max($0, 0) }
         }
 
-        guard let started = record?.startedDate, let ended = record?.endedDate else {
-            return nil
-        }
-        guard ended >= started else { return nil }
-        return Int((ended.timeIntervalSince(started)).rounded())
+        let record = appProgressRecord(
+            for: offset,
+            preferredGridSize: currentPreferredGridSize
+        )
+        return record?.effectiveElapsedSeconds
     }
 }
