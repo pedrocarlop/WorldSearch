@@ -164,8 +164,6 @@ public struct DailyPuzzleChallengeCardView: View {
                             sideLength: gridSide
                         )
                         .frame(width: gridSide, height: gridSide)
-                        .saturation(shouldDimPreview ? 0.22 : 1)
-                        .opacity(shouldDimPreview ? 0.72 : 1)
                         .blur(radius: shouldDimPreview ? 3 : 0)
                         .overlay(alignment: .center) {
                             statusBadge
@@ -292,7 +290,7 @@ public struct DailyPuzzleChallengeCardView: View {
     private var challengeStatusText: some View {
         Text(statusLabel)
             .font(TypographyTokens.caption)
-            .foregroundStyle(isCompleted ? ColorTokens.textPrimary : ColorTokens.textSecondary)
+            .foregroundStyle(isCompleted ? ColorTokens.textPrimary : ColorTokens.statusMuted)
             .lineLimit(1)
             .minimumScaleFactor(0.72)
             .frame(maxWidth: .infinity, alignment: .center)

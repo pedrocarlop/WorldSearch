@@ -54,7 +54,7 @@ public struct DSStatusBadge: View {
         case .completed:
             return "checkmark.seal.fill"
         case .missed:
-            return "calendar.badge.clock"
+            return "xmark.circle.fill"
         }
     }
 

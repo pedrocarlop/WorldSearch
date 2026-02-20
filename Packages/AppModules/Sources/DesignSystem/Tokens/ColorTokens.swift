@@ -35,6 +35,7 @@ public enum ColorTokens {
     public static let inkSecondary = dynamicColor(lightHex: 0x4A4A4A, darkHex: 0xCEC2B3)
     public static let inkTertiary = dynamicColor(lightHex: 0x5B5B5B, darkHex: 0xD8CCBD)
     public static let gridLine = dynamicColor(lightHex: 0xCFCAC1, darkHex: 0x655D53)
+    public static let statusMuted = dynamicColor(lightHex: 0x8D877E, darkHex: 0x5C554D)
     public static let borderSoft = dynamicColor(lightHex: 0xE3DED5, darkHex: 0x4E463D)
 
     // MARK: - Warm Accent Brush

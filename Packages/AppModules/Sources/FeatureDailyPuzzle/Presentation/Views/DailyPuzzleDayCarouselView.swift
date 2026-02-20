@@ -179,7 +179,7 @@ private struct DailyPuzzleDayCarouselItem: View {
                 .font(TypographyTokens.footnote)
                 .foregroundStyle(ThemeGradients.brushWarm)
         } else if isMissed {
-            Image(systemName: "calendar.badge.clock")
+            Image(systemName: "xmark.circle.fill")
                 .font(TypographyTokens.footnote)
                 .foregroundStyle(ColorTokens.gridLine)
         } else {
