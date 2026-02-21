@@ -8,6 +8,7 @@ EXPORT_OPTIONS_PLIST="${BUILD_DIR}/ExportOptions.plist"
 PROJECT_PATH="${REPO_ROOT}/WorldCrush.xcodeproj"
 SCHEME="WorldCrush"
 TEAM_ID="MM9BHDUA97"
+BUILD_NUMBER="${BUILD_NUMBER_OVERRIDE:-$(date -u +%Y%m%d%H%M%S)}"
 
 if [[ "${SKIP_TESTFLIGHT_UPLOAD:-0}" == "1" ]]; then
   echo "Skipping TestFlight upload because SKIP_TESTFLIGHT_UPLOAD=1."
@@ -37,6 +38,7 @@ cat > "${EXPORT_OPTIONS_PLIST}" <<PLIST
 </plist>
 PLIST
 
+echo "[TestFlight] Using build number: ${BUILD_NUMBER}"
 echo "[TestFlight] Archiving ${SCHEME}..."
 xcodebuild \
   -project "${PROJECT_PATH}" \
@@ -44,6 +46,7 @@ xcodebuild \
   -configuration Release \
   -destination "generic/platform=iOS" \
   -archivePath "${ARCHIVE_PATH}" \
+  CURRENT_PROJECT_VERSION="${BUILD_NUMBER}" \
   -allowProvisioningUpdates \
   clean archive
 

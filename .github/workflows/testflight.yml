@@ -106,6 +106,12 @@ jobs:
           </plist>
           EOF
 
+      - name: Compute build number
+        if: ${{ steps.preflight.outputs.ready == 'true' }}
+        id: build_number
+        run: |
+          echo "value=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+
       - name: Archive app
         if: ${{ steps.preflight.outputs.ready == 'true' }}
         run: |
@@ -117,7 +123,7 @@ jobs:
             -archivePath "$ARCHIVE_PATH" \
             CODE_SIGN_STYLE=Automatic \
             DEVELOPMENT_TEAM="$TEAM_ID" \
-            CURRENT_PROJECT_VERSION="${GITHUB_RUN_NUMBER}" \
+            CURRENT_PROJECT_VERSION="${{ steps.build_number.outputs.value }}" \
             clean archive
 
       - name: Export IPA

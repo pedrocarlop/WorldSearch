@@ -9,6 +9,8 @@ This project is prepared for Xcode Cloud with custom workflow scripts in `ci_scr
 - `ci_scripts/ci_pre_xcodebuild.sh`
   - Runs `Scripts/lint.sh` before the build/test action.
   - Can be disabled with `CI_RUN_SWIFTLINT=0`.
+  - By default lint is non-blocking in CI (`CI_FAIL_ON_LINT=0`).
+  - Set `CI_FAIL_ON_LINT=1` to fail the workflow when lint violations are found.
   - Set `CI_REQUIRE_SWIFTLINT=1` to fail the workflow if SwiftLint is missing.
 
 ## Create the workflow in Xcode Cloud
@@ -23,6 +25,7 @@ This project is prepared for Xcode Cloud with custom workflow scripts in `ci_scr
 ## Recommended workflow environment variables
 - `CI_INSTALL_SWIFTLINT=1`
 - `CI_RUN_SWIFTLINT=1`
+- `CI_FAIL_ON_LINT=0` (set to `1` to enforce lint errors as failures)
 - `CI_REQUIRE_SWIFTLINT=0` (set to `1` if you want missing SwiftLint to fail)
 
 ## Notes

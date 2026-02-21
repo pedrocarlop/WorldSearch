@@ -25,6 +25,7 @@
 //
 
 import SwiftUI
+import Combine
 import WidgetKit
 import Core
 import DesignSystem
@@ -92,6 +93,7 @@ struct ContentView: View {
         static let launchCardSettleDelayNanos: UInt64 = 110_000_000
         static let launchCardCleanupDelayNanos: UInt64 = 170_000_000
         static let minimumHomeRefreshInterval: TimeInterval = 0.75
+        static let boundaryRefreshPollInterval: TimeInterval = 15
         static let firstLaunchSplashShownKey = "hasShownFirstLaunchSplash"
     }
 
@@ -110,6 +112,11 @@ struct ContentView: View {
     @State private var showFirstLaunchSplash: Bool
     @State private var showsWidgetOnboardingBanner: Bool
     @Namespace private var toolbarActionTransitionNamespace
+    private let boundaryRefreshTimer = Timer.publish(
+        every: Constants.boundaryRefreshPollInterval,
+        on: .main,
+        in: .common
+    ).autoconnect()
 
     @MainActor
     init(container: AppContainer) {
@@ -205,6 +212,10 @@ struct ContentView: View {
                 guard phase == .active else { return }
                 refreshHomeData(force: false)
             }
+            .onReceive(boundaryRefreshTimer) { _ in
+                guard scenePhase == .active else { return }
+                syncHomeStateForDailyRotation(now: Date())
+            }
             .onDisappear {
                 presentGameTask?.cancel()
                 presentGameTask = nil
@@ -268,6 +279,17 @@ struct ContentView: View {
 
     private func refreshWidgetOnboardingBannerVisibility(now: Date = Date()) {
         showsWidgetOnboardingBanner = WidgetOnboardingBannerState.shouldShow(defaults: .standard, now: now)
+    }
+
+    private func syncHomeStateForDailyRotation(now: Date = Date()) {
+        let didRefresh = dailyPuzzleHomeViewModel.refreshIfNeeded(
+            preferredGridSize: settingsViewModel.model.gridSize,
+            now: now
+        )
+        guard didRefresh else { return }
+
+        historyViewModel.refresh()
+        reloadWidgetTimeline()
     }
 
     private func dismissWidgetOnboardingBanner() {
@@ -371,6 +393,8 @@ struct ContentView: View {
     }
 
     private func handleChallengeCardTap(offset: Int) {
+        syncHomeStateForDailyRotation(now: Date())
+
         switch dailyPuzzleHomeViewModel.handleChallengeCardTap(offset: offset) {
         case .openGame:
             presentGameFromCard(offset: offset)

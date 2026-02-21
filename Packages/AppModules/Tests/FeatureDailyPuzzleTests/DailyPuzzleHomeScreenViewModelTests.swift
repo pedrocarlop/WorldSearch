@@ -137,6 +137,53 @@ final class DailyPuzzleHomeScreenViewModelTests: XCTestCase {
         XCTAssertFalse(card.isMissed)
     }
 
+    func testRefreshIfNeededRebuildsStaleCardsAfterRotationBoundaryChange() throws {
+        let (core, now) = makeCore(daysSinceInstall: 8)
+        let viewModel = DailyPuzzleHomeScreenViewModel(
+            core: core,
+            preferredGridSize: 7,
+            now: now
+        )
+        let previousToday = viewModel.todayOffset
+
+        let calendar = Calendar.current
+        let nextDayNow = calendar.date(byAdding: .day, value: 1, to: now) ?? now.addingTimeInterval(86_400)
+        let didRefresh = viewModel.refreshIfNeeded(
+            preferredGridSize: 7,
+            now: nextDayNow
+        )
+
+        XCTAssertTrue(didRefresh)
+        XCTAssertEqual(viewModel.todayOffset, previousToday + 1)
+
+        let previousCard = try XCTUnwrap(viewModel.challengeCards.first { $0.offset == previousToday })
+        XCTAssertTrue(previousCard.isMissed)
+        XCTAssertTrue(previousCard.isLocked)
+
+        let dayCarouselProgress = viewModel.progressFraction(for: previousToday, preferredGridSize: 7)
+        let isMarkedMissedInDayCarousel = previousToday < viewModel.todayOffset && dayCarouselProgress < 0.999
+        XCTAssertEqual(previousCard.isMissed, isMarkedMissedInDayCarousel)
+        XCTAssertEqual(viewModel.handleChallengeCardTap(offset: previousToday), .noAction)
+    }
+
+    func testRefreshIfNeededDoesNothingWithinSameRotationBoundary() {
+        let (core, now) = makeCore(daysSinceInstall: 8)
+        let viewModel = DailyPuzzleHomeScreenViewModel(
+            core: core,
+            preferredGridSize: 7,
+            now: now
+        )
+        let beforeOffsets = viewModel.challengeCards.map(\.offset)
+
+        let didRefresh = viewModel.refreshIfNeeded(
+            preferredGridSize: 7,
+            now: now.addingTimeInterval(300)
+        )
+
+        XCTAssertFalse(didRefresh)
+        XCTAssertEqual(viewModel.challengeCards.map(\.offset), beforeOffsets)
+    }
+
     func testInitialProgressRecordForTodayUsesSharedStateProgress() {
         let now = Date(timeIntervalSince1970: 10_000)
         let core = CoreContainer(store: InMemoryKeyValueStore())

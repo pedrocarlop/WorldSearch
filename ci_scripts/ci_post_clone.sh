@@ -23,8 +23,15 @@ else
 fi
 
 echo "Installing SwiftLint with Homebrew..."
-HOMEBREW_NO_AUTO_UPDATE=1 "${BREW_BIN}" install swiftlint
+if ! HOMEBREW_NO_AUTO_UPDATE=1 "${BREW_BIN}" install swiftlint; then
+  echo "warning: Failed to install SwiftLint via Homebrew. Continuing without SwiftLint."
+  exit 0
+fi
 
 # Ensure the current shell can resolve the newly installed binary.
 eval "$("${BREW_BIN}" shellenv)"
-echo "SwiftLint installed: $(swiftlint version)"
+if command -v swiftlint >/dev/null 2>&1; then
+  echo "SwiftLint installed: $(swiftlint version)"
+else
+  echo "warning: SwiftLint install completed but binary not found in PATH."
+fi

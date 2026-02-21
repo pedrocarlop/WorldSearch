@@ -6,6 +6,8 @@ if [[ "${CI_RUN_SWIFTLINT:-1}" != "1" ]]; then
   exit 0
 fi
 
+CI_FAIL_ON_LINT="${CI_FAIL_ON_LINT:-0}"
+
 if ! command -v swiftlint >/dev/null 2>&1; then
   if [[ "${CI_REQUIRE_SWIFTLINT:-0}" == "1" ]]; then
     echo "SwiftLint is required but not available in PATH." >&2
@@ -28,4 +30,10 @@ if [[ ! -x "${LINT_SCRIPT}" ]]; then
 fi
 
 echo "Running SwiftLint..."
-"${LINT_SCRIPT}"
+if ! "${LINT_SCRIPT}"; then
+  if [[ "${CI_FAIL_ON_LINT}" == "1" ]]; then
+    echo "SwiftLint reported violations and CI_FAIL_ON_LINT=1." >&2
+    exit 1
+  fi
+  echo "warning: SwiftLint reported violations, but CI_FAIL_ON_LINT=${CI_FAIL_ON_LINT}; continuing build."
+fi

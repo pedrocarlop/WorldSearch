@@ -20,118 +20,25 @@
 import Foundation
 
 public enum PuzzleFactory {
-    private static let canonicalThemes: [[String]] = [
-        [
-            "ARBOL", "TIERRA", "NUBE", "MAR", "SOL", "RIO", "FLOR", "LUNA", "MONTE", "VALLE",
-            "BOSQUE", "RAMA", "ROCA", "PLAYA", "NIEVE", "VIENTO", "TRUENO", "FUEGO", "ARENA",
-            "ISLA", "CIELO", "SELVA", "LLUVIA", "CAMINO", "MUSGO", "LAGO", "PRIMAVERA",
-            "HORIZONTE", "ESTRELLA", "PLANETA"
-        ],
-        [
-            "QUESO", "PAN", "MIEL", "LECHE", "UVA", "PERA", "CAFE", "TOMATE", "ACEITE", "SAL",
-            "PASTA", "ARROZ", "PAPAYA", "MANGO", "BANANA", "NARANJA", "CEREZA", "SOPA",
-            "TORTILLA", "GALLETA", "CHOCOLATE", "YOGUR", "MANZANA", "AVENA", "ENSALADA",
-            "PIMIENTO", "LIMON", "COCO", "ALMENDRA", "ALBAHACA"
-        ],
-        [
-            "TREN", "BUS", "CARRO", "PUERTA", "PLAYA", "LIBRO", "CINE", "PUENTE", "CALLE",
-            "METRO", "AVION", "BARRIO", "PLAZA", "PARQUE", "TORRE", "MUSEO", "MAPA", "RUTA",
-            "BICICLETA", "TRAFICO", "SEMAFORO", "ESTACION", "AUTOPISTA", "TAXI", "MOTOR",
-            "VIAJE", "MOCHILA", "PASEO", "CIUDAD", "CARTEL"
-        ]
-    ]
+    private static let minimumPuzzleCount = 365
+    private static let wordsPerTheme = 30
+    private static let fallbackTheme = ["SOL", "MAR", "RIO", "LUNA", "FLOR", "ROCA"]
 
-    private static let englishTranslations: [String: String] = [
-        "ACEITE": "OIL",
-        "ALBAHACA": "BASIL",
-        "ALMENDRA": "ALMOND",
-        "ARBOL": "TREE",
-        "ARENA": "SAND",
-        "ARROZ": "RICE",
-        "AUTOPISTA": "HIGHWAY",
-        "AVENA": "OATMEAL",
-        "AVION": "AIRPLANE",
-        "BANANA": "BANANA",
-        "BARRIO": "DISTRICT",
-        "BICICLETA": "BICYCLE",
-        "BOSQUE": "FOREST",
-        "BUS": "BUS",
-        "CAFE": "COFFEE",
-        "CALLE": "STREET",
-        "CAMINO": "PATH",
-        "CARRO": "CAR",
-        "CARTEL": "SIGN",
-        "CEREZA": "CHERRY",
-        "CHOCOLATE": "CHOCOLATE",
-        "CIELO": "SKY",
-        "CINE": "CINEMA",
-        "CIUDAD": "CITY",
-        "COCO": "COCONUT",
-        "ENSALADA": "SALAD",
-        "ESTACION": "STATION",
-        "ESTRELLA": "STAR",
-        "FLOR": "FLOWER",
-        "FUEGO": "FIRE",
-        "GALLETA": "COOKIE",
-        "HORIZONTE": "HORIZON",
-        "ISLA": "ISLAND",
-        "LAGO": "LAKE",
-        "LECHE": "MILK",
-        "LIBRO": "BOOK",
-        "LIMON": "LEMON",
-        "LLUVIA": "RAIN",
-        "LUNA": "MOON",
-        "MANGO": "MANGO",
-        "MANZANA": "APPLE",
-        "MAPA": "MAP",
-        "MAR": "OCEAN",
-        "METRO": "SUBWAY",
-        "MIEL": "HONEY",
-        "MOCHILA": "BACKPACK",
-        "MONTE": "HILL",
-        "MOTOR": "ENGINE",
-        "MUSEO": "MUSEUM",
-        "MUSGO": "MOSS",
-        "NARANJA": "ORANGE",
-        "NIEVE": "SNOW",
-        "NUBE": "CLOUD",
-        "PAN": "BREAD",
-        "PAPAYA": "PAPAYA",
-        "PARQUE": "PARK",
-        "PASEO": "WALK",
-        "PASTA": "PASTA",
-        "PERA": "PEAR",
-        "PIMIENTO": "PEPPER",
-        "PLANETA": "PLANET",
-        "PLAYA": "BEACH",
-        "PLAZA": "SQUARE",
-        "PRIMAVERA": "SPRING",
-        "PUENTE": "BRIDGE",
-        "PUERTA": "DOOR",
-        "QUESO": "CHEESE",
-        "RAMA": "BRANCH",
-        "RIO": "RIVER",
-        "ROCA": "ROCK",
-        "RUTA": "ROUTE",
-        "SAL": "SALT",
-        "SELVA": "JUNGLE",
-        "SEMAFORO": "SIGNAL",
-        "SOL": "SUN",
-        "SOPA": "SOUP",
-        "TAXI": "TAXI",
-        "TIERRA": "EARTH",
-        "TOMATE": "TOMATO",
-        "TORRE": "TOWER",
-        "TORTILLA": "OMELET",
-        "TRAFICO": "TRAFFIC",
-        "TREN": "TRAIN",
-        "TRUENO": "THUNDER",
-        "UVA": "GRAPE",
-        "VALLE": "VALLEY",
-        "VIAJE": "TRAVEL",
-        "VIENTO": "WIND",
-        "YOGUR": "YOGURT"
-    ]
+    private static let canonicalWordBank: [String] = PuzzleWordBankData.pairs.map(\.spanish)
+
+    private static let canonicalThemes: [[String]] = makeCanonicalThemes()
+    private static let randomizedPuzzleOrder: [Int] = makeRandomizedPuzzleOrder(
+        count: max(canonicalThemes.count, 1)
+    )
+
+    private static let englishTranslations: [String: String] = {
+        var map: [String: String] = [:]
+        map.reserveCapacity(PuzzleWordBankData.pairs.count)
+        for pair in PuzzleWordBankData.pairs {
+            map[pair.spanish] = pair.english
+        }
+        return map
+    }()
 
     private static let spanishThemes: [[String]] = canonicalThemes.map { theme in
         theme.map(WordSearchNormalization.normalizedWord)
@@ -147,6 +54,109 @@ public enum PuzzleFactory {
                 return WordSearchNormalization.normalizedWord(translated)
             }
         }
+    }
+
+    private static func makeCanonicalThemes() -> [[String]] {
+        var seenWords: Set<String> = []
+        let uniqueWordBank = canonicalWordBank
+            .map(WordSearchNormalization.normalizedWord)
+            .filter { seenWords.insert($0).inserted }
+
+        guard !uniqueWordBank.isEmpty else {
+            return Array(repeating: fallbackTheme, count: minimumPuzzleCount)
+        }
+
+        let targetThemeCount = max(minimumPuzzleCount, 1)
+        let wordsInTheme = min(wordsPerTheme, uniqueWordBank.count)
+        let maximumAttempts = max(targetThemeCount * 20, targetThemeCount)
+
+        var themes: [[String]] = []
+        themes.reserveCapacity(targetThemeCount)
+        var signatures: Set<String> = []
+        var attempt = 0
+
+        while themes.count < targetThemeCount && attempt < maximumAttempts {
+            let seed = stableSeed(dayOffset: attempt + 1, gridSize: uniqueWordBank.count) ^ 0x51A7EA5ED
+            let candidate = shuffledWords(
+                from: uniqueWordBank,
+                seed: seed,
+                take: wordsInTheme
+            )
+            let signature = candidate.joined(separator: "|")
+            if signatures.insert(signature).inserted {
+                themes.append(candidate)
+            }
+            attempt += 1
+        }
+
+        var rng = WordSearchGenerator.SeededGenerator(seed: 0x0BADC0DE1234ABCD)
+        while themes.count < targetThemeCount {
+            let start = rng.int(upperBound: uniqueWordBank.count)
+            let step = max(1, rng.int(upperBound: uniqueWordBank.count))
+            var candidate: [String] = []
+            candidate.reserveCapacity(wordsInTheme)
+            var used: Set<String> = []
+            var index = start
+
+            while candidate.count < wordsInTheme && used.count < uniqueWordBank.count {
+                let word = uniqueWordBank[index % uniqueWordBank.count]
+                if used.insert(word).inserted {
+                    candidate.append(word)
+                }
+                index += step
+            }
+
+            if candidate.count < wordsInTheme {
+                for word in uniqueWordBank where candidate.count < wordsInTheme {
+                    if used.insert(word).inserted {
+                        candidate.append(word)
+                    }
+                }
+            }
+
+            let signature = candidate.joined(separator: "|")
+            if signatures.insert(signature).inserted {
+                themes.append(candidate)
+            }
+        }
+
+        return themes
+    }
+
+    private static func makeRandomizedPuzzleOrder(count: Int) -> [Int] {
+        guard count > 1 else { return [0] }
+        var order = Array(0..<count)
+        var rng = WordSearchGenerator.SeededGenerator(seed: 0xD1A1222365ABCDEF)
+
+        for index in stride(from: order.count - 1, through: 1, by: -1) {
+            let swapAt = rng.int(upperBound: index + 1)
+            if swapAt != index {
+                order.swapAt(index, swapAt)
+            }
+        }
+
+        return order
+    }
+
+    private static func shuffledWords(from words: [String], seed: UInt64, take count: Int) -> [String] {
+        guard !words.isEmpty else { return fallbackTheme }
+
+        var shuffled = words
+        var rng = WordSearchGenerator.SeededGenerator(seed: seed)
+        for index in stride(from: shuffled.count - 1, through: 1, by: -1) {
+            let swapAt = rng.int(upperBound: index + 1)
+            if swapAt != index {
+                shuffled.swapAt(index, swapAt)
+            }
+        }
+
+        return Array(shuffled.prefix(max(1, count)))
+    }
+
+    private static func randomizedPuzzleIndex(for normalizedIndex: Int) -> Int {
+        guard !randomizedPuzzleOrder.isEmpty else { return 0 }
+        let index = normalizedPuzzleIndex(normalizedIndex)
+        return randomizedPuzzleOrder[index]
     }
 
     private static let canonicalByLocalizedWord: [String: String] = {
@@ -171,6 +181,12 @@ public enum PuzzleFactory {
         return canonicalByLocalizedWord[normalized]
     }
 
+    public static func puzzleNumber(for dayKey: DayKey) -> Int {
+        let normalizedIndex = normalizedPuzzleIndex(dayKey.offset)
+        let randomizedIndex = randomizedPuzzleIndex(for: normalizedIndex)
+        return randomizedIndex + 1
+    }
+
     public static func normalizedPuzzleIndex(_ offset: Int) -> Int {
         let count = max(canonicalThemes.count, 1)
         let value = offset % count
@@ -179,10 +195,11 @@ public enum PuzzleFactory {
 
     public static func puzzle(for dayKey: DayKey, gridSize: Int, locale: Locale? = nil) -> Puzzle {
         let normalizedIndex = normalizedPuzzleIndex(dayKey.offset)
+        let randomizedIndex = randomizedPuzzleIndex(for: normalizedIndex)
         let clampedGridSize = clampGridSize(gridSize)
         let resolvedLocale = locale ?? AppLocalization.currentLocale
         let language = AppLanguage.resolved(from: resolvedLocale)
-        let wordsPool = themedWords(for: normalizedIndex, language: language)
+        let wordsPool = themedWords(for: randomizedIndex, language: language)
         let seed = stableSeed(dayOffset: dayKey.offset, gridSize: clampedGridSize)
 
         let selectedWords = selectWords(from: wordsPool, gridSize: clampedGridSize, seed: seed)
@@ -194,7 +211,7 @@ public enum PuzzleFactory {
         )
 
         return Puzzle(
-            number: normalizedIndex + 1,
+            number: randomizedIndex + 1,
             dayKey: dayKey,
             grid: PuzzleGrid(letters: generated.grid),
             words: generated.words.map(Word.init(text:))
@@ -231,7 +248,7 @@ public enum PuzzleFactory {
             .filter { $0.count >= 3 && $0.count <= gridSize }
 
         if filtered.isEmpty {
-            filtered = ["SOL", "MAR", "RIO", "LUNA", "FLOR", "ROCA"]
+            filtered = fallbackTheme
         }
 
         var rng = WordSearchGenerator.SeededGenerator(seed: seed ^ 0xA11CE5EED)

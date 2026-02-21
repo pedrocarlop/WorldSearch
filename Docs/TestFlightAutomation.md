@@ -4,7 +4,7 @@ This repository includes a GitHub Actions workflow that uploads a new TestFlight
 
 - Workflow file: `.github/workflows/testflight.yml`
 - Trigger: `push` on `main` (plus manual `workflow_dispatch`)
-- Build number: set automatically to `github.run_number` to prevent duplicate build-number upload errors.
+- Build number: set automatically using UTC timestamp format (`yyyyMMddHHmmss`) to prevent duplicate build-number upload errors.
 
 ## Local post-push automation (configured in this clone)
 
@@ -15,6 +15,13 @@ This clone is configured to upload to TestFlight automatically after each succes
 - Local git config: `core.hooksPath=.githooks`
 
 This path does not require GitHub secrets, but it only runs when pushes are made from this machine.
+
+The local upload script also assigns the same UTC timestamp build number format by default.
+You can override it for one run if needed:
+
+```bash
+BUILD_NUMBER_OVERRIDE=20260220113000 Scripts/upload_testflight.sh
+```
 
 To skip one upload on demand:
 

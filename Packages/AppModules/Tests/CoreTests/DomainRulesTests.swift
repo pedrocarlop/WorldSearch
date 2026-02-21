@@ -188,6 +188,42 @@ final class DomainRulesTests: XCTestCase {
         XCTAssertEqual(first.words, second.words)
     }
 
+    func testPuzzleCatalogSupportsAtLeast365UniqueNumbersPerLanguage() {
+        let offsets = 0..<365
+        let spanishNumbers = Set(offsets.map {
+            PuzzleFactory.puzzle(
+                for: DayKey(offset: $0),
+                gridSize: 9,
+                locale: Locale(identifier: "es")
+            ).number
+        })
+        let englishNumbers = Set(offsets.map {
+            PuzzleFactory.puzzle(
+                for: DayKey(offset: $0),
+                gridSize: 9,
+                locale: Locale(identifier: "en")
+            ).number
+        })
+
+        XCTAssertEqual(spanishNumbers.count, 365)
+        XCTAssertEqual(englishNumbers.count, 365)
+    }
+
+    func testWordBankHas800SpanishEnglishPairs() {
+        XCTAssertEqual(PuzzleWordBankData.pairs.count, 800)
+        XCTAssertEqual(Set(PuzzleWordBankData.pairs.map(\.spanish)).count, 800)
+        XCTAssertTrue(PuzzleWordBankData.pairs.allSatisfy { !$0.english.isEmpty })
+    }
+
+    func testPuzzleOrderIsRandomizedWithoutRepeatingInFirst365Days() {
+        let numbers = (0..<365).map {
+            PuzzleFactory.puzzleNumber(for: DayKey(offset: $0))
+        }
+
+        XCTAssertEqual(Set(numbers).count, 365)
+        XCTAssertNotEqual(numbers, Array(1...365))
+    }
+
     func testWordPathFinderPrefersSolvedCells() {
         let grid = PuzzleGrid(letters: [
             ["C", "A", "T"],

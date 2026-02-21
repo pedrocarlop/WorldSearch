@@ -191,6 +191,20 @@ public final class DailyPuzzleHomeScreenViewModel {
         rebuildDerivedState(preferredGridSize: preferredGridSize, now: now)
     }
 
+    @discardableResult
+    public func refreshIfNeeded(
+        preferredGridSize: Int,
+        now: Date = Date()
+    ) -> Bool {
+        let latestBoundary = core.currentRotationBoundaryUseCase.execute(now: now)
+        guard latestBoundary != currentBoundary else {
+            return false
+        }
+
+        refresh(preferredGridSize: preferredGridSize, now: now)
+        return true
+    }
+
     public func puzzleDate(for offset: Int) -> Date {
         let delta = offset - todayOffset
         return Calendar.current.date(byAdding: .day, value: delta, to: currentBoundary) ?? currentBoundary
@@ -233,7 +247,7 @@ public final class DailyPuzzleHomeScreenViewModel {
     public func puzzleForOffset(_ offset: Int, preferredGridSize: Int) -> Puzzle {
         if offset == todayOffset, !sharedState.grid.isEmpty, !sharedState.words.isEmpty {
             return Puzzle(
-                number: sharedState.puzzleIndex + 1,
+                number: PuzzleFactory.puzzleNumber(for: DayKey(offset: offset)),
                 dayKey: DayKey(offset: offset),
                 grid: PuzzleGrid(letters: sharedState.grid),
                 words: sharedState.words.map(Word.init(text:))

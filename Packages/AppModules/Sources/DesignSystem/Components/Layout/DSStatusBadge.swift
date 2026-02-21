@@ -72,7 +72,7 @@ public struct DSStatusBadge: View {
     private var backgroundStyle: AnyShapeStyle {
         switch kind {
         case .locked, .completed, .missed:
-            return AnyShapeStyle(ColorTokens.gridLine.opacity(0.4))
+            return AnyShapeStyle(ColorTokens.surfacePrimary.opacity(0.8))
         }
     }
 }
